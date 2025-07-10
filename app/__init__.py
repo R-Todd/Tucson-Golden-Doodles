@@ -1,10 +1,10 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 from datetime import datetime, timezone
 
-db = SQLAlchemy()
+from app.models import db # Import the db instance from the new models package
+
 migrate = Migrate()
 
 def create_app(config_class=Config):
@@ -18,7 +18,7 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_utility_vars():
         """Injects variables into all templates."""
-        from .models import SiteMeta
+        from app.models import SiteMeta # Update the import path for SiteMeta
         return dict(
             site_meta=SiteMeta.query.first(),
             now=datetime.now(timezone.utc)
