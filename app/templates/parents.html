@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Our Parents - Tucson Golden Doodles{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Our Wonderful Parents</h1>
+        <p class="lead">Meet the sires and dams of our loving Golden Doodle family.</p>
+    </div>
+
+    {% if parents %}
+        {% for parent in parents %}
+        <div class="card shadow-sm mb-5">
+            <div class="row g-0">
+                <div class="col-md-5">
+                    {# Use url_for to generate the correct path to the static image #}
+                    <img src="{{ url_for('static', filename=parent.main_image_url) }}" class="img-fluid rounded-start" alt="Photo of {{ parent.name }}">
+                </div>
+                <div class="col-md-7">
+                    <div class="card-body p-4">
+                        <h2 class="card-title">{{ parent.name }} <span class="badge bg-primary fw-normal">{{ parent.role.value }}</span></h2>
+                        <h5 class="card-subtitle mb-2 text-muted">{{ parent.breed }}</h5>
+                        <p class="card-text mt-3">{{ parent.description }}</p>
+
+                        <!-- Parent Image Gallery -->
+                        {% if parent.images %}
+                        <div class="mt-4">
+                            <h6>Gallery</h6>
+                            <div class="row row-cols-2 row-cols-lg-4 g-2">
+                                {% for image in parent.images %}
+                                <div class="col">
+                                    {# This links to a lightbox for a better viewing experience #}
+                                    <a href="{{ url_for('static', filename=image.image_url) }}" data-toggle="lightbox" data-gallery="gallery-{{ parent.id }}" data-title="{{ image.caption or parent.name }}">
+                                        <img src="{{ url_for('static', filename=image.image_url) }}" class="img-thumbnail" alt="{{ image.caption or 'Gallery image of ' + parent.name }}">
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Past Litters Section using the grouped_litters property -->
+            {% if parent.grouped_litters %}
+            <div class="card-footer bg-light border-top-0 p-4">
+                <h4 class="mt-2 mb-4 text-center">Past Litters</h4>
+                {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
+                <div class="litter-group mb-4">
+                    <h5 class="fw-normal">
+                        Litter with
+                        {# Dynamically show the OTHER parent's name #}
+                        <strong>{% if parent.role.name == 'DAD' %}{{ mom.name }}{% else %}{{ dad.name }}{% endif %}</strong>
+                        - Born {{ birth_date.strftime('%B %d, %Y') }}
+                    </h5>
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 mt-1">
+                        {% for puppy in puppies %}
+                        <div class="col">
+                            <div class="card h-100 text-center border-light shadow-sm">
+                                <img src="{{ url_for('static', filename=puppy.main_image_url) }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
+                                <div class="card-body p-2">
+                                    <p class="card-text mb-1 small">{{ puppy.name }}</p>
+                                    <span class="badge rounded-pill
+                                        {% if puppy.status.name == 'AVAILABLE' %}bg-success
+                                        {% elif puppy.status.name == 'RESERVED' %}bg-warning text-dark
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ puppy.status.value }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if not loop.last %}<hr class="my-4">{% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            There are no parent dogs to display at this time. Please check back later!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{# This script enables the image gallery lightbox functionality #}
+<script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
+{% endblock %}

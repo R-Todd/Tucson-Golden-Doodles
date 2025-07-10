@@ -1,0 +1,8 @@
+Flask               # the core framework
+Flask-SQLAlchemy     # ORM integration
+Flask-Migrate        # DB migrations
+python-dotenv        # load .env vars
+PyMySQL              # MySQL driver
+cryptography         # required by certain extensions
+pytest               # testing framework
+pytest-flask         # pytest fixtures for Flask
