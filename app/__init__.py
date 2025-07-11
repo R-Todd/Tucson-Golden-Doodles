@@ -28,6 +28,10 @@ def create_app(config_class=Config):
     from app.parents import bp as parents_bp
     app.register_blueprint(parents_bp)
     
+    # Register the new puppies blueprint
+    from app.puppies import bp as puppies_bp
+    app.register_blueprint(puppies_bp)
+    
     # Register the main blueprint for homepage, etc.
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
