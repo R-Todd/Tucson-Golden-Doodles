@@ -6,3 +6,6 @@ PyMySQL              # MySQL driver
 cryptography         # required by certain extensions
 pytest               # testing framework
 pytest-flask         # pytest fixtures for Flask
+Flask-Admin
+Flask-Login
+werkzeug

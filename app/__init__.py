@@ -1,11 +1,16 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_login import LoginManager
 from config import Config
 from datetime import datetime, timezone
 
-from app.models import db # Import the db instance from the new models package
+from app.models import db, User 
+from app.admin.routes import admin 
 
 migrate = Migrate()
+login = LoginManager()
+# Update the login view to use the new blueprint name
+login.login_view = 'admin_auth.login'
 
 def create_app(config_class=Config):
     """Application factory function."""
@@ -14,15 +19,25 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    login.init_app(app)
+    admin.init_app(app)
+
+    @login.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     @app.context_processor
     def inject_utility_vars():
         """Injects variables into all templates."""
-        from app.models import SiteMeta # Update the import path for SiteMeta
+        from app.models import SiteMeta 
         return dict(
             site_meta=SiteMeta.query.first(),
             now=datetime.now(timezone.utc)
         )
+
+    # Register the admin blueprint
+    from app.admin import bp as admin_bp
+    app.register_blueprint(admin_bp)
 
     # Register the new parents blueprint
     from app.parents import bp as parents_bp

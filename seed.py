@@ -1,7 +1,8 @@
+import os
 from datetime import date
 from app import create_app, db
 from app.models import (
-    SiteMeta, Parent, ParentImage, Puppy, Review, HeroSection,
+    User, SiteMeta, Parent, ParentImage, Puppy, Review, HeroSection,
     AboutSection, GalleryImage, ParentRole, PuppyStatus
 )
 
@@ -9,16 +10,25 @@ from app.models import (
 app = create_app()
 
 def seed_database():
-    """Seeds the database with sample data."""
+    """Seeds the database with sample data and an admin user."""
     with app.app_context():
         print("Clearing existing data...")
-        # Drop all tables and recreate them to ensure a clean slate. This is a
-        # robust method for development and seeding that avoids foreign key
-        # constraint issues.
         db.drop_all()
         db.create_all()
 
         print("Seeding new data...")
+
+        # --- Create Admin User ---
+        admin_username = os.environ.get('ADMIN_USERNAME')
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        if admin_username and admin_password:
+            # Make sure you have imported the User model
+            admin_user = User(username=admin_username)
+            admin_user.set_password(admin_password)
+            db.session.add(admin_user)
+            print(f"Admin user '{admin_username}' created.")
+        else:
+            print("Warning: ADMIN_USERNAME and ADMIN_PASSWORD not set in .env file. Admin user not created.")
 
         # --- Create Site Metadata ---
         site_meta = SiteMeta(
