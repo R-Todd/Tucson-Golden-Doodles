@@ -5,7 +5,10 @@ from flask_login import current_user, login_user, logout_user
 from wtforms.fields import SelectField
 
 from app import db
-from app.models import User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, ParentRole
+from app.models import (
+    User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, 
+    ParentRole, PuppyStatus
+)
 from . import bp
 
 class MyAdminIndexView(AdminIndexView):
@@ -24,27 +27,35 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin_auth.login', next=request.url))
 
-# Final custom view for the Parent model
+# Custom view for the Parent model
 class ParentAdminView(AdminModelView):
-    # Use form_overrides to force a SelectField
     form_overrides = {
         'role': SelectField
     }
-    
-    # Use form_args to configure the SelectField
     form_args = {
         'role': {
             'label': 'Role',
-            # Generate choices dynamically from the ParentRole enum
             'choices': [(role.name, role.value) for role in ParentRole],
-            # This is the key change: handle both string and enum inputs
             'coerce': lambda x: ParentRole[x] if isinstance(x, str) else x
         }
     }
 
-# Add views for your models, using the custom view for Parents
+# Custom view for the Puppy model
+class PuppyAdminView(AdminModelView):
+    form_overrides = {
+        'status': SelectField
+    }
+    form_args = {
+        'status': {
+            'label': 'Status',
+            'choices': [(status.name, status.value) for status in PuppyStatus],
+            'coerce': lambda x: PuppyStatus[x] if isinstance(x, str) else x
+        }
+    }
+
+# Add views for your models, using the new custom views
 admin.add_view(ParentAdminView(Parent, db.session))
-admin.add_view(AdminModelView(Puppy, db.session))
+admin.add_view(PuppyAdminView(Puppy, db.session))
 admin.add_view(AdminModelView(Review, db.session))
 admin.add_view(AdminModelView(HeroSection, db.session))
 admin.add_view(AdminModelView(AboutSection, db.session))
