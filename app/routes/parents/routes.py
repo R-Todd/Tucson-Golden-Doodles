@@ -1,6 +1,6 @@
 from flask import render_template
 from sqlalchemy.orm import joinedload
-from app.parents import bp
+from app.routes.parents import bp
 from app.models import Parent
 
 @bp.route('/parents')

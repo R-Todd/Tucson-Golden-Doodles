@@ -5,7 +5,9 @@ from config import Config
 from datetime import datetime, timezone
 
 from app.models import db, User 
-from app.admin.routes import admin 
+from app.routes.admin.routes import admin
+
+# Initialize Flask extensions
 
 migrate = Migrate()
 login = LoginManager()
@@ -36,19 +38,19 @@ def create_app(config_class=Config):
         )
 
     # Register the admin blueprint
-    from app.admin import bp as admin_bp
+    from app.routes.admin import bp as admin_bp
     app.register_blueprint(admin_bp)
 
     # Register the new parents blueprint
-    from app.parents import bp as parents_bp
+    from app.routes.parents import bp as parents_bp
     app.register_blueprint(parents_bp)
     
     # Register the new puppies blueprint
-    from app.puppies import bp as puppies_bp
+    from app.routes.puppies import bp as puppies_bp
     app.register_blueprint(puppies_bp)
     
     # Register the main blueprint for homepage, etc.
-    from app.main import bp as main_bp
+    from app.routes.main import bp as main_bp
     app.register_blueprint(main_bp)
 
     return app

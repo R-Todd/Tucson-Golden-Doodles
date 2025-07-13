@@ -9,3 +9,4 @@ pytest-flask         # pytest fixtures for Flask
 Flask-Admin
 Flask-Login
 werkzeug
+boto3

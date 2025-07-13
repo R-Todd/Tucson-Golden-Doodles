@@ -1,5 +1,5 @@
 from flask import render_template
-from app.main import bp
+from app.routes.main import bp
 from app.models import (
     HeroSection, AboutSection, Puppy, Review, GalleryImage, PuppyStatus
 )

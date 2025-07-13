@@ -2,7 +2,7 @@ from flask import render_template
 from itertools import groupby
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
-from app.puppies import bp
+from app.routes.puppies import bp
 from app.models import Puppy, PuppyStatus
 
 @bp.route('/puppies')
