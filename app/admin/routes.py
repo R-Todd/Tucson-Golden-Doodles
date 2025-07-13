@@ -2,8 +2,10 @@ from flask import redirect, url_for, request, render_template
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, login_user, logout_user
+from wtforms.fields import SelectField
+
 from app import db
-from app.models import User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage
+from app.models import User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, ParentRole
 from . import bp
 
 class MyAdminIndexView(AdminIndexView):
@@ -22,8 +24,26 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin_auth.login', next=request.url))
 
-# Add views for your models
-admin.add_view(AdminModelView(Parent, db.session))
+# Final custom view for the Parent model
+class ParentAdminView(AdminModelView):
+    # Use form_overrides to force a SelectField
+    form_overrides = {
+        'role': SelectField
+    }
+    
+    # Use form_args to configure the SelectField
+    form_args = {
+        'role': {
+            'label': 'Role',
+            # Generate choices dynamically from the ParentRole enum
+            'choices': [(role.name, role.value) for role in ParentRole],
+            # This is the key change: handle both string and enum inputs
+            'coerce': lambda x: ParentRole[x] if isinstance(x, str) else x
+        }
+    }
+
+# Add views for your models, using the custom view for Parents
+admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(AdminModelView(Puppy, db.session))
 admin.add_view(AdminModelView(Review, db.session))
 admin.add_view(AdminModelView(HeroSection, db.session))
