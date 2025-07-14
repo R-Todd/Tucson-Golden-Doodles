@@ -2,9 +2,12 @@ import pytest
 from app import create_app, db as _db
 from config import TestingConfig
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def app():
-    """Create and configure a new app instance for each test session."""
+    """
+    Create and configure a new app instance for each test function.
+    Using 'function' scope ensures that tests are isolated from each other.
+    """
     app = create_app(TestingConfig)
     app_context = app.app_context()
     app_context.push()
@@ -15,7 +18,6 @@ def app():
 def db(app):
     """
     Create a fresh database for each test function.
-    This ensures test isolation.
     """
     _db.app = app
     _db.create_all()

@@ -58,3 +58,29 @@ class PuppyAdminView(AdminModelView):
             image_url = upload_image(file, folder='puppies')
             if image_url:
                 model.main_image_url = image_url
+
+# Custom view for the Hero Section model
+class HeroSectionAdminView(AdminModelView):
+    form_extra_fields = {
+        'image_upload': FileField('Upload New Image')
+    }
+
+    def on_model_change(self, form, model, is_created):
+        file = request.files.get('image_upload')
+        if file:
+            image_url = upload_image(file, folder='hero')
+            if image_url:
+                model.image_url = image_url
+
+# Custom view for the About Section model
+class AboutSectionAdminView(AdminModelView):
+    form_extra_fields = {
+        'image_upload': FileField('Upload New Image')
+    }
+
+    def on_model_change(self, form, model, is_created):
+        file = request.files.get('image_upload')
+        if file:
+            image_url = upload_image(file, folder='about')
+            if image_url:
+                model.image_url = image_url

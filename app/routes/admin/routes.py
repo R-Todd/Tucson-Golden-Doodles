@@ -8,7 +8,10 @@ from app.models import (
 )
 from . import bp
 # Import the separated view classes
-from .views import AdminModelView, ParentAdminView, PuppyAdminView
+from .views import (
+    AdminModelView, ParentAdminView, PuppyAdminView, HeroSectionAdminView,
+    AboutSectionAdminView
+)
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
@@ -23,9 +26,10 @@ admin = Admin(name='Tucson Golden Doodles Admin', template_mode='bootstrap3', in
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 admin.add_view(AdminModelView(Review, db.session))
-admin.add_view(AdminModelView(HeroSection, db.session))
-admin.add_view(AdminModelView(AboutSection, db.session))
-admin.add_view(AdminModelView(GalleryImage, db.session))
+admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
+admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
+admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
+
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

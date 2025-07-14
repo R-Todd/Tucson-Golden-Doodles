@@ -10,3 +10,4 @@ Flask-Admin
 Flask-Login
 werkzeug
 boto3
+Flask-WTF
