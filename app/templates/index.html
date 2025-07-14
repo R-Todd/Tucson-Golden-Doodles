@@ -2,9 +2,8 @@
 
 {% block content %}
 
-<!-- 1. Hero Section -->
 {% if hero %}
-<div class="p-5 mb-4 bg-light rounded-3" style="background-image: url('{{ url_for('static', filename=hero.image_url) }}'); background-size: cover; background-position: center;">
+<div class="p-5 mb-4 bg-light rounded-3" style="background-image: url('{{ hero.image_url }}'); background-size: cover; background-position: center;">
     <div class="container-fluid py-5 text-white" style="background-color: rgba(0,0,0,0.5);">
         <h1 class="display-5 fw-bold">{{ hero.title }}</h1>
         <p class="col-md-8 fs-4">{{ hero.subtitle }}</p>
@@ -17,12 +16,11 @@
 
 <div class="container">
 
-    <!-- 2. About Section -->
     {% if about %}
     <section id="about" class="my-5">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <img src="{{ url_for('static', filename=about.image_url) }}" class="img-fluid rounded shadow" alt="About us">
+                <img src="{{ about.image_url }}" class="img-fluid rounded shadow" alt="About us">
             </div>
             <div class="col-md-6">
                 <h2 class="display-5">{{ about.title }}</h2>
@@ -34,7 +32,6 @@
     <hr class="my-5">
     {% endif %}
 
-    <!-- 3. Dog Tiles Section (Available Puppies) -->
     <section id="available-puppies" class="my-5 text-center">
         <h2 class="display-5 mb-4">Available Puppies</h2>
         {% if puppies %}
@@ -42,7 +39,7 @@
             {% for puppy in puppies %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="{{ url_for('static', filename=puppy.main_image_url) }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
+                    <img src="{{ puppy.main_image_url }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ puppy.name }}</h5>
                         <p class="card-text">Born: {{ puppy.birth_date.strftime('%B %d, %Y') }}</p>
@@ -63,7 +60,6 @@
     </section>
     <hr class="my-5">
 
-    <!-- 4. Testimonials Section -->
     {% if reviews %}
     <section id="testimonials" class="my-5">
         <h2 class="display-5 text-center mb-4">What Our Families Say</h2>
@@ -85,15 +81,14 @@
     <hr class="my-5">
     {% endif %}
 
-    <!-- 5. Gallery Section -->
     {% if gallery_images %}
     <section id="gallery" class="my-5">
         <h2 class="display-5 text-center mb-4">Gallery</h2>
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
             {% for image in gallery_images %}
             <div class="col">
-                <a href="{{ url_for('static', filename=image.image_url) }}" data-toggle="lightbox" data-gallery="site-gallery" data-title="{{ image.caption or 'Gallery Image' }}">
-                    <img src="{{ url_for('static', filename=image.image_url) }}" class="img-fluid img-thumbnail" alt="{{ image.caption or 'Gallery Image' }}">
+                <a href="{{ image.image_url }}" data-toggle="lightbox" data-gallery="site-gallery" data-title="{{ image.caption or 'Gallery Image' }}">
+                    <img src="{{ image.image_url }}" class="img-fluid img-thumbnail" alt="{{ image.caption or 'Gallery Image' }}">
                 </a>
             </div>
             {% endfor %}

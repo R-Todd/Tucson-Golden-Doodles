@@ -6,6 +6,9 @@ from app.models import (
     AboutSection, GalleryImage, ParentRole, PuppyStatus
 )
 
+# --- Placeholder URL for all images ---
+PLACEHOLDER_URL = "https://via.placeholder.com/600x400.png?text=Tucson+Golden+Doodles"
+
 # Create a Flask app context to work with the database
 app = create_app()
 
@@ -22,7 +25,6 @@ def seed_database():
         admin_username = os.environ.get('ADMIN_USERNAME')
         admin_password = os.environ.get('ADMIN_PASSWORD')
         if admin_username and admin_password:
-            # Make sure you have imported the User model
             admin_user = User(username=admin_username)
             admin_user.set_password(admin_password)
             db.session.add(admin_user)
@@ -43,12 +45,12 @@ def seed_database():
         hero = HeroSection(
             title='Welcome to Tucson Golden Doodles',
             subtitle='Your new best friend is waiting for you!',
-            image_url='img/hero_background.jpg'
+            image_url=PLACEHOLDER_URL
         )
         about = AboutSection(
             title='About Our Family',
             content_html='<p>We are a family-based breeder in sunny Tucson, Arizona, dedicated to raising healthy, happy, and well-socialized Golden Doodle puppies. <b>All our dogs are part of our family.</b> They live in our home, play in our yard, and are loved unconditionally.</p>',
-            image_url='img/about_us_family.jpg'
+            image_url=PLACEHOLDER_URL
         )
         db.session.add_all([hero, about])
 
@@ -59,48 +61,47 @@ def seed_database():
             breed='F1 Golden Doodle',
             description='A gentle and intelligent sire with a beautiful apricot coat. He loves playing fetch and getting belly rubs.',
             is_active=True,
-            main_image_url='img/parents/archie_main.jpg'
+            main_image_url=PLACEHOLDER_URL
         )
-        parent_luna = Parent(
-            name='Luna',
+        parent_penelope = Parent(
+            name='Penelope',
             role=ParentRole.MOM,
             breed='F1b Golden Doodle',
             description='A sweet and caring dam with a curly cream-colored coat. She is an attentive mother and loves cuddling on the couch.',
             is_active=True,
-            main_image_url='img/parents/luna_main.jpg'
+            main_image_url=PLACEHOLDER_URL
         )
-        db.session.add_all([parent_archie, parent_luna])
-        # We need to commit here to get IDs for the parents before adding images
+        db.session.add_all([parent_archie, parent_penelope])
         db.session.commit()
 
         # --- Create Parent Images (Gallery) ---
         archie_images = [
-            ParentImage(parent_id=parent_archie.id, image_url='img/parents/archie_gallery_1.jpg', caption='Archie playing in the park'),
-            ParentImage(parent_id=parent_archie.id, image_url='img/parents/archie_gallery_2.jpg', caption='Relaxing in the sun')
+            ParentImage(parent_id=parent_archie.id, image_url=PLACEHOLDER_URL, caption='Archie playing in the park'),
+            ParentImage(parent_id=parent_archie.id, image_url=PLACEHOLDER_URL, caption='Relaxing in the sun')
         ]
-        luna_images = [
-            ParentImage(parent_id=parent_luna.id, image_url='img/parents/luna_gallery_1.jpg', caption='Luna with her favorite toy')
+        penelope_images = [
+            ParentImage(parent_id=parent_penelope.id, image_url=PLACEHOLDER_URL, caption='Penelope with her favorite toy')
         ]
-        db.session.add_all(archie_images + luna_images)
+        db.session.add_all(archie_images + penelope_images)
 
         # --- Create Puppies ---
-        puppy1 = Puppy(
-            name='Blue Collar Male',
+        puppy_river = Puppy(
+            name='River',
             birth_date=date(2023, 10, 1),
             status=PuppyStatus.AVAILABLE,
             dad_id=parent_archie.id,
-            mom_id=parent_luna.id,
-            main_image_url='img/puppies/puppy1.jpg'
+            mom_id=parent_penelope.id,
+            main_image_url=PLACEHOLDER_URL
         )
-        puppy2 = Puppy(
-            name='Pink Collar Female',
+        puppy_benson = Puppy(
+            name='Benson',
             birth_date=date(2023, 10, 1),
             status=PuppyStatus.RESERVED,
             dad_id=parent_archie.id,
-            mom_id=parent_luna.id,
-            main_image_url='img/puppies/puppy2.jpg'
+            mom_id=parent_penelope.id,
+            main_image_url=PLACEHOLDER_URL
         )
-        db.session.add_all([puppy1, puppy2])
+        db.session.add_all([puppy_river, puppy_benson])
 
         # --- Create Reviews ---
         review1 = Review(
@@ -115,9 +116,8 @@ def seed_database():
         )
         db.session.add_all([review1, review2])
 
-        # --- Final Commit ---
         db.session.commit()
-        print("Database seeded successfully!")
+        print("Database seeded successfully with placeholder images and updated names!")
 
 if __name__ == '__main__':
     seed_database()

@@ -21,7 +21,7 @@
                     {% for puppy in puppies_in_litter %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
-                            <img src="{{ url_for('static', filename=puppy.main_image_url or 'img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
+                            <img src="{{ puppy.main_image_url or url_for('static', filename='img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
                             <div class="card-body text-center">
                                 <h5 class="card-title">{{ puppy.name }}</h5>
                                 {% if puppy.status == PuppyStatus.AVAILABLE %}<span class="badge bg-success">{{ puppy.status.value }}</span>
