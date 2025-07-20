@@ -20,3 +20,9 @@
     {% endif %}
   </ul>
 {% endblock %}
+
+{# THIS IS THE FIX: This block ensures flash messages are rendered #}
+{# and the template context is complete. #}
+{% block messages %}
+  {{ super() }}
+{% endblock %}
