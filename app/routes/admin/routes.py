@@ -20,7 +20,13 @@ class MyAdminIndexView(AdminIndexView):
             return redirect(url_for('admin_auth.login'))
         return super(MyAdminIndexView, self).index()
 
-admin = Admin(name='Tucson Golden Doodles Admin', template_mode='bootstrap3', index_view=MyAdminIndexView())
+# This is the section to update
+admin = Admin(
+    name='Tucson Golden Doodles Admin',
+    template_mode='bootstrap3',
+    index_view=MyAdminIndexView(),
+    base_template='admin/base_admin.html'  # Use your new file name here
+)
 
 # Add views for your models, using the imported view classes
 admin.add_view(ParentAdminView(Parent, db.session))

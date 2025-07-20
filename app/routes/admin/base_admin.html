@@ -1,0 +1,22 @@
+{# 1. Extend the default Flask-Admin base template #}
+{% extends 'admin/master.html' %}
+
+{# 2. Override the 'brand' block to use your site's name and link to the homepage #}
+{% block brand %}
+<a class="navbar-brand" href="{{ url_for('main.index') }}">Tucson Golden Doodles</a>
+{% endblock %}
+
+{# 3. Override the 'nav_links' block to add custom navigation #}
+{% block nav_links %}
+  {{ super() }}  {# This includes the default admin links (e.g., for models) #}
+  <ul class="nav navbar-nav navbar-right">
+    <li>
+      <a href="{{ url_for('main.index') }}">Back to Main Site</a>
+    </li>
+    {% if current_user.is_authenticated %}
+    <li>
+      <a href="{{ url_for('admin_auth.logout') }}">Logout</a>
+    </li>
+    {% endif %}
+  </ul>
+{% endblock %}
