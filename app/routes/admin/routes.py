@@ -1,34 +1,27 @@
+# app/routes/admin/routes.py
+
 from flask import redirect, url_for, request, render_template
-from flask_admin import Admin, AdminIndexView, expose
 from flask_login import current_user, login_user, logout_user
 
 from app import db
 from app.models import (
     User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage
 )
-from . import bp
-# Import the separated view classes
+# --- Key Change ---
+# Import the blueprint 'bp' and the 'admin' object from this package's __init__.py.
+# This is the core of the fix. We are now using the objects that were
+# centrally created, rather than creating new ones.
+from . import bp, admin
+
+# Import the separated view classes from .views
 from .views import (
     AdminModelView, ParentAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView
 )
 
-class MyAdminIndexView(AdminIndexView):
-    @expose('/')
-    def index(self):
-        if not current_user.is_authenticated:
-            return redirect(url_for('admin_auth.login'))
-        return super(MyAdminIndexView, self).index()
-
-# This is the section to update
-admin = Admin(
-    name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap3',
-    index_view=MyAdminIndexView(),
-    base_template='admin/base_admin.html'  # Use your new file name here
-)
-
-# Add views for your models, using the imported view classes
+# --- Model View Registration ---
+# This section no longer defines 'admin'. It *uses* the imported 'admin' object
+# to register the views for each of your database models.
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 admin.add_view(AdminModelView(Review, db.session))
@@ -37,6 +30,9 @@ admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Secti
 admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
 
 
+# --- Route Registration ---
+# These routes are registered with the 'bp' blueprint, which is also
+# imported from the __init__.py file.
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -46,10 +42,12 @@ def login():
         if user is None or not user.check_password(request.form['password']):
             return 'Invalid username or password'
         login_user(user)
+        # Redirect to the main admin dashboard after successful login
         return redirect(url_for('admin.index'))
     return render_template('login.html')
 
 @bp.route('/logout')
 def logout():
     logout_user()
+    # Redirect to the public homepage after logout
     return redirect(url_for('main.index'))
