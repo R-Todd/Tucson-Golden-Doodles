@@ -1,13 +1,13 @@
 # app/routes/admin/views.py
 
 from flask import request, url_for, redirect
-# Import AdminIndexView and expose for the custom index view
 from flask_admin import AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from wtforms.fields import SelectField, FileField
 
-from app.models import ParentRole, PuppyStatus
+# Make sure Parent and ParentRole are imported
+from app.models import Parent, ParentRole, PuppyStatus
 from app.utils.image_uploader import upload_image
 
 # NEW: MyAdminIndexView is now in this file where it belongs
@@ -61,21 +61,45 @@ class ParentAdminView(AdminModelView):
             if image_url:
                 model.main_image_url = image_url
 
-# Custom view for the Puppy model
+# THIS IS THE CORRECTED VIEW FOR YOUR PUPPY MODEL
 class PuppyAdminView(AdminModelView):
+    # Explicitly define the columns to show in the form
+    form_columns = [
+        'name',
+        'birth_date',
+        'status',
+        'mom',  # Use the relationship name from the Puppy model
+        'dad',  # Use the relationship name from the Puppy model
+        'image_upload' # The extra field for file uploads
+    ]
+
     form_extra_fields = {
         'image_upload': FileField('Upload New Main Image')
     }
+
     form_overrides = {
         'status': SelectField
     }
+
+    # Add arguments to configure the dropdowns correctly
     form_args = {
         'status': {
             'label': 'Status',
             'choices': [(status.name, status.value) for status in PuppyStatus],
             'coerce': lambda x: PuppyStatus[x] if isinstance(x, str) else x
+        },
+        'mom': {
+            'label': 'Mom',
+            # This query ensures only parents with the 'MOM' role appear
+            'query_factory': lambda: Parent.query.filter_by(role=ParentRole.MOM).all()
+        },
+        'dad': {
+            'label': 'Dad',
+            # This query ensures only parents with the 'DAD' role appear
+            'query_factory': lambda: Parent.query.filter_by(role=ParentRole.DAD).all()
         }
     }
+
     def on_model_change(self, form, model, is_created):
         file = request.files.get('image_upload')
         if file:

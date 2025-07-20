@@ -22,7 +22,7 @@
 {% endblock %}
 
 {# THIS IS THE FIX: This block ensures flash messages are rendered #}
-{# and the template context is complete. #}
+{# and the template context is complete, allowing JavaScript to run correctly. #}
 {% block messages %}
   {{ super() }}
 {% endblock %}

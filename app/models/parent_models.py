@@ -17,9 +17,11 @@ class Parent(db.Model):
     # One-to-many relationship to ParentImage
     images = db.relationship('ParentImage', backref='parent', lazy=True, cascade="all, delete-orphan")
 
+    # --- THIS IS THE FIX ---
     # Relationships to Puppy, distinguishing between dad and mom roles
-    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', backref='dad', lazy='dynamic')
-    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', backref='mom', lazy='dynamic')
+    # Use back_populates to link to the 'dad' and 'mom' properties in the Puppy model
+    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
+    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
 
     @property
     def litters(self):
