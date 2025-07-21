@@ -2,6 +2,8 @@
 
 from flask import request
 from wtforms.fields import SelectField, FileField
+# Import the validator
+from wtforms.validators import DataRequired
 from .base import AdminModelView
 from app.models import Parent, ParentRole, PuppyStatus
 from app.utils.image_uploader import upload_image
@@ -14,13 +16,22 @@ class PuppyAdminView(AdminModelView):
     form_extra_fields = { 'image_upload': FileField('Upload New Main Image') }
     form_overrides = { 'status': SelectField }
     
+    # *** THIS IS THE FIX ***
     form_args = {
+        'name': {
+            # This makes the 'name' field required in the form.
+            'validators': [DataRequired(message="This field is required.")]
+        },
         'mom': {
             'label': 'Mother',
+            # This explicitly tells the dropdown to use the 'name' attribute for the label.
+            'get_label': 'name',
             'query_factory': lambda: Parent.query.filter_by(role=ParentRole.MOM).all()
         },
         'dad': {
             'label': 'Father',
+            # This explicitly tells the dropdown to use the 'name' attribute for the label.
+            'get_label': 'name',
             'query_factory': lambda: Parent.query.filter_by(role=ParentRole.DAD).all()
         },
         'status': {
@@ -31,6 +42,7 @@ class PuppyAdminView(AdminModelView):
     }
 
     def on_model_change(self, form, model, is_created):
+        """ Handle image upload when a Puppy record is saved. """
         file = request.files.get('image_upload')
         if file:
             image_url = upload_image(file, folder='puppies')
