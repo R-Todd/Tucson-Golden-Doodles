@@ -11,7 +11,7 @@ bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 # The `base_template` argument has been removed.
 admin = Admin(
     name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap3',
+    #template_mode='bootstrap3',
     index_view=MyAdminIndexView(url='/admin')
 )
 
