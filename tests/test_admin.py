@@ -101,8 +101,8 @@ class TestAdminFunctionality:
         assert 'value="' + str(mom2.id) + '">Bella' in html
         assert 'value="' + str(dad1.id) + '">Archie' not in html
         assert 'value="' + str(dad2.id) + '">Rocky' not in html
-    
-    @patch('app.routes.admin.views.upload_image', return_value='http://fake-s3-url.com/new_puppy.jpg')
+
+    @patch('app.routes.admin.views.puppy_views.upload_image', return_value='http://fake-s3-url.com/new_puppy.jpg')
     def test_create_puppy_with_valid_data(self, mock_upload, client, db):
         """
         GIVEN a logged-in admin and existing parent records
@@ -223,5 +223,5 @@ class TestAdminFunctionality:
         # ASSERT
         assert response.status_code == 200
         assert b'Record was successfully deleted.' in response.data
-        deleted_review = Review.query.get(review_id)
+        deleted_review = db.session.get(Review, review_id)
         assert deleted_review is None
