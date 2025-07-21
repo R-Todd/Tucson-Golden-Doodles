@@ -18,8 +18,9 @@ class Parent(db.Model):
     images = db.relationship('ParentImage', backref='parent', lazy=True, cascade="all, delete-orphan")
 
     # Relationships to Puppy, distinguishing between dad and mom roles
-    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', backref='dad', lazy='dynamic')
-    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', backref='mom', lazy='dynamic')
+    # Use back_populates to link to the 'dad' and 'mom' properties in the Puppy model
+    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
+    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
 
     @property
     def litters(self):
@@ -48,6 +49,12 @@ class Parent(db.Model):
 
     def __repr__(self):
         return f'<Parent {self.name}>'
+
+    # --- THIS IS THE FIX ---
+    # This method provides a user-friendly string representation for Parent objects,
+    # which is used by Flask-Admin to label the dropdown options.
+    def __str__(self):
+        return self.name
 
 # Gallery images for parents
 class ParentImage(db.Model):

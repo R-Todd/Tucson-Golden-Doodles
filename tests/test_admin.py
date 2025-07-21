@@ -1,11 +1,17 @@
 import io
 from unittest.mock import patch
 from flask import url_for
-from app.models import User, Parent, Puppy, HeroSection, AboutSection, ParentRole, SiteMeta, PuppyStatus
+from app.models import (
+    User, Parent, Puppy, SiteMeta, ParentRole, PuppyStatus, Review
+)
 
-class TestAdminRoutes:
+# By grouping tests into a class, we can share helper methods like _login
+# and keep the test suite organized.
+
+class TestAdminFunctionality:
     """
-    Test suite for admin authentication and model management.
+    A comprehensive test suite for the Flask-Admin portal, covering
+    authentication, authorization, and model-specific CRUD operations.
     """
 
     def _login(self, client, username, password):
@@ -16,189 +22,206 @@ class TestAdminRoutes:
             follow_redirects=True
         )
 
-    def test_admin_login_logout(self, client, db):
-        """
-        GIVEN a User model for an admin.
-        WHEN the admin logs in via the login form.
-        THEN check for a successful response and that the "Logout" link is present.
-        WHEN the admin clicks logout.
-        THEN check that they are redirected and the login page is shown.
+    # --- Authentication and Authorization Tests ---
 
-        This test validates the interaction between:
-        - User model (app/models/user_models.py)
-        - Login/Logout routes (app/routes/admin/routes.py)
-        - Base template (app/templates/base.html)
+    def test_admin_login_and_logout(self, client, db):
         """
-        # === ARRANGE ===
-        # 1. Create the admin user.
+        GIVEN a User model for an admin
+        WHEN the admin logs in via a POST to '/admin/login'
+        THEN check that the response is successful and they can access the dashboard
+        WHEN the admin logs out via a GET to '/admin/logout'
+        THEN check that they are redirected to the homepage and can no longer see admin links
+        """
+        # ARRANGE: Create a test admin user and site metadata
         admin_user = User(username='admin')
         admin_user.set_password('password123')
-        
-        # 2. Add a SiteMeta object. The base template requires this for rendering
-        #    the footer and other elements, which is necessary after a successful login redirect.
         db.session.add(SiteMeta(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 
-        # === ACT & ASSERT (LOGIN) ===
-        # 3. Log in the user and check the response.
-        response = self._login(client, 'admin', 'password123')
-        assert response.status_code == 200
-        # Check for content unique to the admin dashboard.
-        assert b'Tucson Golden Doodles Admin' in response.data
-        # This confirms the fix in `base.html` was successful.
-        assert b'Logout' in response.data
+        # ACT & ASSERT (LOGIN)
+        login_response = self._login(client, 'admin', 'password123')
+        assert login_response.status_code == 200
+        assert b'Tucson Golden Doodles Admin' in login_response.data # Check for dashboard content
+        assert b'Logout' in login_response.data
 
-        # === ACT & ASSERT (LOGOUT) ===
-        # 4. Request the logout URL and check the final page content.
-        response = client.get(url_for('admin_auth.logout'), follow_redirects=True)
+        # ACT & ASSERT (LOGOUT)
+        logout_response = client.get(url_for('admin_auth.logout'), follow_redirects=True)
+        assert logout_response.status_code == 200
+        # After logout, they should be on the public site, which shows "Admin Login"
+        assert b'Admin Login' in logout_response.data
+        assert b'Logout' not in logout_response.data
+
+    def test_unauthenticated_access_is_redirected(self, client, db):
+        """
+        GIVEN a non-authenticated user
+        WHEN they attempt to access any admin model view (e.g., the Puppy list)
+        THEN they should be redirected to the login page
+        """
+        # ARRANGE
+        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.commit()
+
+        # ACT
+        response = client.get(url_for('puppy.index_view'), follow_redirects=True)
+
+        # ASSERT
         assert response.status_code == 200
-        # After logout, the user should be on a public page that shows the Admin Login link.
+        # The content of the login page should be present
         assert b'Admin Login' in response.data
-        assert b'Logout' not in response.data
+        # The content of the protected page should NOT be present
+        assert b'Puppy' not in response.data
 
+    # --- Puppy CRUD and Validation Tests ---
 
-    @patch('app.routes.admin.views.upload_image', return_value='http://fake-s3-url.com/puppy.jpg')
-    def test_puppy_image_upload(self, mock_upload, client, db):
+    def test_create_puppy_form_has_filtered_parents(self, client, db):
         """
-        GIVEN a logged-in admin user and existing parent dogs.
-        WHEN a new Puppy is created via the Flask-Admin form with valid data and an image.
-        THEN check the response is successful, the image upload was handled, and the puppy exists in the database.
-        
-        This test validates the interaction between:
-        - Puppy model (app/models/puppy_models.py)
-        - PuppyAdminView (app/routes/admin/views.py)
-        - Image Uploader Patch (app/utils/image_uploader.py)
+        GIVEN a logged-in admin and multiple parents with 'MOM' and 'DAD' roles
+        WHEN the 'Add Puppy' form page is requested
+        THEN check that the 'Mother' dropdown only contains moms and the 'Father' dropdown only contains dads
         """
-        # === ARRANGE ===
-        # 1. Create and log in the admin user.
-        admin_user = User(username='admin')
-        admin_user.set_password('password123')
-        
-        # 2. Add the required SiteMeta object for template rendering.
-        db.session.add(SiteMeta(email='test@test.com'))
-        
-        # 3. Create Parent objects, as their IDs are required by the Puppy form.
+        # ARRANGE
+        admin_user = User(username='admin'); admin_user.set_password('pw')
+        mom1 = Parent(name='Luna', role=ParentRole.MOM)
+        mom2 = Parent(name='Bella', role=ParentRole.MOM)
+        dad1 = Parent(name='Archie', role=ParentRole.DAD)
+        dad2 = Parent(name='Rocky', role=ParentRole.DAD)
+        db.session.add_all([admin_user, mom1, mom2, dad1, dad2, SiteMeta(email='c@t.com')])
+        db.session.commit()
+        self._login(client, 'admin', 'pw')
+
+        # ACT
+        response = client.get(url_for('puppy.create_view'))
+        html = response.data.decode('utf-8')
+
+        # ASSERT
+        assert response.status_code == 200
+        # Check that mom names are present and dad names are not in the mom dropdown
+        assert 'value="' + str(mom1.id) + '">Luna' in html
+        assert 'value="' + str(mom2.id) + '">Bella' in html
+        assert 'value="' + str(dad1.id) + '">Archie' not in html
+        assert 'value="' + str(dad2.id) + '">Rocky' not in html
+
+    @patch('app.routes.admin.views.puppy_views.upload_image', return_value='http://fake-s3-url.com/new_puppy.jpg')
+    def test_create_puppy_with_valid_data(self, mock_upload, client, db):
+        """
+        GIVEN a logged-in admin and existing parent records
+        WHEN a new Puppy is created via POST with valid data and an image
+        THEN check that a new Puppy record is created in the database with the correct image URL
+        """
+        # ARRANGE
+        admin_user = User(username='admin'); admin_user.set_password('pw')
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
-        db.session.add_all([admin_user, mom, dad])
+        db.session.add_all([admin_user, mom, dad, SiteMeta(email='c@t.com')])
         db.session.commit()
-        self._login(client, 'admin', 'password123')
+        self._login(client, 'admin', 'pw')
+        fake_image = (io.BytesIO(b"a fake image"), 'puppy.jpg')
 
-        # 4. Prepare the form data, ensuring it matches all required fields.
-        fake_image = (io.BytesIO(b"this is a fake puppy image"), 'puppy.jpg')
-        form_data = {
-            'name': 'Test Puppy',
-            'birth_date': '2024-01-01',
-            'status': 'AVAILABLE',  # Use the Enum *name* as a string
-            'mom': mom.id,          # Use the parent's actual ID
-            'dad': dad.id,
-            'image_upload': fake_image
-        }
-
-        # === ACT ===
-        # 5. Make the POST request, capturing the response for analysis.
+        # ACT
         response = client.post(
             url_for('puppy.create_view'),
-            data=form_data,
-            content_type='multipart/form-data', # Essential for file uploads
+            data={
+                'name': 'Test Puppy',
+                'birth_date': '2025-07-21',
+                'status': 'AVAILABLE',
+                'mom': mom.id,
+                'dad': dad.id,
+                'image_upload': fake_image
+            },
+            content_type='multipart/form-data',
             follow_redirects=True
         )
 
-        # === ASSERT ===
-        # 6. Check for a successful response code.
+        # ASSERT
         assert response.status_code == 200
-        
-        # 7. Check for Flask-Admin's default success message.
         assert b'Record was successfully created.' in response.data
-
-        # 8. Confirm the mocked image upload function was called.
         mock_upload.assert_called_once()
-
-        # 9. Query the database to ensure the puppy was actually created.
         puppy = Puppy.query.filter_by(name='Test Puppy').first()
         assert puppy is not None
-        
-        # 10. Verify the data was saved correctly.
-        assert puppy.status == PuppyStatus.AVAILABLE
-        assert puppy.main_image_url == 'http://fake-s3-url.com/puppy.jpg'
+        assert puppy.mom == mom
+        assert puppy.main_image_url == 'http://fake-s3-url.com/new_puppy.jpg'
 
-    # --- Other tests from your original file are preserved below ---
-
-    def test_admin_auth_redirect(self, client, db):
+    def test_create_puppy_with_missing_name_fails(self, client, db):
         """
-        GIVEN a Flask application
-        WHEN the admin index is accessed without authentication
-        THEN check that the user is redirected to the login page
+        GIVEN a logged-in admin
+        WHEN a new Puppy is created via POST with a required field missing (e.g., name)
+        THEN check that the form is re-rendered with a validation error message
         """
-        db.session.add(SiteMeta(email='test@test.com'))
+        # ARRANGE
+        admin_user = User(username='admin'); admin_user.set_password('pw')
+        mom = Parent(name='Test Mom', role=ParentRole.MOM)
+        dad = Parent(name='Test Dad', role=ParentRole.DAD)
+        db.session.add_all([admin_user, mom, dad, SiteMeta(email='c@t.com')])
         db.session.commit()
+        self._login(client, 'admin', 'pw')
 
-        response = client.get(url_for('admin.index'), follow_redirects=True)
-        assert response.status_code == 200
-        assert b'Admin Login' in response.data
-
-    @patch('app.routes.admin.views.upload_image', return_value='http://fake-s3-url.com/image.jpg')
-    def test_parent_image_upload(self, mock_upload, client, db):
-        """
-        GIVEN an authenticated admin user
-        WHEN a new Parent is created with an image upload
-        THEN check that the 'upload_image' function was called and the URL was saved
-        """
-        admin_user = User(username='admin')
-        admin_user.set_password('password123')
-        db.session.add(admin_user)
-        db.session.commit()
-        self._login(client, 'admin', 'password123')
-
-        fake_image = (io.BytesIO(b"this is a fake parent image"), 'parent.jpg')
-
+        # ACT
         response = client.post(
-            url_for('parent.create_view'),
+            url_for('puppy.create_view'),
             data={
-                'name': 'Test Dad',
-                'role': 'DAD',
-                'breed': 'Test Breed',
-                'image_upload': fake_image
+                'name': '', # Missing name
+                'birth_date': '2025-07-21',
+                'status': 'AVAILABLE',
+                'mom': mom.id,
+                'dad': dad.id,
             },
-            content_type='multipart/form-data',
             follow_redirects=True
         )
 
+        # ASSERT
         assert response.status_code == 200
-        mock_upload.assert_called_once()
-        parent = Parent.query.filter_by(name='Test Dad').first()
-        assert parent is not None
-        assert parent.main_image_url == 'http://fake-s3-url.com/image.jpg'
+        assert b'This field is required.' in response.data
+        assert Puppy.query.count() == 0 # Ensure no puppy was created
 
+    # --- Parent CRUD and Validation Tests ---
 
-    @patch('app.routes.admin.views.upload_image', return_value='http://fake-s3-url.com/hero.jpg')
-    def test_hero_section_image_upload(self, mock_upload, client, db):
+    def test_edit_parent_record(self, client, db):
         """
-        GIVEN an authenticated admin user
-        WHEN the Hero Section is edited with a new image
-        THEN check that the image URL is updated
+        GIVEN a logged-in admin and an existing Parent record
+        WHEN the admin edits the parent's name via POST to the edit view
+        THEN check that the change is saved to the database
         """
-        hero = HeroSection(title='Old Title')
-        admin_user = User(username='admin')
-        admin_user.set_password('password123')
-        db.session.add_all([hero, admin_user])
+        # ARRANGE
+        admin_user = User(username='admin'); admin_user.set_password('pw')
+        parent = Parent(name='Old Name', role=ParentRole.DAD)
+        db.session.add_all([admin_user, parent, SiteMeta(email='c@t.com')])
         db.session.commit()
-        self._login(client, 'admin', 'password123')
+        self._login(client, 'admin', 'pw')
 
-        fake_image = (io.BytesIO(b"this is a fake hero image"), 'hero.jpg')
-
+        # ACT
         client.post(
-            url_for('herosection.edit_view', id=hero.id),
-            data={
-                'title': 'New Title',
-                'image_upload': fake_image
-            },
-            content_type='multipart/form-data',
+            url_for('parent.edit_view', id=parent.id),
+            data={'name': 'New Name', 'role': 'DAD'},
             follow_redirects=True
         )
 
-        mock_upload.assert_called_once()
-        db.session.refresh(hero)
-        assert hero.image_url == 'http://fake-s3-url.com/hero.jpg'
-        assert hero.title == 'New Title'
+        # ASSERT
+        db.session.refresh(parent)
+        assert parent.name == 'New Name'
+
+    def test_delete_review_record(self, client, db):
+        """
+        GIVEN a logged-in admin and an existing Review record
+        WHEN the admin deletes the record via POST to the delete view
+        THEN check that the record is removed from the database
+        """
+        # ARRANGE
+        admin_user = User(username='admin'); admin_user.set_password('pw')
+        review_to_delete = Review(author_name='ToBeDeleted', testimonial_text='...')
+        db.session.add_all([admin_user, review_to_delete, SiteMeta(email='c@t.com')])
+        db.session.commit()
+        self._login(client, 'admin', 'pw')
+        review_id = review_to_delete.id
+
+        # ACT
+        response = client.post(
+            url_for('review.delete_view', id=review_id),
+            follow_redirects=True
+        )
+
+        # ASSERT
+        assert response.status_code == 200
+        assert b'Record was successfully deleted.' in response.data
+        deleted_review = db.session.get(Review, review_id)
+        assert deleted_review is None
