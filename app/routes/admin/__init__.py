@@ -7,11 +7,12 @@ from .views import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
+# -- ---
+# The `base_template` argument has been removed.
 admin = Admin(
     name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap3',
-    index_view=MyAdminIndexView(url='/admin'),
-    base_template='admin/base_admin.html'
+    #template_mode='bootstrap3',
+    index_view=MyAdminIndexView(url='/admin')
 )
 
 # This import must come AFTER the admin object is defined.
