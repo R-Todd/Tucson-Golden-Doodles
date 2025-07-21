@@ -7,13 +7,11 @@ from app import db
 from app.models import (
     User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage
 )
-# --- Blueprint and Admin Object ---
-# Import the centrally created 'bp' (for routing) and 'admin' (for views)
-# objects from this package's __init__.py file.
 from . import bp, admin
 
 # --- View Imports ---
-# Import the custom ModelView classes from the neighboring 'views.py' file.
+# This is the only change needed in this file.
+# It now imports from the new 'views' package.
 from .views import (
     AdminModelView, ParentAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView
