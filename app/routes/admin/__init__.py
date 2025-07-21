@@ -2,31 +2,30 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-# Import the MyAdminIndexView we just moved
+# Import the custom, authentication-aware index view
 from .views import MyAdminIndexView
 
 # --- Blueprint Registration ---
 # This blueprint handles the routes for admin authentication (login/logout).
-# The 'url_prefix' ensures all routes in this blueprint start with /admin.
+# All routes defined using this 'bp' object will be prefixed with '/admin'.
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
 
-# --- Flask-Admin Registration ---
-# This is the central registration point for the Flask-Admin extension.
-# We create the 'admin' object here, and it will be initialized with the
-# Flask app later in the main application factory.
+# --- Flask-Admin Initialization ---
+# This creates the central 'admin' object for the entire application.
+# It's configured with a custom index view to handle authentication checks.
 admin = Admin(
     name='Tucson Golden Doodles Admin',
     template_mode='bootstrap3',
-    # We pass our custom, authentication-aware index view to Flask-Admin.
-    # The url='/admin' is important because it sets the root URL for the admin interface,
-    # distinguishing it from the blueprint's prefix if they were different.
+    # Sets the entry point for the admin interface to our custom view.
+    # The URL '/admin' is the root for all Flask-Admin generated pages.
     index_view=MyAdminIndexView(url='/admin'),
-    # This points Flask-Admin to your custom base template.
+    # Points to a custom base template for consistent branding.
     base_template='admin/base_admin.html'
 )
 
-# This import is now safe. It comes *after* the admin object is created.
-# It will import the routes.py file, which in turn will use the 'admin' and 'bp'
-# objects we just defined here to attach the model views and routes.
+# --- Import Routes and Views ---
+# This import is placed at the bottom to avoid circular dependencies.
+# It connects the routing logic from 'routes.py' and the model views
+# from 'views.py' to the blueprint and admin objects created above.
 from . import routes
