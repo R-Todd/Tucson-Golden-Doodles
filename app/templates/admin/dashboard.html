@@ -1,0 +1,53 @@
+{# app/templates/admin/dashboard.html #}
+{% extends 'admin/master.html' %}
+
+{# This block injects our custom stylesheet into the page head #}
+{% block head_css %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/admin_custom.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block body %}
+{# The 'super()' call ensures that any default content from the master template, like flash messages, is still rendered. #}
+{{ super() }}
+<div class="container-fluid">
+    <div class="page-header">
+        <h1>Welcome, Administrator!</h1>
+    </div>
+    <p class="lead">This is your control panel for the Tucson Golden Doodles website.</p>
+    <p>From here, you can manage puppies, parents, customer reviews, and the content on your homepage. Use the quick-action links below or the navigation menu on the left to get started.</p>
+    <hr>
+
+    <h3>Quick Actions</h3>
+    <div class="row" id="dashboard-cards">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🐶 Add a New Puppy</h5>
+                    <p class="card-text">Use this to add a new puppy to a litter. You'll need to select its parents and set its availability.</p>
+                    <a href="{{ url_for('puppy.create_view') }}" class="btn btn-primary">Add Puppy</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🐾 Add a New Parent Dog</h5>
+                    <p class="card-text">Add a new sire or dam to the "Our Parents" page. Don't forget to upload a nice photo!</p>
+                    <a href="{{ url_for('parent.create_view') }}" class="btn btn-primary">Add Parent</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">⭐️ Manage Customer Reviews</h5>
+                    <p class="card-text">Add new customer testimonials or choose which ones are featured on the homepage.</p>
+                    <a href="{{ url_for('review.index_view') }}" class="btn btn-secondary">View Reviews</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
