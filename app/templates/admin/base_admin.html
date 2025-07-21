@@ -8,7 +8,7 @@
 
 {# 3. Override the 'nav_links' block to add custom navigation #}
 {% block nav_links %}
-  {{ super() }}  {# THIS IS THE FIX: Includes default links like Logout #}
+  {{ super() }}  {# Includes default links like Logout #}
   <ul class="nav navbar-nav navbar-right">
     <li>
       <a href="{{ url_for('main.index') }}">Back to Main Site</a>
@@ -16,7 +16,7 @@
   </ul>
 {% endblock %}
 
-{# THIS IS THE FIX: This block renders flash messages, including form errors, #}
+{#  This block renders flash messages, including form errors, #}
 {# and ensures the template context is complete for JavaScript to run. #}
 {% block messages %}
   {{ super() }}

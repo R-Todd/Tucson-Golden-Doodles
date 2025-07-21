@@ -16,7 +16,7 @@ class PuppyAdminView(AdminModelView):
     form_extra_fields = { 'image_upload': FileField('Upload New Main Image') }
     form_overrides = { 'status': SelectField }
     
-    # *** THIS IS THE FIX ***
+   
     form_args = {
         'name': {
             # This makes the 'name' field required in the form.
