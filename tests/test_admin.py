@@ -4,6 +4,8 @@ from flask import url_for
 from app.models import (
     User, Parent, Puppy, SiteMeta, ParentRole, PuppyStatus, Review
 )
+# Import BeautifulSoup for HTML parsing
+from bs4 import BeautifulSoup
 
 # By grouping tests into a class, we can share helper methods like _login
 # and keep the test suite organized.
@@ -96,11 +98,46 @@ class TestAdminFunctionality:
 
         # ASSERT
         assert response.status_code == 200
-        # Check that mom names are present and dad names are not in the mom dropdown
-        assert 'value="' + str(mom1.id) + '">Luna' in html
-        assert 'value="' + str(mom2.id) + '">Bella' in html
-        assert 'value="' + str(dad1.id) + '">Archie' not in html
-        assert 'value="' + str(dad2.id) + '">Rocky' not in html
+        
+        # Parse the HTML to specifically check the dropdowns
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Check the 'Mother' dropdown
+        mom_select = soup.find('select', {'name': 'mom'})
+        assert mom_select is not None, "Mother dropdown not found"
+        mom_options_text = [option.text for option in mom_select.find_all('option')]
+        mom_options_values = [option.get('value') for option in mom_select.find_all('option')]
+
+        # Assert moms are present in mom dropdown
+        assert mom1.name in mom_options_text
+        assert mom2.name in mom_options_text
+        assert str(mom1.id) in mom_options_values
+        assert str(mom2.id) in mom_options_values
+
+        # Assert dads are NOT present in mom dropdown
+        assert dad1.name not in mom_options_text
+        assert dad2.name not in mom_options_text
+        assert str(dad1.id) not in mom_options_values
+        assert str(dad2.id) not in mom_options_values
+
+        # Check the 'Father' dropdown
+        dad_select = soup.find('select', {'name': 'dad'})
+        assert dad_select is not None, "Father dropdown not found"
+        dad_options_text = [option.text for option in dad_select.find_all('option')]
+        dad_options_values = [option.get('value') for option in dad_select.find_all('option')]
+
+        # Assert dads are present in dad dropdown
+        assert dad1.name in dad_options_text
+        assert dad2.name in dad_options_text
+        assert str(dad1.id) in dad_options_values
+        assert str(dad2.id) in dad_options_values
+
+        # Assert moms are NOT present in dad dropdown
+        assert mom1.name not in dad_options_text
+        assert mom2.name not in dad_options_text
+        assert str(mom1.id) not in dad_options_values
+        assert str(mom2.id) not in dad_options_values
+
 
     @patch('app.routes.admin.views.puppy_views.upload_image', return_value='http://fake-s3-url.com/new_puppy.jpg')
     def test_create_puppy_with_valid_data(self, mock_upload, client, db):
