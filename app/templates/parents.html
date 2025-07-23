@@ -47,20 +47,19 @@
                         </div>
                     </div>
                     {% endif %}
-
-                    {# Three Rectangular Buttons #}
-                    <div class="parent-buttons mt-5 px-2">
-                        <a href="#" class="btn btn-parent-action">Contact Us</a>
-                        <a href="#" class="btn btn-parent-action">Apply Now</a>
-                        <a href="#" class="btn btn-parent-action">View Full Profile</a>
-                    </div>
                 </div>
 
                 {# Right Column: Breed & Weight, Description #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4"> {# Align with top of main image on desktop, add top margin on mobile #}
                         <h3 class="breed-header">{{ parent.breed }}</h3>
-                        <p class="weight-header">{{ parent.weight_kg }} kg / {{ (parent.weight_kg * 2.20462)|round(1) }} lbs</p> {# Converted to lbs #}
+                        <p class="weight-header">
+                            {% if parent.weight_kg is not none %}
+                                {{ parent.weight_kg }} kg / {{ (parent.weight_kg * 2.20462)|round(1) }} lbs
+                            {% else %}
+                                Weight: N/A
+                            {% endif %}
+                        </p>
                     </div>
                     <div class="description-paragraphs mt-4">
                         {# Split description by newlines to create paragraphs #}
@@ -76,7 +75,7 @@
             {# "Past Puppies" Section Header #}
             {% if parent.grouped_litters %}
             <div class="past-puppies-header mt-5 text-center">
-                <h2>{{ parent.name | upper }} PAST PUPPIES</h2> {# All-caps or small-caps #}
+                <h2>{{ parent.name | upper }}'S PAST PUPPIES</h2> {# All-caps or small-caps #}
             </div>
 
             {# Past Puppies Thumbnails Row - Horizontal Scroll #}
