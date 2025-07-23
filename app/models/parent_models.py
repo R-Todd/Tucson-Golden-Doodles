@@ -14,6 +14,12 @@ class Parent(db.Model):
     height_cm = db.Column(db.Float)
     description = db.Column(db.Text)
     main_image_url = db.Column(db.String(255))
+    
+    # New: Add fields for responsive image sizes
+    main_image_url_small = db.Column(db.String(255))
+    main_image_url_medium = db.Column(db.String(255))
+    main_image_url_large = db.Column(db.String(255))
+
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     # New: Add fields for 4 alternate images

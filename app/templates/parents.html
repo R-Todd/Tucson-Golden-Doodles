@@ -35,8 +35,11 @@
                         </div>
                         <div class="carousel-inner">
                             {% for img_url in all_carousel_images %}
+                            {# To this (add loading="lazy" only to non-active images): #}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                <img src="{{ img_url }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
+                                <img src="{{ img_url }}" class="d-block w-100 carousel-image" 
+                                    alt="Parent image {{ loop.index }}" 
+                                    {% if not loop.first %}loading="lazy"{% endif %}>
                             </div>
                             {% endfor %}
                         </div>
