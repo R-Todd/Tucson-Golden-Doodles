@@ -35,11 +35,27 @@
                         </div>
                         <div class="carousel-inner">
                             {% for img_url in all_carousel_images %}
-                            {# To this (add loading="lazy" only to non-active images): #}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                <img src="{{ img_url }}" class="d-block w-100 carousel-image" 
-                                    alt="Parent image {{ loop.index }}" 
-                                    {% if not loop.first %}loading="lazy"{% endif %}>
+                                {# --- START: Srcset Implementation --- #}
+
+                                {# Check if this is the main image (loop.first) and if responsive versions exist. #}
+                                {% if loop.first and parent.main_image_url_small %}
+                                    <img src="{{ parent.main_image_url_large }}"
+                                         srcset="{{ parent.main_image_url_small }} 480w,
+                                                 {{ parent.main_image_url_medium }} 800w,
+                                                 {{ parent.main_image_url_large }} 1200w"
+                                         sizes="(max-width: 767px) 90vw, 45vw"
+                                         class="d-block w-100 carousel-image"
+                                         alt="Photo of {{ parent.name }}"
+                                         {% if not loop.first %}loading="lazy"{% endif %}>
+                                {% else %}
+                                    {# Fallback for alternate images or if responsive versions don't exist #}
+                                    <img src="{{ img_url }}"
+                                         class="d-block w-100 carousel-image"
+                                         alt="Parent image {{ loop.index }}"
+                                         {% if not loop.first %}loading="lazy"{% endif %}>
+                                {% endif %}
+                                {# --- END: Srcset Implementation --- #}
                             </div>
                             {% endfor %}
                         </div>

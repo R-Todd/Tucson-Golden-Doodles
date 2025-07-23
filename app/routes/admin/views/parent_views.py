@@ -3,13 +3,9 @@
 from flask import request
 from wtforms import SelectField
 from wtforms.fields import FileField # Ensure FileField is imported
-# No longer need InlineFormAdmin here as we're using fixed fields
-# from flask_admin.model.form import InlineFormAdmin 
 from .base import AdminModelView
-from app.models import ParentRole # No longer need ParentImage here as it's not inline
+from app.models import ParentRole
 from app.utils.image_uploader import upload_image
-
-# Remove ParentImageInlineForm definition as it's no longer used for fixed slots
 
 class ParentAdminView(AdminModelView):
     form_extra_fields = {
@@ -29,21 +25,25 @@ class ParentAdminView(AdminModelView):
         }
     }
 
-    # Remove inline_models configuration
-    # inline_models = (ParentImageInlineForm(ParentImage),)
-
     def on_model_change(self, form, model, is_created):
         """
         Handles image uploads for the main parent image and the 4 alternate images.
         """
-        # Handle the main parent image upload (existing logic)
+        # --- MODIFIED SECTION ---
+        # Handle the main parent image upload with responsive versions
         main_file = request.files.get('image_upload')
         if main_file and main_file.filename:
-            main_image_url = upload_image(main_file, folder='parents')
-            if main_image_url:
-                model.main_image_url = main_image_url
+            # Call the uploader to create multiple sizes
+            image_urls = upload_image(main_file, folder='parents', create_responsive_versions=True)
+            if image_urls:
+                # Save the new URLs to the corresponding model fields
+                model.main_image_url = image_urls.get('original') # Fallback
+                model.main_image_url_small = image_urls.get('small')
+                model.main_image_url_medium = image_urls.get('medium')
+                model.main_image_url_large = image_urls.get('large')
 
-        # New: Handle uploads for the 4 alternate images
+        # --- UNCHANGED SECTION ---
+        # Handle uploads for the 4 alternate images as single files
         alternate_fields = [
             'alternate_image_upload_1',
             'alternate_image_upload_2',
@@ -60,6 +60,7 @@ class ParentAdminView(AdminModelView):
         for i, field_name in enumerate(alternate_fields):
             alternate_file = request.files.get(field_name)
             if alternate_file and alternate_file.filename:
-                alternate_image_url = upload_image(alternate_file, folder='parents_alternates') # New folder for alternate images
+                # This call does NOT create responsive versions, so it works as before
+                alternate_image_url = upload_image(alternate_file, folder='parents_alternates')
                 if alternate_image_url:
                     setattr(model, alternate_url_columns[i], alternate_image_url)
