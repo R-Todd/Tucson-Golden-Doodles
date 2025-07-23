@@ -15,41 +15,49 @@
         <div class="container my-5"> {# Container for the two-column layout #}
             <div class="row g-4 parent-layout-container"> {# g-4 for consistent spacing #}
 
-                {# Left Column: Main Image, Alternate Images, Buttons #}
+                {# Left Column: Image Carousel #}
                 <div class="col-md-6 parent-image-column">
-                    <div class="main-image-wrapper p-2"> {# Added padding #}
-                        <img src="{{ parent.main_image_url }}" class="img-fluid parent-main-image" alt="Main photo of {{ parent.name }}">
-                    </div>
+                    {# Collect all image URLs for the carousel #}
+                    {% set all_carousel_images = [] %}
+                    {% if parent.main_image_url %}{% set _ = all_carousel_images.append(parent.main_image_url) %}{% endif %}
+                    {% if parent.alternate_image_url_1 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_1) %}{% endif %}
+                    {% if parent.alternate_image_url_2 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_2) %}{% endif %}
+                    {% if parent.alternate_image_url_3 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_3) %}{% endif %}
+                    {% if parent.alternate_image_url_4 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_4) %}{% endif %}
 
-                    {# Alternate Image Thumbnails #}
-                    {% set alternate_images = [
-                        parent.alternate_image_url_1,
-                        parent.alternate_image_url_2,
-                        parent.alternate_image_url_3,
-                        parent.alternate_image_url_4
-                    ] %}
-                    {% set has_alternate_images = false %}
-                    {% for img in alternate_images %}{% if img %}{% set has_alternate_images = true %}{% endif %}{% endfor %}
-
-                    {% if has_alternate_images %}
-                    <div class="mt-4 px-2"> {# Slight padding for alignment #}
-                        <h6>Alternate Views</h6>
-                        <div class="row row-cols-3 row-cols-lg-4 g-2 justify-content-center alternate-thumbnails-grid">
-                            {% for img_url in alternate_images %}
-                                {% if img_url %}
-                                <div class="col">
-                                    <a href="{{ img_url }}" data-toggle="lightbox" data-gallery="alternate-gallery-{{ parent.id }}" data-title="{{ parent.name }} Alternate View">
-                                        <img src="{{ img_url }}" class="img-thumbnail parent-alternate-image" alt="{{ parent.name }} Alternate Image">
-                                    </a>
-                                </div>
-                                {% endif %}
+                    {% if all_carousel_images %}
+                    {# REMOVED data-bs-ride="carousel" from this div #}
+                    <div id="parentCarousel-{{ parent.id }}" class="carousel slide parent-carousel-wrapper">
+                        <div class="carousel-indicators">
+                            {% for loop_index in range(all_carousel_images|length) %}
+                            <button type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide-to="{{ loop_index }}" class="{{ 'active' if loop.first }}" aria-current="{{ 'true' if loop.first }}" aria-label="Slide {{ loop_index + 1 }}"></button>
                             {% endfor %}
                         </div>
+                        <div class="carousel-inner">
+                            {% for img_url in all_carousel_images %}
+                            <div class="carousel-item {{ 'active' if loop.first }}">
+                                <img src="{{ img_url }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    {% else %}
+                    {# Fallback if no images are available #}
+                    <div class="main-image-wrapper p-2">
+                        <img src="{{ url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid parent-main-image" alt="No image available">
                     </div>
                     {% endif %}
                 </div>
 
-                {# Right Column: Breed & Weight, Description #}
+                {# Right Column: Breed & Weight, Description, AND Alternate Image Previews #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4"> {# Align with top of main image on desktop, add top margin on mobile #}
                         <h3 class="breed-header">{{ parent.breed }}</h3>
@@ -69,6 +77,35 @@
                             {% endif %}
                         {% endfor %}
                     </div>
+
+                    {# New: Alternate Image Previews below the description #}
+                    {% set alternate_previews = [
+                        parent.alternate_image_url_1,
+                        parent.alternate_image_url_2,
+                        parent.alternate_image_url_3,
+                        parent.alternate_image_url_4
+                    ] %}
+                    {% set has_previews = false %}
+                    {% for img in alternate_previews %}{% if img %}{% set has_previews = true %}{% endif %}{% endfor %}
+
+                    {% if has_previews %}
+                    <div class="alternate-previews mt-4">
+                        <p style="color: red;">DEBUG: Alternate Image 1 URL for Preview: {{ parent.alternate_image_url_1 }}</p>
+                        <p style="color: red;">DEBUG: Has Previews: {{ has_previews }}</p>
+                        <h6>Image Gallery</h6>
+                        <div class="row row-cols-2 row-cols-lg-4 g-2 justify-content-start"> {# justify-content-start for left alignment #}
+                            {% for img_url in alternate_previews %}
+                                {% if img_url %}
+                                <div class="col">
+                                    <a href="{{ img_url }}" data-toggle="lightbox" data-gallery="alt-preview-gallery-{{ parent.id }}" data-title="{{ parent.name }} Preview">
+                                        <img src="{{ img_url }}" class="img-fluid alternate-preview-thumbnail" alt="Alternate image of {{ parent.name }}">
+                                    </a>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div> {# End .row #}
 
@@ -110,4 +147,7 @@
 {% block extra_js %}
 {# This script enables the image gallery lightbox functionality #}
 <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
+
+{# Link to your new JavaScript file #}
+<script src="{{ url_for('static', filename='js/parents_carousel.js') }}"></script>
 {% endblock %}

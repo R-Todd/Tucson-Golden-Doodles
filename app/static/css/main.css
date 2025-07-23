@@ -47,21 +47,33 @@ h1, h2, h3, h4, h5, h6 {
     /* Add padding/margin as needed, `g-4` on the row handles column gap */
 }
 
-/* Main Image */
-.main-image-wrapper {
+/* Parent Carousel Styling (replaces Main Image styling) */
+.parent-carousel-wrapper {
     background-color: #ffffff; /* White background for padding effect */
     border-radius: 8px; /* Slightly rounded corners */
     overflow: hidden; /* Ensures image respects border-radius */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Soft shadow */
     padding: 10px; /* Slight padding on all sides */
+    max-width: 100%; /* Ensure it fits column */
+    margin: auto; /* Center within its column */
+    border: none; /* Explicitly remove any default border */
 }
 
-.parent-main-image {
+.carousel-image {
     width: 100%;
-    height: auto; /* Maintain aspect ratio */
-    max-height: 500px; /* Cap height to prevent overly tall images */
-    object-fit: cover; /* or contain, depending on desired image crop/fit */
-    border-radius: 5px; /* Slightly rounded inner image */
+    height: 450px; /* Fixed height for carousel images, adjust as needed */
+    object-fit: cover; /* Ensures images fill the frame and are cropped if necessary */
+    border-radius: 5px;
+    border: none; /* Ensure no border on images within carousel */
+    box-shadow: none; /* Ensure no extra shadow on images within carousel */
+}
+
+/* Adjust carousel controls for better visibility if needed */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border-radius: 50%; /* Make them round */
+    padding: 15px; /* Increase size */
 }
 
 /* Breed & Weight Header */
@@ -85,57 +97,34 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1.2rem; /* Top/bottom margins */
     text-align: justify; /* Justified text */
 }
-/* For center-aligned text, use:
-.description-paragraphs p {
-    text-align: center;
-}
-*/
 
-/* Alternate Image Thumbnails */
-.alternate-thumbnails-grid .col {
-    /* Bootstrap's g-2 provides small gaps */
+/* Alternate Image Previews (New Section) */
+.alternate-previews {
+    margin-top: 40px; /* Space from description */
+    padding: 15px; /* Inner padding */
+    background-color: #f0f0f0; /* Light background for the section */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Subtle inner shadow */
 }
 
-.parent-alternate-image {
+.alternate-previews h6 {
+    text-align: center; /* Center the "Image Gallery" header */
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.alternate-preview-thumbnail {
     width: 100%;
-    height: 100px; /* Uniform sizing for thumbnails */
-    object-fit: cover; /* Ensures images fill the space */
+    height: 90px; /* Small uniform size for previews */
+    object-fit: cover; /* Ensure images fill their space */
     border-radius: 5px;
+    border: 1px solid #ddd; /* Subtle border for each thumbnail */
     transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    border: 2px solid transparent; /* For hover effect */
 }
 
-.parent-alternate-image:hover {
-    transform: scale(1.05); /* Optional hover effect */
-    border-color: #28a745; /* Highlight on hover (muted green accent) */
-}
-
-/* Three Rectangular Buttons */
-.parent-buttons {
-    display: flex;
-    justify-content: space-between; /* Evenly spaced */
-    gap: 15px; /* Small margins between them */
-    margin-top: 40px; /* Generous top margin */
-    flex-wrap: wrap; /* Allow wrapping on small screens */
-}
-
-.btn-parent-action {
-    flex: 1; /* Equal width */
-    min-width: 120px; /* Minimum width for small screens */
-    padding: 15px 20px; /* Height and padding */
-    background-color: #28a745; /* Muted green background matching banner accent */
-    color: #ffffff; /* White centered text */
-    text-align: center;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-}
-
-.btn-parent-action:hover {
-    background-color: #218838; /* Slightly darker green on hover */
-    color: #ffffff;
+.alternate-preview-thumbnail:hover {
+    transform: scale(1.05);
+    border-color: #007bff; /* Highlight on hover */
 }
 
 
@@ -201,18 +190,11 @@ h1, h2, h3, h4, h5, h6 {
         width: 100%; /* Full width */
         margin-top: 0 !important; /* Reset top margin if any from md-0 */
     }
-    .main-image-wrapper,
-    .alternate-thumbnails-grid,
-    .parent-buttons,
+    .parent-carousel-wrapper, /* Adjust carousel padding on mobile */
+    .alternate-previews,
     .description-paragraphs {
         padding-left: 15px; /* Adjust padding for mobile */
         padding-right: 15px;
-    }
-    .parent-buttons {
-        flex-direction: column; /* Stack buttons vertically */
-    }
-    .btn-parent-action {
-        width: 100%; /* Full width buttons */
     }
     .past-puppies-header h2 {
         font-size: 1.8rem; /* Adjust font size for mobile */
