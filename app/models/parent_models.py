@@ -1,3 +1,5 @@
+# app/models/parent_models.py
+
 from . import db
 from .enums import ParentRole
 
@@ -14,11 +16,16 @@ class Parent(db.Model):
     main_image_url = db.Column(db.String(255))
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
-    # One-to-many relationship to ParentImage
+    # New: Add fields for 4 alternate images
+    alternate_image_url_1 = db.Column(db.String(255))
+    alternate_image_url_2 = db.Column(db.String(255))
+    alternate_image_url_3 = db.Column(db.String(255))
+    alternate_image_url_4 = db.Column(db.String(255))
+
+    # One-to-many relationship to ParentImage (kept for other potential gallery uses)
     images = db.relationship('ParentImage', backref='parent', lazy=True, cascade="all, delete-orphan")
 
     # Relationships to Puppy, distinguishing between dad and mom roles
-    # Use back_populates to link to the 'dad' and 'mom' properties in the Puppy model
     litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
     litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
 
@@ -40,8 +47,7 @@ class Parent(db.Model):
         """
         from collections import OrderedDict
         from itertools import groupby
-        # Local import to prevent circular dependency
-        from .puppy_models import Puppy
+        from .puppy_models import Puppy # Local import to prevent circular dependency
 
         puppies = self.litters.order_by(Puppy.birth_date.desc(), Puppy.name).all()
         keyfunc = lambda p: (p.birth_date, p.dad, p.mom)
@@ -50,13 +56,10 @@ class Parent(db.Model):
     def __repr__(self):
         return f'<Parent {self.name}>'
 
-    # --- THIS IS THE FIX ---
-    # This method provides a user-friendly string representation for Parent objects,
-    # which is used by Flask-Admin to label the dropdown options.
     def __str__(self):
         return self.name
 
-# Gallery images for parents
+# Gallery images for parents (kept as is)
 class ParentImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)

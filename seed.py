@@ -44,7 +44,7 @@ def upload_local_image_to_s3(filename, folder='general'):
     try:
         with open(local_file_path, 'rb') as f:
             s3_client.upload_fileobj(f, S3_BUCKET, s3_key)
-        
+
         # Construct the public URL
         url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{s3_key}"
         return url
@@ -103,12 +103,22 @@ def seed_database():
         parent_archie = Parent(
             name='Archie', role=ParentRole.DAD, breed='F1 Mini Poodle',
             description='A gentle and intelligent sire with a beautiful apricot coat.',
-            main_image_url=upload_local_image_to_s3('archie.jpg', 'parents')
+            main_image_url=upload_local_image_to_s3('archie.jpg', 'parents'),
+            # New: Add alternate images for Archie
+            alternate_image_url_1=upload_local_image_to_s3('archie_gallery_1.jpg', 'parents_alternates'),
+            alternate_image_url_2=upload_local_image_to_s3('archie_gallery_2.jpg', 'parents_alternates'),
+            alternate_image_url_3=None, # You can leave some blank
+            alternate_image_url_4=None
         )
         parent_penelope = Parent(
             name='Penelope', role=ParentRole.MOM, breed='Cavalier King Charles Spaniel',
             description='A sweet and caring dam with a smooth and silky coat.',
-            main_image_url=upload_local_image_to_s3('penelope.jpg', 'parents')
+            main_image_url=upload_local_image_to_s3('penelope.jpg', 'parents'),
+            # New: Add alternate images for Penelope
+            alternate_image_url_1=upload_local_image_to_s3('penny_main.jpg', 'parents_alternates'),
+            alternate_image_url_2=upload_local_image_to_s3('luna_gallery_1.jpg', 'parents_alternates'),
+            alternate_image_url_3=None,
+            alternate_image_url_4=None
         )
         db.session.add_all([parent_archie, parent_penelope])
         db.session.commit() # Commit to get parent IDs

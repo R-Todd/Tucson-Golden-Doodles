@@ -3,88 +3,109 @@
 {% block title %}Our Parents - Tucson Golden Doodles{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4">Our Wonderful Parents</h1>
-        <p class="lead">Meet the sires and dams of our loving Golden Doodle family.</p>
-    </div>
+<div class="container-fluid p-0"> {# Use container-fluid for full width sections #}
 
     {% if parents %}
         {% for parent in parents %}
-        <div class="card shadow-sm mb-5">
-            <div class="row g-0">
-                <div class="col-md-5">
-                    {# Use the direct URL to the image on S3 #}
-                    <img src="{{ parent.main_image_url }}" class="img-fluid rounded-start" alt="Photo of {{ parent.name }}">
-                </div>
-                <div class="col-md-7">
-                    <div class="card-body p-4">
-                        <h2 class="card-title">{{ parent.name }} <span class="badge bg-primary fw-normal">{{ parent.role.value }}</span></h2>
-                        <h5 class="card-subtitle mb-2 text-muted">{{ parent.breed }}</h5>
-                        <p class="card-text mt-3">{{ parent.description }}</p>
+        {# Name Banner #}
+        <div class="parent-name-banner" style="background-color: #79868f;"> {# Muted background bar #}
+            <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1> {# Large, all-caps serif, white, centered #}
+        </div>
 
-                        {% if parent.images %}
-                        <div class="mt-4">
-                            <h6>Gallery</h6>
-                            <div class="row row-cols-2 row-cols-lg-4 g-2">
-                                {% for image in parent.images %}
+        <div class="container my-5"> {# Container for the two-column layout #}
+            <div class="row g-4 parent-layout-container"> {# g-4 for consistent spacing #}
+
+                {# Left Column: Main Image, Alternate Images, Buttons #}
+                <div class="col-md-6 parent-image-column">
+                    <div class="main-image-wrapper p-2"> {# Added padding #}
+                        <img src="{{ parent.main_image_url }}" class="img-fluid parent-main-image" alt="Main photo of {{ parent.name }}">
+                    </div>
+
+                    {# Alternate Image Thumbnails #}
+                    {% set alternate_images = [
+                        parent.alternate_image_url_1,
+                        parent.alternate_image_url_2,
+                        parent.alternate_image_url_3,
+                        parent.alternate_image_url_4
+                    ] %}
+                    {% set has_alternate_images = false %}
+                    {% for img in alternate_images %}{% if img %}{% set has_alternate_images = true %}{% endif %}{% endfor %}
+
+                    {% if has_alternate_images %}
+                    <div class="mt-4 px-2"> {# Slight padding for alignment #}
+                        <h6>Alternate Views</h6>
+                        <div class="row row-cols-3 row-cols-lg-4 g-2 justify-content-center alternate-thumbnails-grid">
+                            {% for img_url in alternate_images %}
+                                {% if img_url %}
                                 <div class="col">
-                                    {# This links to a lightbox for a better viewing experience #}
-                                    <a href="{{ image.image_url }}" data-toggle="lightbox" data-gallery="gallery-{{ parent.id }}" data-title="{{ image.caption or parent.name }}">
-                                        <img src="{{ image.image_url }}" class="img-thumbnail" alt="{{ image.caption or 'Gallery image of ' + parent.name }}">
+                                    <a href="{{ img_url }}" data-toggle="lightbox" data-gallery="alternate-gallery-{{ parent.id }}" data-title="{{ parent.name }} Alternate View">
+                                        <img src="{{ img_url }}" class="img-thumbnail parent-alternate-image" alt="{{ parent.name }} Alternate Image">
                                     </a>
                                 </div>
-                                {% endfor %}
-                            </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {# Three Rectangular Buttons #}
+                    <div class="parent-buttons mt-5 px-2">
+                        <a href="#" class="btn btn-parent-action">Contact Us</a>
+                        <a href="#" class="btn btn-parent-action">Apply Now</a>
+                        <a href="#" class="btn btn-parent-action">View Full Profile</a>
                     </div>
                 </div>
-            </div>
 
-            {% if parent.grouped_litters %}
-            <div class="card-footer bg-light border-top-0 p-4">
-                <h4 class="mt-2 mb-4 text-center">Past Litters</h4>
-                {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
-                <div class="litter-group mb-4">
-                    <h5 class="fw-normal">
-                        Litter with
-                        {# Dynamically show the OTHER parent's name #}
-                        <strong>{% if parent.role.name == 'DAD' %}{{ mom.name }}{% else %}{{ dad.name }}{% endif %}</strong>
-                        - Born {{ birth_date.strftime('%B %d, %Y') }}
-                    </h5>
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 mt-1">
-                        {% for puppy in puppies %}
-                        <div class="col">
-                            <div class="card h-100 text-center border-light shadow-sm">
-                                <img src="{{ puppy.main_image_url }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
-                                <div class="card-body p-2">
-                                    <p class="card-text mb-1 small">{{ puppy.name }}</p>
-                                    <span class="badge rounded-pill
-                                        {% if puppy.status.name == 'AVAILABLE' %}bg-success
-                                        {% elif puppy.status.name == 'RESERVED' %}bg-warning text-dark
-                                        {% else %}bg-secondary
-                                        {% endif %}">
-                                        {{ puppy.status.value }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                {# Right Column: Breed & Weight, Description #}
+                <div class="col-md-6 parent-info-column">
+                    <div class="text-center mt-md-0 mt-4"> {# Align with top of main image on desktop, add top margin on mobile #}
+                        <h3 class="breed-header">{{ parent.breed }}</h3>
+                        <p class="weight-header">{{ parent.weight_kg }} kg / {{ (parent.weight_kg * 2.20462)|round(1) }} lbs</p> {# Converted to lbs #}
+                    </div>
+                    <div class="description-paragraphs mt-4">
+                        {# Split description by newlines to create paragraphs #}
+                        {% for paragraph in parent.description.split('\n') %}
+                            {% if paragraph.strip() %}
+                                <p class="text-justify">{{ paragraph.strip() }}</p> {# Justified text #}
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>
-                {% if not loop.last %}<hr class="my-4">{% endif %}
-                {% endfor %}
+            </div> {# End .row #}
+
+            {# "Past Puppies" Section Header #}
+            {% if parent.grouped_litters %}
+            <div class="past-puppies-header mt-5 text-center">
+                <h2>{{ parent.name | upper }} PAST PUPPIES</h2> {# All-caps or small-caps #}
+            </div>
+
+            {# Past Puppies Thumbnails Row - Horizontal Scroll #}
+            <div class="past-puppies-thumbnails-row mt-4">
+                <div class="d-flex flex-nowrap overflow-auto py-2"> {# Flexbox for horizontal scroll #}
+                    {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
+                        {% for puppy in puppies %}
+                        <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
+                            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ puppy.dad.id }}-{{ puppy.mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
+                                <img src="{{ puppy.main_image_url }}" class="img-fluid puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
             {% endif %}
-        </div>
+
+        </div> {# End .container #}
         {% endfor %}
     {% else %}
-        <div class="alert alert-info" role="alert">
-            There are no parent dogs to display at this time. Please check back later!
+        <div class="container my-5">
+            <div class="alert alert-info text-center" role="alert">
+                There are no parent dogs to display at this time. Please check back later!
+            </div>
         </div>
     {% endif %}
-</div>
+
+</div> {# End container-fluid #}
 {% endblock %}
 
 {% block extra_js %}
