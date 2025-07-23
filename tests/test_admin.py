@@ -173,7 +173,7 @@ class TestAdminFunctionality:
 
     # --- Parent CRUD and Validation Tests ---
 
-    @patch('app.utils.image_uploader.upload_image')
+    @patch('app.routes.admin.views.parent_views.upload_image')
     def test_edit_parent_record(self, mock_upload, client, db):
         """
         GIVEN a logged-in admin and an existing Parent record
