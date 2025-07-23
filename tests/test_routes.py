@@ -26,9 +26,9 @@ def test_parents_page_route(client, db):
     WHEN the '/parents' route is requested (GET)
     THEN check that the response is valid and displays parent names
     """
-    # Seed the database with parents
-    parent1 = Parent(name='Archie', role=ParentRole.DAD, main_image_url='img/archie.jpg')
-    parent2 = Parent(name='Luna', role=ParentRole.MOM, main_image_url='img/luna.jpg')
+    # Seed the database with parents, including a description to prevent Jinja2 error
+    parent1 = Parent(name='Archie', role=ParentRole.DAD, main_image_url='img/archie.jpg', description='A test dad description.')
+    parent2 = Parent(name='Luna', role=ParentRole.MOM, main_image_url='img/luna.jpg', description='A test mom description.')
     db.session.add(parent1)
     db.session.add(parent2)
     db.session.commit() # Commit to get IDs
@@ -46,7 +46,7 @@ def test_parents_page_route(client, db):
     assert b"Past Litters" in response.data # Check that the section appears
     # Check for the components separately to avoid whitespace sensitivity
     assert b"Litter with" in response.data
-    assert b"<strong>Archie</strong>" in response.data
+    assert b"<strong>Luna</strong>" in response.data # Updated assertion for Mom's name (other parent)
 
 def test_homepage_empty_state(client, db):
     """

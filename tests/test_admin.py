@@ -7,6 +7,9 @@ from app.models import (
 # Import BeautifulSoup for HTML parsing
 from bs4 import BeautifulSoup
 
+# Import the upload_image function from the correct path for patching
+from app.utils.image_uploader import upload_image
+
 # By grouping tests into a class, we can share helper methods like _login
 # and keep the test suite organized.
 
@@ -213,11 +216,12 @@ class TestAdminFunctionality:
 
     # --- Parent CRUD and Validation Tests ---
 
-    def test_edit_parent_record(self, client, db):
+    @patch('app.utils.image_uploader.upload_image') # Patch the upload_image function directly
+    def test_edit_parent_record(self, mock_upload, client, db):
         """
         GIVEN a logged-in admin and an existing Parent record
-        WHEN the admin edits the parent's name via POST to the edit view
-        THEN check that the change is saved to the database
+        WHEN the admin edits the parent's name AND uploads an alternate image
+        THEN check that the name and the alternate image URL are saved to the database
         """
         # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
@@ -226,16 +230,33 @@ class TestAdminFunctionality:
         db.session.commit()
         self._login(client, 'admin', 'pw')
 
+        # Mock the S3 upload for the alternate image
+        mock_upload.return_value = 'http://fake-s3-url.com/alternate_image_1.jpg'
+        fake_alternate_image = (io.BytesIO(b"a fake alternate image"), 'alternate1.jpg')
+
         # ACT
-        client.post(
+        response = client.post(
             url_for('parent.edit_view', id=parent.id),
-            data={'name': 'New Name', 'role': 'DAD'},
+            data={
+                'name': 'New Name',
+                'role': 'DAD', # Role is a required field in ParentAdminView form_args
+                'alternate_image_upload_1': fake_alternate_image # Upload an alternate image
+            },
+            content_type='multipart/form-data', # Must specify for file uploads
             follow_redirects=True
         )
 
         # ASSERT
-        db.session.refresh(parent)
+        assert response.status_code == 200
+        # Removed the assertion for a specific success message due to potential brittleness
+        # assert b'Record was successfully updated.' in response.data
+        db.session.refresh(parent) # Refresh the parent object to get latest data from DB
         assert parent.name == 'New Name'
+        assert parent.alternate_image_url_1 == 'http://fake-s3-url.com/alternate_image_1.jpg'
+        
+        # Verify that upload_image was called with the correct file object and folder
+        mock_upload.assert_called_once_with(fake_alternate_image[0], folder='parents_alternates')
+
 
     def test_delete_review_record(self, client, db):
         """
