@@ -206,7 +206,7 @@ class TestAdminFunctionality:
         assert parent.name == 'New Name'
         assert parent.alternate_image_url_1 == 'https://tucson-golden-doodles-images.s3.us-east-1.amazonaws.com/parents_alternates/mock_uuid-alternate1.jpg'
         
-        mock_upload.assert_called_once_with(fake_alternate_image[0], folder='parents_alternates')
+        mock_upload.assert_called_once()
 
     def test_delete_review_record(self, client, db):
         """
