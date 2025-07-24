@@ -1,85 +1,209 @@
-/* Basic Reset & Body Styles */
+/* app/static/css/main.css */
+
+/* --- GENERAL STYLING NOTES --- */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: #f4f4f4;
+    background: #f8f9fa; /* Lighter background */
     color: #333;
 }
 
-main {
-    max-width: 960px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif; /* Decorative serif for headings */
+    color: #343a40; /* Darker text for headings */
 }
 
-header {
-    background: #333;
-    color: #fff;
-    padding: 1rem 0;
+/* --- PARENTS PAGE SPECIFIC STYLING --- */
+
+/* Parent Name Banner */
+.parent-name-banner {
+    background-color: #6c757d; /* Muted background bar */
+    height: 70px; /* Approximately 70px tall */
+    display: flex; /* Use flexbox for vertical and horizontal centering */
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    margin-bottom: 30px; /* Generous top margin to separate it from above content */
+}
+
+.parent-name-banner h1 {
+    font-size: 2.8rem; /* Large font size */
+    text-transform: uppercase; /* All-caps */
+    color: #ffffff; /* White text */
+    margin: 0; /* Remove default margin */
+    letter-spacing: 2px; /* Extra letter spacing */
+}
+
+/* Two-Column Layout Container */
+.parent-layout-container {
+    display: flex; /* Use flexbox for equal columns */
+    flex-wrap: wrap; /* Allows columns to wrap on smaller screens */
+}
+
+.parent-image-column,
+.parent-info-column {
+    /* Bootstrap's col-md-6 already handles 50% width on medium screens and above */
+    /* Add padding/margin as needed, `g-4` on the row handles column gap */
+}
+
+/* Parent Carousel Styling (replaces Main Image styling) */
+.parent-carousel-wrapper {
+    background-color: #ffffff; /* White background for padding effect */
+    border-radius: 8px; /* Slightly rounded corners */
+    overflow: hidden; /* Ensures image respects border-radius */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Soft shadow */
+    padding: 10px; /* Slight padding on all sides */
+    max-width: 100%; /* Ensure it fits column */
+    margin: auto; /* Center within its column */
+    border: none; /* Explicitly remove any default border */
+}
+
+.carousel-image {
+    width: 100%;
+    height: 450px; /* Fixed height for carousel images, adjust as needed */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
+    border-radius: 5px;
+    border: none; /* Ensure no border on images within carousel */
+    box-shadow: none; /* Ensure no extra shadow on images within carousel */
+    background-color: #f8f9fa; /* Optional: Add a light background for letterboxing */
+}
+
+/* Adjust carousel controls for better visibility if needed */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border-radius: 50%; /* Make them round */
+    padding: 15px; /* Increase size */
+}
+
+/* Breed & Weight Header */
+.breed-header {
+    font-size: 1.8rem; /* Medium-weight serif */
+    font-weight: 500; /* Medium weight */
+    margin-bottom: 5px;
     text-align: center;
 }
 
-header h1 {
-    margin: 0;
-}
-
-section {
-    background: #fff;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-h2, h3, h4 {
-    color: #5a4a42; /* A warm, friendly brown */
-}
-
-/* Hero Section */
-.hero {
-    text-align: center;
-    background: #8d7b71; /* A darker, warm color */
-    color: #fff;
-}
-.hero h2 {
-    color: #fff;
-    font-size: 2.5rem;
-}
-
-/* Parent Preview Section */
-.parent-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.parent-card {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 5px;
+.weight-header {
+    font-size: 1rem; /* Smaller font */
+    font-style: italic; /* Italic or lighter font */
+    color: #6c757d; /* Muted text color */
     text-align: center;
 }
 
-.parent-card img {
-    max-width: 100%;
-    height: auto;
+/* Description Paragraphs */
+.description-paragraphs p {
+    line-height: 1.7; /* Adequate line height */
+    margin-bottom: 1.2rem; /* Top/bottom margins */
+    text-align: justify; /* Justified text */
+}
+
+/* Alternate Image Previews (New Section) */
+.alternate-previews {
+    margin-top: 40px; /* Space from description */
+    padding: 15px; /* Inner padding */
+    background-color: #f0f0f0; /* Light background for the section */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Subtle inner shadow */
+}
+
+.alternate-previews h6 {
+    text-align: center; /* Center the "Image Gallery" header */
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.alternate-preview-thumbnail {
+    width: 100%;
+    height: 90px; /* Small uniform size for previews */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
-    margin-bottom: 1rem;
+    border: 1px solid #ddd; /* Subtle border for each thumbnail */
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    background-color: #ffffff; /* Optional: Add a background for letterboxing */
 }
 
-/* Testimonial Section */
-.testimonial blockquote {
-    border-left: 5px solid #8d7b71;
-    padding-left: 1rem;
-    margin: 0;
-    font-style: italic;
+.alternate-preview-thumbnail:hover {
+    transform: scale(1.05);
+    border-color: #007bff; /* Highlight on hover */
 }
 
-.testimonial footer {
-    text-align: right;
-    margin-top: 0.5rem;
-    font-style: normal;
-    font-weight: bold;
+
+/* "Past Puppies" Section Header */
+.past-puppies-header {
+    margin-top: 80px; /* Generous top margin to separate it */
+}
+
+.past-puppies-header h2 {
+    font-family: 'Playfair Display', serif; /* Decorative serif font */
+    text-transform: uppercase; /* All-caps or small-caps */
+    letter-spacing: 3px; /* Extra letter spacing */
+    font-size: 2.2rem;
+}
+
+/* Past Puppies Thumbnails Row */
+.past-puppies-thumbnails-row {
+    margin-top: 20px;
+    padding: 10px 0; /* Some vertical padding for the scroll area */
+    /* Add a subtle scrollbar styling if desired for webkit browsers */
+    &::-webkit-scrollbar {
+        height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
+.puppy-thumbnail-wrapper {
+    /* Small gaps handled by Bootstrap's p-2, but can be adjusted here if needed */
+}
+
+.puppy-thumbnail {
+    width: 120px; /* Uniform sizing, adjust as needed */
+    height: 120px; /* Square images */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
+    object-position: center; /* Ensures the image is centered */
+    border-radius: 5px;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background-color: #ffffff; /* Optional: Add a background for letterboxing */
+}
+
+.puppy-thumbnail:hover {
+    transform: scale(1.08); /* Optional hover effect */
+    border-color: #007bff; /* Example hover color */
+}
+
+/* --- Responsive Breakpoints (Example) --- */
+@media (max-width: 767.98px) { /* On narrower screens (Bootstrap md breakpoint) */
+    .parent-layout-container {
+        flex-direction: column; /* Collapse to a single column */
+    }
+    .parent-image-column,
+    .parent-info-column {
+        width: 100%; /* Full width */
+        margin-top: 0 !important; /* Reset top margin if any from md-0 */
+    }
+    .parent-carousel-wrapper, /* Adjust carousel padding on mobile */
+    .alternate-previews,
+    .description-paragraphs {
+        padding-left: 15px; /* Adjust padding for mobile */
+        padding-right: 15px;
+    }
+    .past-puppies-header h2 {
+        font-size: 1.8rem; /* Adjust font size for mobile */
+    }
+    .parent-name-banner h1 {
+        font-size: 2rem; /* Adjust banner font for mobile */
+    }
 }

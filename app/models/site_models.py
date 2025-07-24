@@ -16,6 +16,10 @@ class SiteMeta(db.Model):
 class HeroSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(255))
+    # Add fields for responsive image sizes
+    image_url_small = db.Column(db.String(255))
+    image_url_medium = db.Column(db.String(255))
+    image_url_large = db.Column(db.String(255))
     title = db.Column(db.String(200))
     subtitle = db.Column(db.String(300))
     cta_text = db.Column(db.String(50))
@@ -29,6 +33,11 @@ class AboutSection(db.Model):
     title = db.Column(db.String(200))
     content_html = db.Column(db.Text)
     image_url = db.Column(db.String(255))
+    # Add fields for responsive image sizes
+    image_url_small = db.Column(db.String(255))
+    image_url_medium = db.Column(db.String(255))
+    image_url_large = db.Column(db.String(255))
+
 
     def __repr__(self):
         return f'<AboutSection {self.title}>'

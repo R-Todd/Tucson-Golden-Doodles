@@ -7,7 +7,6 @@ def test_homepage_route(client, db):
     WHEN the '/' route is requested (GET)
     THEN check that the response is valid and contains expected content
     """
-    # Seed the database with some content for the homepage
     hero = HeroSection(title='Test Hero Title', subtitle='Test Subtitle', image_url='img/test.jpg')
     about = AboutSection(title='About Us Test', content_html='<p>Test Content</p>', image_url='img/test.jpg')
     db.session.add_all([hero, about])
@@ -24,11 +23,11 @@ def test_parents_page_route(client, db):
     """
     GIVEN a Flask application
     WHEN the '/parents' route is requested (GET)
-    THEN check that the response is valid and displays parent names
+    THEN check that the response is valid and displays parent names and litter info
     """
-    # Seed the database with parents
-    parent1 = Parent(name='Archie', role=ParentRole.DAD, main_image_url='img/archie.jpg')
-    parent2 = Parent(name='Luna', role=ParentRole.MOM, main_image_url='img/luna.jpg')
+    # Seed the database with parents, including a description to prevent Jinja2 error
+    parent1 = Parent(name='Archie', role=ParentRole.DAD, main_image_url='img/archie.jpg', description='A test dad description.')
+    parent2 = Parent(name='Luna', role=ParentRole.MOM, main_image_url='img/luna.jpg', description='A test mom description.')
     db.session.add(parent1)
     db.session.add(parent2)
     db.session.commit() # Commit to get IDs
@@ -40,13 +39,11 @@ def test_parents_page_route(client, db):
 
     response = client.get('/parents')
     assert response.status_code == 200
-    assert b"Our Wonderful Parents" in response.data
-    assert b"Archie" in response.data
-    assert b"Luna" in response.data
-    assert b"Past Litters" in response.data # Check that the section appears
-    # Check for the components separately to avoid whitespace sensitivity
-    assert b"Litter with" in response.data
-    assert b"<strong>Archie</strong>" in response.data
+    # Fix: Assert parent names from the new dynamic banners (uppercase as per template)
+    assert b"ARCHIE" in response.data
+    assert b"LUNA" in response.data
+    # Fix: Assert the updated "Past Puppies" section header
+    assert b"PAST PUPPIES" in response.data # Part of "ARCHIE'S PAST PUPPIES"
 
 def test_homepage_empty_state(client, db):
     """
@@ -54,10 +51,7 @@ def test_homepage_empty_state(client, db):
     WHEN the '/' route is requested (GET)
     THEN check that placeholder messages are shown
     """
-    # The 'db' fixture ensures tables are created but are empty.
     response = client.get('/')
     assert response.status_code == 200
-    # Check for the message that appears when there are no available puppies
     assert b"We don't have any available puppies at the moment" in response.data
-    # Check that the testimonials section does not render if there are none
     assert b"What Our Families Say" not in response.data

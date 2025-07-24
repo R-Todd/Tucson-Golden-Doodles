@@ -1,0 +1,60 @@
+{# r-todd/tucson-golden-doodles/Tucson-Golden-Doodles-Syle-and-Design/app/templates/admin/parent_edit.html #}
+{% extends 'admin/model/edit.html' %}
+
+{% block edit_form %}
+    {{ super() }}
+
+    {# Add our custom litter display section, only for existing records #}
+    {% if model and model.id %}
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Associated Litters</h3>
+                {% if model.grouped_litters %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Litter Details</th>
+                                <th>Puppies in Litter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for (birth_date, dad, mom), puppies in model.grouped_litters.items() %}
+                            <tr>
+                                <td>
+                                    <strong>
+                                        Litter with:
+                                        {# Dynamically show the OTHER parent's name #}
+                                        {% if model.role.name == 'DAD' %}
+                                            {{ mom.name }} (Mom)
+                                        {% else %}
+                                            {{ dad.name }} (Dad)
+                                        {% endif %}
+                                    </strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Born: {{ birth_date.strftime('%B %d, %Y') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for puppy in puppies %}
+                                        <li>
+                                            {# Provide a convenient link to edit the puppy directly #}
+                                            <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
+                                            - Status: {{ puppy.status.value }}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No litters found for this parent.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

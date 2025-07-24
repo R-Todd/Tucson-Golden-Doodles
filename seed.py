@@ -4,53 +4,39 @@ from botocore.exceptions import NoCredentialsError
 from datetime import date
 from app import create_app, db
 from app.models import (
-    User, SiteMeta, Parent, ParentImage, Puppy, Review, HeroSection,
+    User, SiteMeta, Parent, Puppy, Review, HeroSection,
     AboutSection, GalleryImage, ParentRole, PuppyStatus
 )
-import uuid
+from app.utils.image_uploader import upload_image, RESPONSIVE_SIZES # Import the uploader
+from werkzeug.datastructures import FileStorage
 
 # --- AWS S3 Configuration ---
-# The script will pull these from your .env file
 S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
 S3_REGION = os.environ.get('S3_BUCKET_REGION')
-
-# Initialize the S3 client
-s3_client = boto3.client("s3", region_name=S3_REGION)
 
 # Local image directory
 BASE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'seed_images')
 
-
-def upload_local_image_to_s3(filename, folder='general'):
+def upload_seed_image(filename, folder='general', create_responsive=False):
     """
-    Uploads a local image file from the `seed_images` directory to the S3 bucket.
-    Returns the public URL of the uploaded image.
+    Uploads a local image file and returns either a single URL or a dictionary of URLs.
     """
     if not S3_BUCKET or not S3_REGION:
-        print("Warning: S3 bucket name or region is not configured. Skipping upload.")
-        return "https://via.placeholder.com/600x400.png?text=S3+Not+Configured"
+        print(f"Warning: S3 not configured. Using placeholder for {filename}.")
+        return "https://via.placeholder.com/800x600.png?text=S3+Not+Configured"
 
     local_file_path = os.path.join(BASE_IMAGE_PATH, filename)
-
     if not os.path.exists(local_file_path):
-        print(f"Warning: Local image file not found at {local_file_path}. Skipping.")
-        return "https://via.placeholder.com/600x400.png?text=Image+Not+Found"
+        print(f"Warning: Local image file not found: {local_file_path}. Using placeholder.")
+        return "https://via.placeholder.com/800x600.png?text=Image+Not+Found"
 
-    # Create a unique filename for S3 to prevent overwrites
-    unique_filename = f"{uuid.uuid4().hex[:8]}-{filename}"
-    s3_key = f"{folder}/{unique_filename}"
-
-    print(f"Uploading {filename} to s3://{S3_BUCKET}/{s3_key}...")
+    print(f"Uploading {filename} to S3 in folder '{folder}'...")
     try:
         with open(local_file_path, 'rb') as f:
-            s3_client.upload_fileobj(f, S3_BUCKET, s3_key)
-        
-        # Construct the public URL
-        url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{s3_key}"
-        return url
-    except NoCredentialsError:
-        print("Error: AWS credentials not found. Please configure your credentials.")
-        return None
+            # Wrap the file in FileStorage to mimic a Flask upload
+            file_storage = FileStorage(f, filename=filename)
+            # Use the main application's uploader
+            return upload_image(file_storage, folder=folder, create_responsive_versions=create_responsive)
     except Exception as e:
         print(f"Error during S3 upload for {filename}: {e}")
         return None
@@ -79,59 +65,72 @@ def seed_database():
         else:
             print("Warning: ADMIN_USERNAME and ADMIN_PASSWORD not set in .env. Admin user not created.")
 
-        # --- Create Site Metadata ---
-        site_meta = SiteMeta(
-            phone_number='520-555-1234',
-            email='contact@tucsondoodles.com'
-        )
+        site_meta = SiteMeta(phone_number='520-555-1234', email='contact@tucsondoodles.com')
         db.session.add(site_meta)
 
-        # --- Create Homepage Content (with real image uploads) ---
+        # --- Homepage Content (with responsive images) ---
+        hero_urls = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
+        about_urls = upload_seed_image('about-us.jpg', 'about', create_responsive=True)
+
         hero = HeroSection(
             title='Welcome to Tucson Golden Doodles',
             subtitle='Your new best friend is waiting for you!',
-            image_url=upload_local_image_to_s3('hero-image.jpg', 'hero')
+            image_url=hero_urls.get('original'),
+            image_url_small=hero_urls.get('small'),
+            image_url_medium=hero_urls.get('medium'),
+            image_url_large=hero_urls.get('large')
         )
         about = AboutSection(
             title='About Our Family',
             content_html='<p>We are a family-based breeder in sunny Tucson, Arizona, dedicated to raising healthy, happy, and well-socialized Golden Doodle puppies. <b>All our dogs are part of our family.</b> They live in our home, play in our yard, and are loved unconditionally.</p>',
-            image_url=upload_local_image_to_s3('about-us.jpg', 'about')
+            image_url=about_urls.get('original'),
+            image_url_small=about_urls.get('small'),
+            image_url_medium=about_urls.get('medium'),
+            image_url_large=about_urls.get('large')
         )
         db.session.add_all([hero, about])
 
-        # --- Create Parent Dogs ---
+        # --- Parent Dogs (with responsive images) ---
+        archie_urls = upload_seed_image('archie.jpg', 'parents', create_responsive=True)
         parent_archie = Parent(
             name='Archie', role=ParentRole.DAD, breed='F1 Mini Poodle',
             description='A gentle and intelligent sire with a beautiful apricot coat.',
-            main_image_url=upload_local_image_to_s3('archie.jpg', 'parents')
+            main_image_url=archie_urls.get('original'),
+            main_image_url_small=archie_urls.get('small'),
+            main_image_url_medium=archie_urls.get('medium'),
+            main_image_url_large=archie_urls.get('large'),
+            alternate_image_url_1=upload_seed_image('archie_gallery_1.jpg', 'parents_alternates'),
+            alternate_image_url_2=upload_seed_image('archie_gallery_2.jpg', 'parents_alternates')
         )
+        
+        penelope_urls = upload_seed_image('penelope.jpg', 'parents', create_responsive=True)
         parent_penelope = Parent(
             name='Penelope', role=ParentRole.MOM, breed='Cavalier King Charles Spaniel',
             description='A sweet and caring dam with a smooth and silky coat.',
-            main_image_url=upload_local_image_to_s3('penelope.jpg', 'parents')
+            main_image_url=penelope_urls.get('original'),
+            main_image_url_small=penelope_urls.get('small'),
+            main_image_url_medium=penelope_urls.get('medium'),
+            main_image_url_large=penelope_urls.get('large'),
+            alternate_image_url_1=upload_seed_image('penny_main.jpg', 'parents_alternates'),
+            alternate_image_url_2=upload_seed_image('luna_gallery_1.jpg', 'parents_alternates')
         )
         db.session.add_all([parent_archie, parent_penelope])
-        db.session.commit() # Commit to get parent IDs
+        db.session.commit()
 
-        # --- Create Puppies ---
+        # --- Puppies (single image upload) ---
         puppy_river = Puppy(
             name='River', birth_date=date(2023, 10, 1), status=PuppyStatus.AVAILABLE,
             dad_id=parent_archie.id, mom_id=parent_penelope.id,
-            main_image_url=upload_local_image_to_s3('river.jpg', 'puppies')
+            main_image_url=upload_seed_image('river.jpg', 'puppies')
         )
         puppy_benson = Puppy(
             name='Benson', birth_date=date(2023, 10, 1), status=PuppyStatus.RESERVED,
             dad_id=parent_archie.id, mom_id=parent_penelope.id,
-            main_image_url=upload_local_image_to_s3('benson.jpg', 'puppies')
+            main_image_url=upload_seed_image('benson.jpg', 'puppies')
         )
         db.session.add_all([puppy_river, puppy_benson])
 
-        # --- Create Reviews ---
-        review1 = Review(
-            author_name='The Smith Family',
-            testimonial_text='We couldn''t be happier with our puppy!',
-            is_featured=True
-        )
+        review1 = Review(author_name='The Smith Family', testimonial_text='We couldn''t be happier with our puppy!', is_featured=True)
         db.session.add(review1)
 
         db.session.commit()

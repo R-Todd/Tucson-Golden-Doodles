@@ -4,18 +4,10 @@ from flask import url_for
 from app.models import (
     User, Parent, Puppy, SiteMeta, ParentRole, PuppyStatus, Review
 )
-# Import BeautifulSoup for HTML parsing
 from bs4 import BeautifulSoup
-
-# By grouping tests into a class, we can share helper methods like _login
-# and keep the test suite organized.
+from app.utils.image_uploader import upload_image
 
 class TestAdminFunctionality:
-    """
-    A comprehensive test suite for the Flask-Admin portal, covering
-    authentication, authorization, and model-specific CRUD operations.
-    """
-
     def _login(self, client, username, password):
         """Helper function to log in a user."""
         return client.post(
@@ -34,23 +26,19 @@ class TestAdminFunctionality:
         WHEN the admin logs out via a GET to '/admin/logout'
         THEN check that they are redirected to the homepage and can no longer see admin links
         """
-        # ARRANGE: Create a test admin user and site metadata
         admin_user = User(username='admin')
         admin_user.set_password('password123')
         db.session.add(SiteMeta(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 
-        # ACT & ASSERT (LOGIN)
         login_response = self._login(client, 'admin', 'password123')
         assert login_response.status_code == 200
-        assert b'Tucson Golden Doodles Admin' in login_response.data # Check for dashboard content
+        assert b'Tucson Golden Doodles Admin' in login_response.data
         assert b'Logout' in login_response.data
 
-        # ACT & ASSERT (LOGOUT)
         logout_response = client.get(url_for('admin_auth.logout'), follow_redirects=True)
         assert logout_response.status_code == 200
-        # After logout, they should be on the public site, which shows "Admin Login"
         assert b'Admin Login' in logout_response.data
         assert b'Logout' not in logout_response.data
 
@@ -60,18 +48,11 @@ class TestAdminFunctionality:
         WHEN they attempt to access any admin model view (e.g., the Puppy list)
         THEN they should be redirected to the login page
         """
-        # ARRANGE
         db.session.add(SiteMeta(email='contact@test.com'))
         db.session.commit()
-
-        # ACT
         response = client.get(url_for('puppy.index_view'), follow_redirects=True)
-
-        # ASSERT
         assert response.status_code == 200
-        # The content of the login page should be present
         assert b'Admin Login' in response.data
-        # The content of the protected page should NOT be present
         assert b'Puppy' not in response.data
 
     # --- Puppy CRUD and Validation Tests ---
@@ -82,7 +63,6 @@ class TestAdminFunctionality:
         WHEN the 'Add Puppy' form page is requested
         THEN check that the 'Mother' dropdown only contains moms and the 'Father' dropdown only contains dads
         """
-        # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
         mom1 = Parent(name='Luna', role=ParentRole.MOM)
         mom2 = Parent(name='Bella', role=ParentRole.MOM)
@@ -92,52 +72,38 @@ class TestAdminFunctionality:
         db.session.commit()
         self._login(client, 'admin', 'pw')
 
-        # ACT
         response = client.get(url_for('puppy.create_view'))
         html = response.data.decode('utf-8')
-
-        # ASSERT
         assert response.status_code == 200
         
-        # Parse the HTML to specifically check the dropdowns
         soup = BeautifulSoup(html, 'html.parser')
-
-        # Check the 'Mother' dropdown
         mom_select = soup.find('select', {'name': 'mom'})
         assert mom_select is not None, "Mother dropdown not found"
         mom_options_text = [option.text for option in mom_select.find_all('option')]
         mom_options_values = [option.get('value') for option in mom_select.find_all('option')]
 
-        # Assert moms are present in mom dropdown
         assert mom1.name in mom_options_text
         assert mom2.name in mom_options_text
         assert str(mom1.id) in mom_options_values
         assert str(mom2.id) in mom_options_values
-
-        # Assert dads are NOT present in mom dropdown
         assert dad1.name not in mom_options_text
         assert dad2.name not in mom_options_text
         assert str(dad1.id) not in mom_options_values
         assert str(dad2.id) not in mom_options_values
 
-        # Check the 'Father' dropdown
         dad_select = soup.find('select', {'name': 'dad'})
         assert dad_select is not None, "Father dropdown not found"
         dad_options_text = [option.text for option in dad_select.find_all('option')]
         dad_options_values = [option.get('value') for option in dad_select.find_all('option')]
 
-        # Assert dads are present in dad dropdown
         assert dad1.name in dad_options_text
         assert dad2.name in dad_options_text
         assert str(dad1.id) in dad_options_values
         assert str(dad2.id) in dad_options_values
-
-        # Assert moms are NOT present in dad dropdown
         assert mom1.name not in dad_options_text
         assert mom2.name not in dad_options_text
         assert str(mom1.id) not in dad_options_values
         assert str(mom2.id) not in dad_options_values
-
 
     @patch('app.routes.admin.views.puppy_views.upload_image', return_value='http://fake-s3-url.com/new_puppy.jpg')
     def test_create_puppy_with_valid_data(self, mock_upload, client, db):
@@ -146,7 +112,6 @@ class TestAdminFunctionality:
         WHEN a new Puppy is created via POST with valid data and an image
         THEN check that a new Puppy record is created in the database with the correct image URL
         """
-        # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
@@ -155,7 +120,6 @@ class TestAdminFunctionality:
         self._login(client, 'admin', 'pw')
         fake_image = (io.BytesIO(b"a fake image"), 'puppy.jpg')
 
-        # ACT
         response = client.post(
             url_for('puppy.create_view'),
             data={
@@ -170,7 +134,6 @@ class TestAdminFunctionality:
             follow_redirects=True
         )
 
-        # ASSERT
         assert response.status_code == 200
         assert b'Record was successfully created.' in response.data
         mock_upload.assert_called_once()
@@ -185,7 +148,6 @@ class TestAdminFunctionality:
         WHEN a new Puppy is created via POST with a required field missing (e.g., name)
         THEN check that the form is re-rendered with a validation error message
         """
-        # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
@@ -193,11 +155,10 @@ class TestAdminFunctionality:
         db.session.commit()
         self._login(client, 'admin', 'pw')
 
-        # ACT
         response = client.post(
             url_for('puppy.create_view'),
             data={
-                'name': '', # Missing name
+                'name': '',
                 'birth_date': '2025-07-21',
                 'status': 'AVAILABLE',
                 'mom': mom.id,
@@ -206,36 +167,46 @@ class TestAdminFunctionality:
             follow_redirects=True
         )
 
-        # ASSERT
         assert response.status_code == 200
         assert b'This field is required.' in response.data
-        assert Puppy.query.count() == 0 # Ensure no puppy was created
+        assert Puppy.query.count() == 0
 
     # --- Parent CRUD and Validation Tests ---
 
-    def test_edit_parent_record(self, client, db):
+    @patch('app.routes.admin.views.parent_views.upload_image')
+    def test_edit_parent_record(self, mock_upload, client, db):
         """
         GIVEN a logged-in admin and an existing Parent record
-        WHEN the admin edits the parent's name via POST to the edit view
-        THEN check that the change is saved to the database
+        WHEN the admin edits the parent's name AND uploads an alternate image
+        THEN check that the name and the alternate image URL are saved to the database
         """
-        # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
         parent = Parent(name='Old Name', role=ParentRole.DAD)
         db.session.add_all([admin_user, parent, SiteMeta(email='c@t.com')])
         db.session.commit()
         self._login(client, 'admin', 'pw')
 
-        # ACT
-        client.post(
+        # Fix: Mock the S3 upload to return a URL that matches the expected S3 format
+        mock_upload.return_value = 'https://tucson-golden-doodles-images.s3.us-east-1.amazonaws.com/parents_alternates/mock_uuid-alternate1.jpg'
+        fake_alternate_image = (io.BytesIO(b"a fake alternate image"), 'alternate1.jpg')
+
+        response = client.post(
             url_for('parent.edit_view', id=parent.id),
-            data={'name': 'New Name', 'role': 'DAD'},
+            data={
+                'name': 'New Name',
+                'role': 'DAD',
+                'alternate_image_upload_1': fake_alternate_image
+            },
+            content_type='multipart/form-data',
             follow_redirects=True
         )
 
-        # ASSERT
+        assert response.status_code == 200
         db.session.refresh(parent)
         assert parent.name == 'New Name'
+        assert parent.alternate_image_url_1 == 'https://tucson-golden-doodles-images.s3.us-east-1.amazonaws.com/parents_alternates/mock_uuid-alternate1.jpg'
+        
+        mock_upload.assert_called_once()
 
     def test_delete_review_record(self, client, db):
         """
@@ -243,7 +214,6 @@ class TestAdminFunctionality:
         WHEN the admin deletes the record via POST to the delete view
         THEN check that the record is removed from the database
         """
-        # ARRANGE
         admin_user = User(username='admin'); admin_user.set_password('pw')
         review_to_delete = Review(author_name='ToBeDeleted', testimonial_text='...')
         db.session.add_all([admin_user, review_to_delete, SiteMeta(email='c@t.com')])
@@ -251,13 +221,11 @@ class TestAdminFunctionality:
         self._login(client, 'admin', 'pw')
         review_id = review_to_delete.id
 
-        # ACT
         response = client.post(
             url_for('review.delete_view', id=review_id),
             follow_redirects=True
         )
 
-        # ASSERT
         assert response.status_code == 200
         assert b'Record was successfully deleted.' in response.data
         deleted_review = db.session.get(Review, review_id)
