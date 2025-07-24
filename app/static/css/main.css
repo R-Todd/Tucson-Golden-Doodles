@@ -62,10 +62,11 @@ h1, h2, h3, h4, h5, h6 {
 .carousel-image {
     width: 100%;
     height: 450px; /* Fixed height for carousel images, adjust as needed */
-    object-fit: cover; /* Ensures images fill the frame and are cropped if necessary */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
     border: none; /* Ensure no border on images within carousel */
     box-shadow: none; /* Ensure no extra shadow on images within carousel */
+    background-color: #f8f9fa; /* Optional: Add a light background for letterboxing */
 }
 
 /* Adjust carousel controls for better visibility if needed */
@@ -116,10 +117,11 @@ h1, h2, h3, h4, h5, h6 {
 .alternate-preview-thumbnail {
     width: 100%;
     height: 90px; /* Small uniform size for previews */
-    object-fit: cover; /* Ensure images fill their space */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
     border: 1px solid #ddd; /* Subtle border for each thumbnail */
     transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    background-color: #ffffff; /* Optional: Add a background for letterboxing */
 }
 
 .alternate-preview-thumbnail:hover {
@@ -168,11 +170,13 @@ h1, h2, h3, h4, h5, h6 {
 .puppy-thumbnail {
     width: 120px; /* Uniform sizing, adjust as needed */
     height: 120px; /* Square images */
-    object-fit: cover; /* Ensures images are cropped to fit */
+    object-fit: contain; /* Ensures the full image is visible without cropping */
+    object-position: center; /* Ensures the image is centered */
     border-radius: 5px;
     border: 2px solid transparent;
     transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background-color: #ffffff; /* Optional: Add a background for letterboxing */
 }
 
 .puppy-thumbnail:hover {
