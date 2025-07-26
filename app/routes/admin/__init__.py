@@ -12,7 +12,8 @@ bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 admin = Admin(
     name='Tucson Golden Doodles Admin',
     #template_mode='bootstrap3',
-    index_view=MyAdminIndexView(url='/admin')
+    index_view=MyAdminIndexView(url='/admin'),
+    base_template='admin/base_admin.html'
 )
 
 # This import must come AFTER the admin object is defined.

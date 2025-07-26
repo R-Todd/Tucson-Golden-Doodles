@@ -9,6 +9,7 @@ from app.models import (
 )
 from app.utils.image_uploader import upload_image, RESPONSIVE_SIZES # Import the uploader
 from werkzeug.datastructures import FileStorage
+import mimetypes
 
 # --- AWS S3 Configuration ---
 S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
@@ -33,8 +34,14 @@ def upload_seed_image(filename, folder='general', create_responsive=False):
     print(f"Uploading {filename} to S3 in folder '{folder}'...")
     try:
         with open(local_file_path, 'rb') as f:
-            # Wrap the file in FileStorage to mimic a Flask upload
-            file_storage = FileStorage(f, filename=filename)
+            # Manually determine the content type
+            content_type, _ = mimetypes.guess_type(local_file_path)
+            if content_type is None:
+                content_type = 'application/octet-stream' # A generic fallback
+
+            # Wrap the file in FileStorage, now with the correct content_type
+            file_storage = FileStorage(f, filename=filename, content_type=content_type)
+            
             # Use the main application's uploader
             return upload_image(file_storage, folder=folder, create_responsive_versions=create_responsive)
     except Exception as e:
