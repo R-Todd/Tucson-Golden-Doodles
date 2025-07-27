@@ -2,13 +2,12 @@
 {% extends 'admin/model/edit.html' %}
 
 {#
-  The logic for adding 'data-current-image' has been moved to the
-  ParentAdminView in parent_views.py. This template is now much cleaner
-  and only responsible for displaying the form and the associated litters.
+  The complex logic has been removed from this template.
+  The ParentAdminView in parent_views.py now handles preparing the form.
 #}
 
 {% block edit_form %}
-    {# This renders the form as prepared by the ParentAdminView #}
+    {# This renders the form correctly, with the image data prepared by the view #}
     {{ super() }}
 
     {# The "Associated Litters" section remains unchanged #}
