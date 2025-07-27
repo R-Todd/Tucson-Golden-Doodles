@@ -1,3 +1,5 @@
+# tests/test_admin.py
+
 import io
 from unittest.mock import patch
 from flask import url_for
@@ -17,10 +19,8 @@ class TestAdminFunctionality:
         )
 
     # --- Authentication and Authorization Tests ---
-    # (These tests are unchanged)
     def test_admin_login_and_logout(self, client, db):
-        admin_user = User(username='admin')
-        admin_user.set_password('password123')
+        admin_user = User(username='admin'); admin_user.set_password('password123')
         db.session.add(SiteMeta(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
@@ -54,15 +54,15 @@ class TestAdminFunctionality:
         assert response.status_code == 200
         soup = BeautifulSoup(html, 'html.parser')
         
-        # --- REVERTED: Use 'mom' as the field name ---
-        mom_select = soup.find('select', {'name': 'mom'})
+        # FIX: Use 'mom_id' as the field name
+        mom_select = soup.find('select', {'name': 'mom_id'})
         assert mom_select is not None, "Mother dropdown not found"
         mom_options_text = [option.text for option in mom_select.find_all('option')]
         assert 'Luna' in mom_options_text and 'Bella' in mom_options_text
         assert 'Archie' not in mom_options_text
 
-        # --- REVERTED: Use 'dad' as the field name ---
-        dad_select = soup.find('select', {'name': 'dad'})
+        # FIX: Use 'dad_id' as the field name
+        dad_select = soup.find('select', {'name': 'dad_id'})
         assert dad_select is not None, "Father dropdown not found"
         dad_options_text = [option.text for option in dad_select.find_all('option')]
         assert 'Archie' in dad_options_text and 'Rocky' in dad_options_text
@@ -83,9 +83,9 @@ class TestAdminFunctionality:
                 'name': 'Test Puppy',
                 'birth_date': '2025-07-21',
                 'status': 'AVAILABLE',
-                # --- REVERTED: Use 'mom' and 'dad' as form field keys ---
-                'mom': mom.id,
-                'dad': dad.id,
+                # FIX: Use 'mom_id' and 'dad_id' as form field keys
+                'mom_id': mom.id,
+                'dad_id': dad.id,
                 'image_upload': fake_image
             },
             content_type='multipart/form-data',
@@ -110,9 +110,9 @@ class TestAdminFunctionality:
                 'name': '',
                 'birth_date': '2025-07-21',
                 'status': 'AVAILABLE',
-                # --- REVERTED: Use 'mom' and 'dad' as form field keys ---
-                'mom': mom.id,
-                'dad': dad.id,
+                # FIX: Use 'mom_id' and 'dad_id' as form field keys
+                'mom_id': mom.id,
+                'dad_id': dad.id,
             },
             follow_redirects=True
         )
@@ -120,7 +120,6 @@ class TestAdminFunctionality:
         assert b'This field is required.' in response.data
 
     # --- Parent CRUD and Validation Tests ---
-    # (These tests are unchanged)
     @patch('app.routes.admin.views.parent_views.upload_image')
     def test_edit_parent_record(self, mock_upload, client, db):
         admin_user = User(username='admin'); admin_user.set_password('pw')
