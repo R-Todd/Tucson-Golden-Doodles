@@ -2,19 +2,19 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-from .views import MyAdminIndexView
+# --- THIS IS THE FIX ---
+# Import directly from the 'base' module instead of the 'views' package
+# to prevent a circular dependency during initialization.
+from .views.base import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# Initialize the Flask-Admin extension
-# We're telling Flask-Admin to use the Bootstrap 4 template mode,
-# which is much more modern and will fix the core layout issues.
+# The `admin` object is now created without triggering the import of all other views.
 admin = Admin(
     name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap4',  # <-- added line for admin header
-    index_view=MyAdminIndexView(url='/admin'),
-    base_template='admin/base_admin.html'
+    index_view=MyAdminIndexView(url='/admin')
 )
 
 # This import must come AFTER the admin object is defined.
+# The 'routes' module will then safely import all the necessary views.
 from . import routes
