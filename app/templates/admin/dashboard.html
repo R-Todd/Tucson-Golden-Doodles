@@ -4,7 +4,8 @@
 {# This block injects our custom stylesheet into the page head #}
 {% block head_css %}
     {{ super() }}
-    <link href="{{ url_for('static', filename='css/admin_custom.css') }}" rel="stylesheet">
+    {# --- THIS IS THE CHANGE --- #}
+    <link href="{{ url_for('static', filename='css/admin/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
 
 

@@ -1,0 +1,23 @@
+/* app/static/css/style.css */
+
+/* --- GENERAL STYLING --- */
+body {
+    font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa; /* Lighter background */
+    color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif; /* Decorative serif for headings */
+    color: #343a40; /* Darker text for headings */
+}
+
+/* --- IMPORTS --- */
+/* Import page-specific styles */
+@import url("pages/parents.css");
+
+/* You can add component imports here later, e.g.: */
+/* @import url("components/_buttons.css"); */

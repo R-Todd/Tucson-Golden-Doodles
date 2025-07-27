@@ -1,21 +1,4 @@
-/* app/static/css/main.css */
-
-/* --- GENERAL STYLING NOTES --- */
-body {
-    font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background: #f8f9fa; /* Lighter background */
-    color: #333;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #343a40; /* Darker text for headings */
-}
-
-/* --- PARENTS PAGE SPECIFIC STYLING --- */
+/* app/static/css/pages/parents.css */
 
 /* Parent Name Banner */
 .parent-name-banner {
@@ -39,12 +22,6 @@ h1, h2, h3, h4, h5, h6 {
 .parent-layout-container {
     display: flex; /* Use flexbox for equal columns */
     flex-wrap: wrap; /* Allows columns to wrap on smaller screens */
-}
-
-.parent-image-column,
-.parent-info-column {
-    /* Bootstrap's col-md-6 already handles 50% width on medium screens and above */
-    /* Add padding/margin as needed, `g-4` on the row handles column gap */
 }
 
 /* Parent Carousel Styling (replaces Main Image styling) */
@@ -146,21 +123,6 @@ h1, h2, h3, h4, h5, h6 {
 .past-puppies-thumbnails-row {
     margin-top: 20px;
     padding: 10px 0; /* Some vertical padding for the scroll area */
-    /* Add a subtle scrollbar styling if desired for webkit browsers */
-    &::-webkit-scrollbar {
-        height: 8px;
-    }
-    &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
 }
 
 .puppy-thumbnail-wrapper {
