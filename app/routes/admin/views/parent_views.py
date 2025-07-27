@@ -8,6 +8,9 @@ from app.models import ParentRole
 from app.utils.image_uploader import upload_image
 
 class ParentAdminView(AdminModelView):
+    # NEW: Specify the custom template for the edit page
+    edit_template = 'admin/parent_edit.html'
+
     form_extra_fields = {
         'image_upload': FileField('Upload New Main Image'),
         # New: Add FileFields for 4 alternate images

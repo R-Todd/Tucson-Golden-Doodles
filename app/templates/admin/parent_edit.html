@@ -1,10 +1,34 @@
-{# r-todd/tucson-golden-doodles/Tucson-Golden-Doodles-Syle-and-Design/app/templates/admin/parent_edit.html #}
 {% extends 'admin/model/edit.html' %}
 
 {% block edit_form %}
+    {#
+      This block adds the `data-current-image` attribute to the file upload fields.
+      The `{{ ... or '' }}` syntax is a Jinja2 trick to execute the .update() method
+      (which returns nothing) without printing "None" into the HTML. This avoids
+      the need for the {% do %} extension.
+    #}
+    {% if model %}
+        {% if model.main_image_url %}
+            {{ form.image_upload.render_kw.update({'data-current-image': model.main_image_url}) or '' }}
+        {% endif %}
+        {% if model.alternate_image_url_1 %}
+            {{ form.alternate_image_upload_1.render_kw.update({'data-current-image': model.alternate_image_url_1}) or '' }}
+        {% endif %}
+        {% if model.alternate_image_url_2 %}
+            {{ form.alternate_image_upload_2.render_kw.update({'data-current-image': model.alternate_image_url_2}) or '' }}
+        {% endif %}
+        {% if model.alternate_image_url_3 %}
+            {{ form.alternate_image_upload_3.render_kw.update({'data-current-image': model.alternate_image_url_3}) or '' }}
+        {% endif %}
+        {% if model.alternate_image_url_4 %}
+            {{ form.alternate_image_upload_4.render_kw.update({'data-current-image': model.alternate_image_url_4}) or '' }}
+        {% endif %}
+    {% endif %}
+
+    {# Now, render the form using the default mechanism. #}
     {{ super() }}
 
-    {# Add our custom litter display section, only for existing records #}
+    {# The rest of this file displays the "Associated Litters" table and is unchanged. #}
     {% if model and model.id %}
         <hr>
         <div class="row">
@@ -24,7 +48,6 @@
                                 <td>
                                     <strong>
                                         Litter with:
-                                        {# Dynamically show the OTHER parent's name #}
                                         {% if model.role.name == 'DAD' %}
                                             {{ mom.name }} (Mom)
                                         {% else %}
@@ -40,7 +63,6 @@
                                     <ul class="list-unstyled mb-0">
                                         {% for puppy in puppies %}
                                         <li>
-                                            {# Provide a convenient link to edit the puppy directly #}
                                             <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
                                             - Status: {{ puppy.status.value }}
                                         </li>
