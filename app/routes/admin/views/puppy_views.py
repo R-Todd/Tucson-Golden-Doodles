@@ -1,66 +1,82 @@
-# app/routes/admin/views/puppy_views.py
+# app/routes/admin/views/parent_views.py
 
 from flask import request
-from flask_admin.contrib.sqla.fields import QuerySelectField
-from wtforms import Form, StringField, DateField
-from wtforms.fields import SelectField, FileField
-from wtforms.validators import DataRequired
-from wtforms.widgets import Select # Import Select widget <--- NEW IMPORT
+from wtforms import SelectField
+from wtforms.fields import FileField
 from .base import AdminModelView
-from app.models import Parent, ParentRole, PuppyStatus
+from app.models import ParentRole
 from app.utils.image_uploader import upload_image
 
-# Define a custom form for Puppy model
-class PuppyForm(Form):
-    """
-    Custom form for the Puppy model to explicitly define fields,
-    especially QuerySelectFields for parent relationships.
-    """
-    name = StringField('Name', validators=[DataRequired(message="This field is required.")])
-    birth_date = DateField('Birth Date', format='%Y-%m-%d', validators=[DataRequired(message="This field is required.")])
+class ParentAdminView(AdminModelView):
+    # Use the custom edit template
+    edit_template = 'admin/parent_edit.html'
 
-    mom = QuerySelectField(
-        'Mother',
-        query_factory=lambda: Parent.query.filter_by(role=ParentRole.MOM).all(),
-        get_label='name', # Explicitly ensures 4-tuple (value, label, selected, render_kw)
-        allow_blank=False, # Make selection mandatory
-        blank_text='-- Select Mother --',
-        validators=[DataRequired(message="Please select a mother.")],
-        widget=Select() # Explicitly use the basic Select widget <--- NEW LINE
-    )
-    dad = QuerySelectField(
-        'Father',
-        query_factory=lambda: Parent.query.filter_by(role=ParentRole.DAD).all(),
-        get_label='name', # Explicitly ensures 4-tuple (value, label, selected, render_kw)
-        allow_blank=False, # Make selection mandatory
-        blank_text='-- Select Father --',
-        validators=[DataRequired(message="Please select a father.")],
-        widget=Select() # Explicitly use the basic Select widget <--- NEW LINE
-    )
-    status = SelectField(
-        'Status',
-        choices=[(s.name, s.value) for s in PuppyStatus],
-        coerce=lambda x: PuppyStatus[x] if isinstance(x, str) else x,
-        validators=[DataRequired(message="This field is required.")]
-    )
-    image_upload = FileField('Upload New Main Image')
+    form_extra_fields = {
+        'image_upload': FileField('Upload New Main Image'),
+        'alternate_image_upload_1': FileField('Upload Alternate Image 1'),
+        'alternate_image_upload_2': FileField('Upload Alternate Image 2'),
+        'alternate_image_upload_3': FileField('Upload Alternate Image 3'),
+        'alternate_image_upload_4': FileField('Upload Alternate Image 4'),
+    }
+    form_overrides = { 'role': SelectField }
+    form_args = {
+        'role': {
+            'label': 'Role',
+            'choices': [(role.name, role.value) for role in ParentRole],
+            'coerce': lambda x: ParentRole[x] if isinstance(x, str) else x
+        }
+    }
 
+    def edit_form(self, obj=None):
+        """
+        Override the edit_form method to add current image data to the form fields.
+        This is the correct place to inject attributes before the template renders.
+        """
+        form = super(ParentAdminView, self).edit_form(obj)
 
-class PuppyAdminView(AdminModelView):
-    """ Custom view for the Puppy model, using a dedicated form. """
-    
-    # Point Flask-Admin to use the custom PuppyForm
-    form = PuppyForm 
+        if obj: # Ensure we are editing an existing object
+            # A mapping of form fields to the corresponding model URL attributes
+            image_fields = {
+                'image_upload': obj.main_image_url,
+                'alternate_image_upload_1': obj.alternate_image_url_1,
+                'alternate_image_upload_2': obj.alternate_image_url_2,
+                'alternate_image_upload_3': obj.alternate_image_url_3,
+                'alternate_image_upload_4': obj.alternate_image_url_4,
+            }
 
-    # form_columns can still be used to control the display order of fields
-    form_columns = [
-        'name', 'birth_date', 'status', 'mom', 'dad', 'image_upload'
-    ]
-    
+            for field_name, image_url in image_fields.items():
+                if hasattr(form, field_name) and image_url:
+                    field = getattr(form, field_name)
+                    # Initialize render_kw if it's None
+                    if field.render_kw is None:
+                        field.render_kw = {}
+                    # Add the data attribute for our JavaScript to use
+                    field.render_kw['data-current-image'] = image_url
+
+        return form
+
     def on_model_change(self, form, model, is_created):
-        """ Handle image upload when a Puppy record is saved. """
-        file = request.files.get('image_upload')
-        if file:
-            image_url = upload_image(file, folder='puppies')
-            if image_url:
-                model.main_image_url = image_url
+        # ... (this method remains unchanged) ...
+        main_file = request.files.get('image_upload')
+        if main_file and main_file.filename:
+            image_urls = upload_image(main_file, folder='parents', create_responsive_versions=True)
+            if image_urls:
+                model.main_image_url = image_urls.get('original')
+                model.main_image_url_small = image_urls.get('small')
+                model.main_image_url_medium = image_urls.get('medium')
+                model.main_image_url_large = image_urls.get('large')
+
+        alternate_fields = [
+            'alternate_image_upload_1', 'alternate_image_upload_2',
+            'alternate_image_upload_3', 'alternate_image_upload_4'
+        ]
+        alternate_url_columns = [
+            'alternate_image_url_1', 'alternate_image_url_2',
+            'alternate_image_url_3', 'alternate_image_url_4'
+        ]
+        for i, field_name in enumerate(alternate_fields):
+            alternate_file = request.files.get(field_name)
+            if alternate_file and alternate_file.filename:
+                alternate_image_url = upload_image(alternate_file, folder='parents_alternates')
+                if alternate_image_url:
+                    setattr(model, alternate_url_columns[i], alternate_image_url)

@@ -2,17 +2,19 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-# This now needs to import from the new views package
-from .views import MyAdminIndexView
+# --- THIS IS THE FIX ---
+# Import MyAdminIndexView directly from its source file (.views.base)
+# to break the circular dependency.
+from .views.base import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# -- ---
-# The `base_template` argument has been removed.
+# Initialize the Flask-Admin extension with your settings
 admin = Admin(
     name='Tucson Golden Doodles Admin',
-    #template_mode='bootstrap3',
-    index_view=MyAdminIndexView(url='/admin')
+    template_mode='bootstrap4',
+    index_view=MyAdminIndexView(url='/admin'),
+    base_template='admin/base_admin.html'
 )
 
 # This import must come AFTER the admin object is defined.
