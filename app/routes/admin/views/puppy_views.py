@@ -2,8 +2,6 @@
 
 from flask import request
 from wtforms.fields import FileField, SelectField
-from wtforms.widgets import Select # <-- Import the basic widget
-from flask_admin.contrib.sqla.fields import QuerySelectField
 from .base import AdminModelView
 from app.models import Parent, ParentRole, PuppyStatus
 from app.utils.image_uploader import upload_image
@@ -27,35 +25,48 @@ class PuppyAdminView(AdminModelView):
     }
 
     form_overrides = {
-        'mom': QuerySelectField,
-        'dad': QuerySelectField,
+        'mom': SelectField,
+        'dad': SelectField,
         'status': SelectField
     }
     
-    # This is the crucial part of the fix
     form_args = {
-        'mom': {
-            'label': 'Mother',
-            'query_factory': lambda: Parent.query.filter_by(role=ParentRole.MOM).all(),
-            'allow_blank': False,
-            'widget': Select() # Force the use of the standard widget
-        },
-        'dad': {
-            'label': 'Father',
-            'query_factory': lambda: Parent.query.filter_by(role=ParentRole.DAD).all(),
-            'allow_blank': False,
-            'widget': Select() # Force the use of the standard widget
-        },
         'status': {
             'label': 'Status',
             'choices': [(s.name, s.value) for s in PuppyStatus],
             'coerce': lambda x: PuppyStatus[x] if isinstance(x, str) else x,
-            'widget': Select() # Force the use of the standard widget
+        },
+        'mom': {
+            'label': 'Mother',
+            'coerce': int,
+            # --- THIS LINE IS REMOVED ---
+            # 'allow_blank': False 
+        },
+        'dad': {
+            'label': 'Father',
+            'coerce': int,
+            # --- THIS LINE IS REMOVED ---
+            # 'allow_blank': False
         }
     }
 
+    def _get_parent_choices(self, role):
+        """Helper method to get parents for dropdowns."""
+        return [(p.id, p.name) for p in Parent.query.filter_by(role=role).order_by(Parent.name).all()]
+
+    def create_form(self):
+        """Dynamically set choices for mom and dad dropdowns on the create form."""
+        form = super(PuppyAdminView, self).create_form()
+        form.mom.choices = self._get_parent_choices(ParentRole.MOM)
+        form.dad.choices = self._get_parent_choices(ParentRole.DAD)
+        return form
+
     def edit_form(self, obj=None):
+        """Dynamically set choices for mom and dad dropdowns on the edit form."""
         form = super(PuppyAdminView, self).edit_form(obj)
+        form.mom.choices = self._get_parent_choices(ParentRole.MOM)
+        form.dad.choices = self._get_parent_choices(ParentRole.DAD)
+        
         if obj and obj.main_image_url:
             if form.image_upload.render_kw is None:
                 form.image_upload.render_kw = {}

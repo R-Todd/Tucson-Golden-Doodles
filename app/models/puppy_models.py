@@ -6,7 +6,7 @@ from .parent_models import Parent
 # Puppies from litters
 class Puppy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100)) # e.g., "Blue Collar Male"
+    name = db.Column(db.String(100), nullable=False) # e.g., "Blue Collar Male"
     birth_date = db.Column(db.Date, nullable=False)
     status = db.Column(db.Enum(PuppyStatus), nullable=False, default=PuppyStatus.AVAILABLE)
     dad_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
