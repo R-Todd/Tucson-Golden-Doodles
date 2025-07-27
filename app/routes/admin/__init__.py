@@ -2,17 +2,17 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-from .views.base import MyAdminIndexView
+from .views.base import MyAdminIndexView # Keep this import, though not used in simplified Admin init
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# Initialize the Flask-Admin extension with your settings
-# 'template_mode' is supported in Flask-Admin 2.0.0a4 and later
+# Initialize the Flask-Admin extension with bare minimum parameters.
+# If this still causes a TypeError, it indicates a very fundamental problem.
 admin = Admin(
     name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap4', # This argument requires Flask-Admin 2.x
-    index_view=MyAdminIndexView(url='/admin'),
-    base_template='admin/base_admin.html'
+    # template_mode='bootstrap4', # Removed in previous step
+    # index_view=MyAdminIndexView(url='/admin'), # Temporarily removed
+    # base_template='admin/base_admin.html' # Temporarily removed
 )
 
 # This import must come AFTER the admin object is defined.
