@@ -13,7 +13,7 @@ class Puppy(db.Model):
     mom_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
     main_image_url = db.Column(db.String(255))
 
-    # --- THIS IS THE FIX ---
+    
     # Explicitly define the relationships to the Parent model.
     # This makes them discoverable by Flask-Admin during startup.
     mom = db.relationship('Parent', foreign_keys=[mom_id], back_populates='litters_as_mom')
