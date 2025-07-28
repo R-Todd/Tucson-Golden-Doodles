@@ -46,7 +46,11 @@
                         <span class="badge rounded-pill bg-success fs-6">{{ puppy.status.value }}</span>
                     </div>
                     <div class="card-footer">
-                        <small class="text-muted">Parents: {{ puppy.mom.name }} & {{ puppy.dad.name }}</small>
+                        <small class="text-muted">
+                            Parents: 
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> &amp; 
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.dad.id }}">{{ puppy.dad.name }}</a>
+                        </small>
                     </div>
                 </div>
             </div>

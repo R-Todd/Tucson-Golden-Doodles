@@ -9,7 +9,8 @@
 
     {% if litters %}
         {% for (birth_date, mom, dad), puppies_in_litter in litters.items() %}
-        <div class="card shadow-sm mb-5">
+        {# ADD THE ID ATTRIBUTE TO THIS CARD #}
+        <div class="card shadow-sm mb-5" id="litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
             <div class="card-header bg-light">
                 <h2 class="h4 mb-0">
                     Litter from <strong>{{ mom.name }}</strong> &amp; <strong>{{ dad.name }}</strong>
