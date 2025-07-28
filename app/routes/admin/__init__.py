@@ -2,18 +2,27 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-from .views.base import MyAdminIndexView # Keep this import, though not used in simplified Admin init
+from .views.base import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# Initialize the Flask-Admin extension with bare minimum parameters.
-# If this still causes a TypeError, it indicates a very fundamental problem.
-admin = Admin(
-    name='Tucson Golden Doodles Admin',
-    # template_mode='bootstrap4', # Removed in previous step
-    # index_view=MyAdminIndexView(url='/admin'), # Temporarily removed
-    # base_template='admin/base_admin.html' # Temporarily removed
+# 1. Create the custom index view for your dashboard
+index_view = MyAdminIndexView(
+    name='Dashboard',
+    template='admin/dashboard.html',
+    url='/admin'
 )
 
-# This import must come AFTER the admin object is defined.
+# 2. Initialize the Admin object, passing it the custom index view
+admin = Admin(
+    name='Tucson Golden Doodles Admin',
+    index_view=index_view,
+    url='/'
+)
+
+# 3. Set the base_template on the created instance
+# This is the key step to make your custom layout load.
+admin.base_template = 'admin/base_admin.html'
+
+# This import must come AFTER the admin object is defined
 from . import routes
