@@ -10,6 +10,7 @@ from app.utils.image_uploader import upload_image
 
 class ParentAdminView(AdminModelView):
     edit_template = 'admin/parent_edit.html'
+    column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian'] # Add is_guardian here
 
     form_extra_fields = {
         'image_upload': FileField('Upload New Main Image'),

@@ -2,20 +2,27 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-# --- THIS IS THE FIX ---
-# Import MyAdminIndexView directly from its source file (.views.base)
-# to break the circular dependency.
 from .views.base import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# Initialize the Flask-Admin extension with your settings
-admin = Admin(
-    name='Tucson Golden Doodles Admin',
-    template_mode='bootstrap4',
-    index_view=MyAdminIndexView(url='/admin'),
-    base_template='admin/base_admin.html'
+# 1. Create the custom index view for your dashboard
+index_view = MyAdminIndexView(
+    name='Dashboard',
+    template='admin/dashboard.html',
+    url='/admin'
 )
 
-# This import must come AFTER the admin object is defined.
+# 2. Initialize the Admin object, passing it the custom index view
+admin = Admin(
+    name='Tucson Golden Doodles Admin',
+    index_view=index_view,
+    url='/'
+)
+
+# 3. Set the base_template on the created instance
+# This is the key step to make your custom layout load.
+admin.base_template = 'admin/base_admin.html'
+
+# This import must come AFTER the admin object is defined
 from . import routes

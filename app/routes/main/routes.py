@@ -1,7 +1,7 @@
 from flask import render_template
 from app.routes.main import bp
 from app.models import (
-    HeroSection, AboutSection, Puppy, Review, GalleryImage, PuppyStatus
+    HeroSection, AboutSection, Puppy, Review, GalleryImage, PuppyStatus, Parent
 )
 
 @bp.route('/')
@@ -13,10 +13,12 @@ def index():
     available_puppies = Puppy.query.filter_by(status=PuppyStatus.AVAILABLE).order_by(Puppy.birth_date.desc()).all()
     featured_reviews = Review.query.filter_by(is_featured=True).order_by(Review.id.desc()).all()
     gallery_images = GalleryImage.query.order_by(GalleryImage.sort_order).all()
+    guardian_parents = Parent.query.filter_by(is_guardian=True).all()
 
     return render_template('index.html', title='Home',
                            hero=hero_data,
                            about=about_data,
                            puppies=available_puppies,
                            reviews=featured_reviews,
-                           gallery_images=gallery_images)
+                           gallery_images=gallery_images,
+                           guardian_parents=guardian_parents)
