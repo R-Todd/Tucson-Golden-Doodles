@@ -55,3 +55,25 @@ def test_homepage_empty_state(client, db):
     assert response.status_code == 200
     assert b"We don't have any available puppies at the moment" in response.data
     assert b"What Our Families Say" not in response.data
+
+def test_homepage_guardian_parents_section(client, db):
+    """
+    GIVEN a Flask application
+    WHEN the homepage is requested and there are guardian parents
+    THEN check that only guardian parents are displayed in the correct section
+    """
+    # Create one guardian parent and one regular parent
+    guardian_parent = Parent(name='GuardianDog', role=ParentRole.MOM, is_guardian=True, description='A guardian parent')
+    regular_parent = Parent(name='RegularDog', role=ParentRole.DAD, is_guardian=False, description='A regular parent')
+    db.session.add_all([guardian_parent, regular_parent])
+    db.session.commit()
+
+    response = client.get('/')
+    assert response.status_code == 200
+    
+    # Check that the "Guardian Parents" title and the guardian dog's name are present
+    assert b'Guardian Parents' in response.data
+    assert b'GuardianDog' in response.data
+    
+    # Check that the regular (non-guardian) dog's name is not present
+    assert b'RegularDog' not in response.data

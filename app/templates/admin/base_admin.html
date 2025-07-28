@@ -11,9 +11,16 @@
   {{ super() }}  {# Includes default links like Logout #}
   <ul class="nav navbar-nav navbar-right">
     <li>
-      <a href="{{ url_for('main.index') }}">Back to Main Site</a>
+      {# This is the "Return to Home" button we worked on #}
+      <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary ms-2">Return to Home</a>
     </li>
   </ul>
+{% endblock %}
+
+{# This block is where you will add the link to your custom CSS #}
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
 {% endblock %}
 
 {#  This block renders flash messages, including form errors, #}

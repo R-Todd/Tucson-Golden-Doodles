@@ -7,8 +7,8 @@
 
     {% if parents %}
         {% for parent in parents %}
-        {# Name Banner #}
-        <div class="parent-name-banner" style="background-color: #79868f;"> {# Muted background bar #}
+        {# Name Banner - ADD THE ID ATTRIBUTE HERE #}
+        <div class="parent-name-banner" id="parent-{{ parent.id }}" style="background-color: #79868f;"> {# Muted background bar #}
             <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1> {# Large, all-caps serif, white, centered #}
         </div>
 
@@ -109,8 +109,6 @@
 
                     {% if has_previews %}
                     <div class="alternate-previews mt-4">
-                        <p style="color: red;">DEBUG: Alternate Image 1 URL for Preview: {{ parent.alternate_image_url_1 }}</p>
-                        <p style="color: red;">DEBUG: Has Previews: {{ has_previews }}</p>
                         <h6>Image Gallery</h6>
                         <div class="row row-cols-2 row-cols-lg-4 g-2 justify-content-start"> {# justify-content-start for left alignment #}
                             {% for img_url in alternate_previews %}
@@ -140,8 +138,9 @@
                     {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
                         {% for puppy in puppies %}
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
-                            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ puppy.dad.id }}-{{ puppy.mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                <img src="{{ puppy.main_image_url }}" class="img-fluid puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                            {# UPDATE THIS LINK TO POINT TO THE LITTER ANCHOR #}
+                            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
+                                <img src="{{ puppy.main_image_url }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
                         {% endfor %}

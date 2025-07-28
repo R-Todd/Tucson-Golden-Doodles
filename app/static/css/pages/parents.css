@@ -109,26 +109,26 @@
 
 /* "Past Puppies" Section Header */
 .past-puppies-header {
-    margin-top: 80px; /* Generous top margin to separate it */
+    margin-top: 80px;
+    /* ... */
 }
 
 .past-puppies-header h2 {
-    font-family: 'Playfair Display', serif; /* Decorative serif font */
-    text-transform: uppercase; /* All-caps or small-caps */
-    letter-spacing: 3px; /* Extra letter spacing */
-    font-size: 2.2rem;
+    font-family: 'Playfair Display', serif;
+    /* ... */
 }
 
 /* Past Puppies Thumbnails Row */
 .past-puppies-thumbnails-row {
     margin-top: 20px;
-    padding: 10px 0; /* Some vertical padding for the scroll area */
+    padding: 10px 0;
 }
 
 .puppy-thumbnail-wrapper {
-    /* Small gaps handled by Bootstrap's p-2, but can be adjusted here if needed */
+    /* ... */
 }
 
+/* This is the CORRECT style for the puppy thumbnails */
 .puppy-thumbnail {
     width: 120px; /* Uniform sizing, adjust as needed */
     height: 120px; /* Square images */
