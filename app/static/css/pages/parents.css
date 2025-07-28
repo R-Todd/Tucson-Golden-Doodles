@@ -128,24 +128,7 @@
     /* ... */
 }
 
-/* This is the style that fixes the image size */
-.puppy-thumbnail {
-    width: 20px; /* Uniform sizing, adjust as needed */
-    height: 20px; /* Square images */
-    object-fit: contain; /* Ensures the full image is visible without cropping */
-    object-position: center; /* Ensures the image is centered */
-    border-radius: 5px;
-    border: 2px solid transparent;
-    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    background-color: #ffffff;
-}
-
-.puppy-thumbnail:hover {
-    transform: scale(1.08);
-    border-color: #007bff;
-}
-
+/* This is the CORRECT style for the puppy thumbnails */
 .puppy-thumbnail {
     width: 120px; /* Uniform sizing, adjust as needed */
     height: 120px; /* Square images */

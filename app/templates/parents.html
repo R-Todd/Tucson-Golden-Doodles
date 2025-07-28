@@ -109,8 +109,6 @@
 
                     {% if has_previews %}
                     <div class="alternate-previews mt-4">
-                        <p style="color: red;">DEBUG: Alternate Image 1 URL for Preview: {{ parent.alternate_image_url_1 }}</p>
-                        <p style="color: red;">DEBUG: Has Previews: {{ has_previews }}</p>
                         <h6>Image Gallery</h6>
                         <div class="row row-cols-2 row-cols-lg-4 g-2 justify-content-start"> {# justify-content-start for left alignment #}
                             {% for img_url in alternate_previews %}
@@ -142,7 +140,7 @@
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
                             {# UPDATE THIS LINK TO POINT TO THE LITTER ANCHOR #}
                             <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                <img src="{{ puppy.main_image_url }}" class="img-fluid puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                                <img src="{{ puppy.main_image_url }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
                         {% endfor %}
