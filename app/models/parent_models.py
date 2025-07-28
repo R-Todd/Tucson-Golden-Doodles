@@ -21,6 +21,7 @@ class Parent(db.Model):
     main_image_url_large = db.Column(db.String(255))
 
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_guardian = db.Column(db.Boolean, default=False, nullable=False)
 
     # New: Add fields for 4 alternate images
     alternate_image_url_1 = db.Column(db.String(255))

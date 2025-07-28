@@ -60,6 +60,26 @@
     </section>
     <hr class="my-5">
 
+    {% if guardian_parents %}
+    <section id="guardian-parents" class="my-5 text-center">
+        <h2 class="display-5 mb-4">Guardian Parents</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for parent in guardian_parents %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ parent.main_image_url }}" class="card-img-top" alt="Photo of {{ parent.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ parent.name }}</h5>
+                        <p class="card-text">{{ parent.breed }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <hr class="my-5">
+    {% endif %}
+
     {% if reviews %}
     <section id="testimonials" class="my-5">
         <h2 class="display-5 text-center mb-4">What Our Families Say</h2>
