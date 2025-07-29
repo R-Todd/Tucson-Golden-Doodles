@@ -39,11 +39,11 @@
 .carousel-image {
     width: 100%;
     height: 450px; /* Fixed height for carousel images, adjust as needed */
-    object-fit: contain; /* Ensures the full image is visible without cropping */
+    object-fit: cover; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
     border: none; /* Ensure no border on images within carousel */
     box-shadow: none; /* Ensure no extra shadow on images within carousel */
-    background-color: #f8f9fa; /* Optional: Add a light background for letterboxing */
+    background-color: transparent; /* Optional: Add a light background for letterboxing */
 }
 
 /* Adjust carousel controls for better visibility if needed */
@@ -94,11 +94,11 @@
 .alternate-preview-thumbnail {
     width: 100%;
     height: 90px; /* Small uniform size for previews */
-    object-fit: contain; /* Ensures the full image is visible without cropping */
+    object-fit: cover; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
     border: 1px solid #ddd; /* Subtle border for each thumbnail */
     transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    background-color: #ffffff; /* Optional: Add a background for letterboxing */
+    /*background-color: #ffffff; /* Optional: Add a background for letterboxing */
 }
 
 .alternate-preview-thumbnail:hover {
@@ -168,4 +168,27 @@
     .parent-name-banner h1 {
         font-size: 2rem; /* Adjust banner font for mobile */
     }
+}
+
+/* New Litter Banner for Past Puppies */
+.litter-banner {
+    text-align: center;
+    padding: 8px 12px;
+    background-color: #e9ecef; /* A light grey, similar to card headers */
+    border-radius: 5px;
+    margin-top: 25px; /* Add space above each new litter banner */
+    font-size: 1.1rem;
+    border: 1px solid #dee2e6;
+}
+
+.litter-banner a {
+    color: #495057; /* A darker grey for text */
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease-in-out;
+}
+
+.litter-banner a:hover {
+    color: #0056b3; /* A blue on hover for interactivity */
+    text-decoration: underline;
 }
