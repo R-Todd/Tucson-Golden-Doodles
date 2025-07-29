@@ -1,21 +1,4 @@
-/* app/static/css/main.css */
-
-/* --- GENERAL STYLING NOTES --- */
-body {
-    font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background: #f8f9fa; /* Lighter background */
-    color: #333;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #343a40; /* Darker text for headings */
-}
-
-/* --- PARENTS PAGE SPECIFIC STYLING --- */
+/* app/static/css/pages/parents.css */
 
 /* Parent Name Banner */
 .parent-name-banner {
@@ -41,12 +24,6 @@ h1, h2, h3, h4, h5, h6 {
     flex-wrap: wrap; /* Allows columns to wrap on smaller screens */
 }
 
-.parent-image-column,
-.parent-info-column {
-    /* Bootstrap's col-md-6 already handles 50% width on medium screens and above */
-    /* Add padding/margin as needed, `g-4` on the row handles column gap */
-}
-
 /* Parent Carousel Styling (replaces Main Image styling) */
 .parent-carousel-wrapper {
     background-color: #ffffff; /* White background for padding effect */
@@ -66,7 +43,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 5px;
     border: none; /* Ensure no border on images within carousel */
     box-shadow: none; /* Ensure no extra shadow on images within carousel */
-    background-color: #f8f9fa; /* Optional: Add a light background for letterboxing */
+    background-color: transparent; /* Optional: Add a light background for letterboxing */
 }
 
 /* Adjust carousel controls for better visibility if needed */
@@ -96,7 +73,7 @@ h1, h2, h3, h4, h5, h6 {
 .description-paragraphs p {
     line-height: 1.7; /* Adequate line height */
     margin-bottom: 1.2rem; /* Top/bottom margins */
-    text-align: justify; /* Justified text */
+    text-align: center; /* Justified text */
 }
 
 /* Alternate Image Previews (New Section) */
@@ -117,11 +94,11 @@ h1, h2, h3, h4, h5, h6 {
 .alternate-preview-thumbnail {
     width: 100%;
     height: 90px; /* Small uniform size for previews */
-    object-fit: contain; /* Ensures the full image is visible without cropping */
+    object-fit: cover; /* Ensures the full image is visible without cropping */
     border-radius: 5px;
     border: 1px solid #ddd; /* Subtle border for each thumbnail */
     transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    background-color: #ffffff; /* Optional: Add a background for letterboxing */
+    /*background-color: #ffffff; /* Optional: Add a background for letterboxing */
 }
 
 .alternate-preview-thumbnail:hover {
@@ -132,41 +109,26 @@ h1, h2, h3, h4, h5, h6 {
 
 /* "Past Puppies" Section Header */
 .past-puppies-header {
-    margin-top: 80px; /* Generous top margin to separate it */
+    margin-top: 80px;
+    /* ... */
 }
 
 .past-puppies-header h2 {
-    font-family: 'Playfair Display', serif; /* Decorative serif font */
-    text-transform: uppercase; /* All-caps or small-caps */
-    letter-spacing: 3px; /* Extra letter spacing */
-    font-size: 2.2rem;
+    font-family: 'Playfair Display', serif;
+    /* ... */
 }
 
 /* Past Puppies Thumbnails Row */
 .past-puppies-thumbnails-row {
     margin-top: 20px;
-    padding: 10px 0; /* Some vertical padding for the scroll area */
-    /* Add a subtle scrollbar styling if desired for webkit browsers */
-    &::-webkit-scrollbar {
-        height: 8px;
-    }
-    &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
+    padding: 10px 0;
 }
 
 .puppy-thumbnail-wrapper {
-    /* Small gaps handled by Bootstrap's p-2, but can be adjusted here if needed */
+    /* ... */
 }
 
+/* This is the CORRECT style for the puppy thumbnails */
 .puppy-thumbnail {
     width: 120px; /* Uniform sizing, adjust as needed */
     height: 120px; /* Square images */
@@ -206,4 +168,27 @@ h1, h2, h3, h4, h5, h6 {
     .parent-name-banner h1 {
         font-size: 2rem; /* Adjust banner font for mobile */
     }
+}
+
+/* New Litter Banner for Past Puppies */
+.litter-banner {
+    text-align: center;
+    padding: 8px 12px;
+    background-color: #e9ecef; /* A light grey, similar to card headers */
+    border-radius: 5px;
+    margin-top: 25px; /* Add space above each new litter banner */
+    font-size: 1.1rem;
+    border: 1px solid #dee2e6;
+}
+
+.litter-banner a {
+    color: #495057; /* A darker grey for text */
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease-in-out;
+}
+
+.litter-banner a:hover {
+    color: #0056b3; /* A blue on hover for interactivity */
+    text-decoration: underline;
 }

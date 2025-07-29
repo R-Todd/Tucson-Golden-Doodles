@@ -2,19 +2,23 @@
 
 from flask import Blueprint
 from flask_admin import Admin
-# This now needs to import from the new views package
-from .views import MyAdminIndexView
+from .views.base import MyAdminIndexView
 
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
-# -- ---
-# The `base_template` argument has been removed.
+# 1. Create the custom index view for your dashboard
+index_view = MyAdminIndexView(
+    name='Dashboard',
+    template='admin/dashboard.html',
+    url='/admin'
+)
+
+# 2. Initialize the Admin object, passing it the custom index view
 admin = Admin(
     name='Tucson Golden Doodles Admin',
     #template_mode='bootstrap3',
-    index_view=MyAdminIndexView(url='/admin'),
-    base_template='admin/base_admin.html'
+    index_view=MyAdminIndexView(url='/admin')
 )
 
-# This import must come AFTER the admin object is defined.
+# This import must come AFTER the admin object is defined
 from . import routes

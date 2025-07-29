@@ -7,9 +7,8 @@ from app.models import (
     User, SiteMeta, Parent, Puppy, Review, HeroSection,
     AboutSection, GalleryImage, ParentRole, PuppyStatus
 )
-from app.utils.image_uploader import upload_image, RESPONSIVE_SIZES # Import the uploader
+from app.utils.image_uploader import upload_image, RESPONSIVE_SIZES
 from werkzeug.datastructures import FileStorage
-import mimetypes
 
 # --- AWS S3 Configuration ---
 S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
@@ -34,14 +33,8 @@ def upload_seed_image(filename, folder='general', create_responsive=False):
     print(f"Uploading {filename} to S3 in folder '{folder}'...")
     try:
         with open(local_file_path, 'rb') as f:
-            # Manually determine the content type
-            content_type, _ = mimetypes.guess_type(local_file_path)
-            if content_type is None:
-                content_type = 'application/octet-stream' # A generic fallback
-
-            # Wrap the file in FileStorage, now with the correct content_type
-            file_storage = FileStorage(f, filename=filename, content_type=content_type)
-            
+            # Wrap the file in FileStorage to mimic a Flask upload
+            file_storage = FileStorage(f, filename=filename)
             # Use the main application's uploader
             return upload_image(file_storage, folder=folder, create_responsive_versions=create_responsive)
     except Exception as e:
@@ -77,7 +70,15 @@ def seed_database():
 
         # --- Homepage Content (with responsive images) ---
         hero_urls = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
+        # Check if upload was successful before proceeding
+        if hero_urls is None:
+            print("Error: Hero image upload failed. Cannot seed dependent data.")
+            return
+
         about_urls = upload_seed_image('about-us.jpg', 'about', create_responsive=True)
+        if about_urls is None:
+            print("Error: About image upload failed. Cannot seed dependent data.")
+            return
 
         hero = HeroSection(
             title='Welcome to Tucson Golden Doodles',
@@ -99,6 +100,9 @@ def seed_database():
 
         # --- Parent Dogs (with responsive images) ---
         archie_urls = upload_seed_image('archie.jpg', 'parents', create_responsive=True)
+        if archie_urls is None:
+            print("Error: Archie image upload failed. Cannot seed dependent data.")
+            return
         parent_archie = Parent(
             name='Archie', role=ParentRole.DAD, breed='F1 Mini Poodle',
             description='A gentle and intelligent sire with a beautiful apricot coat.',
@@ -111,6 +115,9 @@ def seed_database():
         )
         
         penelope_urls = upload_seed_image('penelope.jpg', 'parents', create_responsive=True)
+        if penelope_urls is None:
+            print("Error: Penelope image upload failed. Cannot seed dependent data.")
+            return
         parent_penelope = Parent(
             name='Penelope', role=ParentRole.MOM, breed='Cavalier King Charles Spaniel',
             description='A sweet and caring dam with a smooth and silky coat.',
@@ -125,15 +132,24 @@ def seed_database():
         db.session.commit()
 
         # --- Puppies (single image upload) ---
+        puppy_river_image = upload_seed_image('river.jpg', 'puppies')
+        if puppy_river_image is None:
+            print("Error: River image upload failed. Cannot seed dependent data.")
+            return
         puppy_river = Puppy(
             name='River', birth_date=date(2023, 10, 1), status=PuppyStatus.AVAILABLE,
             dad_id=parent_archie.id, mom_id=parent_penelope.id,
-            main_image_url=upload_seed_image('river.jpg', 'puppies')
+            main_image_url=puppy_river_image
         )
+        
+        puppy_benson_image = upload_seed_image('benson.jpg', 'puppies')
+        if puppy_benson_image is None:
+            print("Error: Benson image upload failed. Cannot seed dependent data.")
+            return
         puppy_benson = Puppy(
             name='Benson', birth_date=date(2023, 10, 1), status=PuppyStatus.RESERVED,
             dad_id=parent_archie.id, mom_id=parent_penelope.id,
-            main_image_url=upload_seed_image('benson.jpg', 'puppies')
+            main_image_url=puppy_benson_image
         )
         db.session.add_all([puppy_river, puppy_benson])
 

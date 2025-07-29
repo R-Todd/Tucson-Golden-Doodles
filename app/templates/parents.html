@@ -7,8 +7,8 @@
 
     {% if parents %}
         {% for parent in parents %}
-        {# Name Banner #}
-        <div class="parent-name-banner" style="background-color: #79868f;"> {# Muted background bar #}
+        {# Name Banner - ADD THE ID ATTRIBUTE HERE #}
+        <div class="parent-name-banner" id="parent-{{ parent.id }}" style="background-color: #79868f;"> {# Muted background bar #}
             <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1> {# Large, all-caps serif, white, centered #}
         </div>
 
@@ -26,7 +26,6 @@
                     {% if parent.alternate_image_url_4 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_4) %}{% endif %}
 
                     {% if all_carousel_images %}
-                    {# REMOVED data-bs-ride="carousel" from this div #}
                     <div id="parentCarousel-{{ parent.id }}" class="carousel slide parent-carousel-wrapper">
                         <div class="carousel-indicators">
                             {% for loop_index in range(all_carousel_images|length) %}
@@ -36,9 +35,7 @@
                         <div class="carousel-inner">
                             {% for img_url in all_carousel_images %}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                {# --- START: Srcset Implementation --- #}
-
-                                {# Check if this is the main image (loop.first) and if responsive versions exist. #}
+                                {# Check if this is the main image and if responsive versions exist. #}
                                 {% if loop.first and parent.main_image_url_small %}
                                     <img src="{{ parent.main_image_url_large }}"
                                          srcset="{{ parent.main_image_url_small }} 480w,
@@ -55,7 +52,6 @@
                                          alt="Parent image {{ loop.index }}"
                                          {% if not loop.first %}loading="lazy"{% endif %}>
                                 {% endif %}
-                                {# --- END: Srcset Implementation --- #}
                             </div>
                             {% endfor %}
                         </div>
@@ -76,9 +72,9 @@
                     {% endif %}
                 </div>
 
-                {# Right Column: Breed & Weight, Description, AND Alternate Image Previews #}
+                {# Right Column: Info #}
                 <div class="col-md-6 parent-info-column">
-                    <div class="text-center mt-md-0 mt-4"> {# Align with top of main image on desktop, add top margin on mobile #}
+                    <div class="text-center mt-md-0 mt-4">
                         <h3 class="breed-header">{{ parent.breed }}</h3>
                         <p class="weight-header">
                             {% if parent.weight_kg is not none %}
@@ -89,65 +85,52 @@
                         </p>
                     </div>
                     <div class="description-paragraphs mt-4">
-                        {# Split description by newlines to create paragraphs #}
-                        {% for paragraph in parent.description.split('\n') %}
-                            {% if paragraph.strip() %}
-                                <p class="text-justify">{{ paragraph.strip() }}</p> {# Justified text #}
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    {# New: Alternate Image Previews below the description #}
-                    {% set alternate_previews = [
-                        parent.alternate_image_url_1,
-                        parent.alternate_image_url_2,
-                        parent.alternate_image_url_3,
-                        parent.alternate_image_url_4
-                    ] %}
-                    {% set has_previews = false %}
-                    {% for img in alternate_previews %}{% if img %}{% set has_previews = true %}{% endif %}{% endfor %}
-
-                    {% if has_previews %}
-                    <div class="alternate-previews mt-4">
-                        <p style="color: red;">DEBUG: Alternate Image 1 URL for Preview: {{ parent.alternate_image_url_1 }}</p>
-                        <p style="color: red;">DEBUG: Has Previews: {{ has_previews }}</p>
-                        <h6>Image Gallery</h6>
-                        <div class="row row-cols-2 row-cols-lg-4 g-2 justify-content-start"> {# justify-content-start for left alignment #}
-                            {% for img_url in alternate_previews %}
-                                {% if img_url %}
-                                <div class="col">
-                                    <a href="{{ img_url }}" data-toggle="lightbox" data-gallery="alt-preview-gallery-{{ parent.id }}" data-title="{{ parent.name }} Preview">
-                                        <img src="{{ img_url }}" class="img-fluid alternate-preview-thumbnail" alt="Alternate image of {{ parent.name }}">
-                                    </a>
-                                </div>
+                        {# Check if parent.description exists before trying to split it #}
+                        {% if parent.description %}
+                            {% for paragraph in parent.description.split('\n') %}
+                                {% if paragraph.strip() %}
+                                    <p class="text-justify">{{ paragraph.strip() }}</p> {# Justified text #}
                                 {% endif %}
                             {% endfor %}
-                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
             </div> {# End .row #}
 
             {# "Past Puppies" Section Header #}
             {% if parent.grouped_litters %}
             <div class="past-puppies-header mt-5 text-center">
-                <h2>{{ parent.name | upper }}'S PAST PUPPIES</h2> {# All-caps or small-caps #}
+                <h2>{{ parent.name | upper }}'S PAST PUPPIES</h2>
             </div>
 
-            {# Past Puppies Thumbnails Row - Horizontal Scroll #}
-            <div class="past-puppies-thumbnails-row mt-4">
-                <div class="d-flex flex-nowrap overflow-auto py-2"> {# Flexbox for horizontal scroll #}
-                    {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
+            {# Loop through each litter for the current parent #}
+            {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
+                {# --- NEW LITTER BANNER --- #}
+                <div class="litter-banner">
+                    <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
+                        Litter with 
+                        {% if parent.id == mom.id %}
+                            {{ dad.name }}
+                        {% else %}
+                            {{ mom.name }}
+                        {% endif %}
+                        <small class="text-muted"> (Born: {{ birth_date.strftime('%B %Y') }})</small>
+                    </a>
+                </div>
+
+                {# Past Puppies Thumbnails Row for THIS LITTER - Horizontal Scroll #}
+                <div class="past-puppies-thumbnails-row">
+                    <div class="d-flex flex-nowrap overflow-auto py-2">
                         {% for puppy in puppies %}
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
-                            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ puppy.dad.id }}-{{ puppy.mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                <img src="{{ puppy.main_image_url }}" class="img-fluid puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
+                                <img src="{{ puppy.main_image_url }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
                         {% endfor %}
-                    {% endfor %}
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
             {% endif %}
 
         </div> {# End .container #}

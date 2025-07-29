@@ -1,10 +1,16 @@
 {# r-todd/tucson-golden-doodles/Tucson-Golden-Doodles-Syle-and-Design/app/templates/admin/parent_edit.html #}
 {% extends 'admin/model/edit.html' %}
 
+{#
+  The complex logic has been removed from this template.
+  The ParentAdminView in parent_views.py now handles preparing the form.
+#}
+
 {% block edit_form %}
+    {# This renders the form correctly, with the image data prepared by the view #}
     {{ super() }}
 
-    {# Add our custom litter display section, only for existing records #}
+    {# The "Associated Litters" section remains unchanged #}
     {% if model and model.id %}
         <hr>
         <div class="row">
@@ -24,7 +30,6 @@
                                 <td>
                                     <strong>
                                         Litter with:
-                                        {# Dynamically show the OTHER parent's name #}
                                         {% if model.role.name == 'DAD' %}
                                             {{ mom.name }} (Mom)
                                         {% else %}
@@ -40,7 +45,6 @@
                                     <ul class="list-unstyled mb-0">
                                         {% for puppy in puppies %}
                                         <li>
-                                            {# Provide a convenient link to edit the puppy directly #}
                                             <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
                                             - Status: {{ puppy.status.value }}
                                         </li>
