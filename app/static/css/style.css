@@ -3,7 +3,8 @@
 /* --- IMPORTS --- */
 /* Import page-specific and component-specific styles. @import rules must be at the top. */
 @import url("pages/parents.css");
-@import url("components/hero.css"); /* <-- ADDED THIS LINE */
+@import url("components/hero.css"); 
+@import url("components/banner.css"); /* <-- ADDED THIS LINE */
 
 
 /* --- GENERAL STYLING --- */
@@ -20,6 +21,3 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif; /* Decorative serif for headings */
     color: #aecdec; /* Darker text for headings */
 }
-
-/* You can add component imports here later, e.g.: */
-/* @import url("components/_buttons.css"); */

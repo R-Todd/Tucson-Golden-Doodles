@@ -1,0 +1,37 @@
+/* app/static/css/components/banner.css */
+
+/* --- Litter Announcement Banner --- */
+.litter-announcement-banner {
+    background: #4a5568; /* A nice muted, dark slate color */
+    color: #ffffff;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 5px solid #2d3748; /* A slightly darker border for depth */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.litter-announcement-banner .h4 {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.litter-announcement-banner p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #e2e8f0; /* A softer white */
+}
+
+.litter-announcement-banner .btn {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    border-radius: 50px; /* Pill-shaped button */
+    border-width: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+.litter-announcement-banner .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}

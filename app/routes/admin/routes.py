@@ -1,14 +1,15 @@
+# app/routes/admin/routes.py
+
 from flask import redirect, url_for, request, render_template
 from flask_login import current_user, login_user, logout_user
 from flask_admin.menu import MenuLink
 
 from app import db
-# --- NEW: Import the AnnouncementBanner model ---
 from app.models import (
     User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
+# --- THIS IS THE FIX: Import 'bp' and 'admin' from this package ---
 from . import bp, admin
-# --- NEW: Import the AdminModelView for the banner ---
 from .views import (
     AdminModelView, ParentAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView
@@ -20,8 +21,6 @@ admin.add_view(PuppyAdminView(Puppy, db.session))
 admin.add_view(AdminModelView(Review, db.session))
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
-admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
-# --- Add the Announcement Banner to the admin panel ---
 admin.add_view(AdminModelView(AnnouncementBanner, db.session, name="Announcement Banner"))
 admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
 
