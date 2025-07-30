@@ -4,7 +4,7 @@ from flask import request
 from wtforms.fields import FileField
 from .base import AdminModelView
 from app.utils.image_uploader import upload_image
-from .forms import AnnouncementBannerForm # Import the new custom form
+from ..forms import AnnouncementBannerForm # THIS IS THE CORRECTED LINE
 from app.models import AnnouncementBanner # Import the model
 
 class HeroSectionAdminView(AdminModelView):
