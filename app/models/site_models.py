@@ -21,8 +21,6 @@ class HeroSection(db.Model):
     image_url_small = db.Column(db.String(255))
     image_url_medium = db.Column(db.String(255))
     image_url_large = db.Column(db.String(255))
-    
-    # New editable text fields
     main_title = db.Column(db.String(200), default="Copper Skye Doodles")
     subtitle = db.Column(db.String(200), default="Established 2001")
     description = db.Column(db.String(300), default="Arizona Goldendoodles, Bernedoodles & Golden Mountain Doodles")
@@ -38,7 +36,6 @@ class AboutSection(db.Model):
     title = db.Column(db.String(200))
     content_html = db.Column(db.Text)
     image_url = db.Column(db.String(255))
-    # Add fields for responsive image sizes
     image_url_small = db.Column(db.String(255))
     image_url_medium = db.Column(db.String(255))
     image_url_large = db.Column(db.String(255))
@@ -55,3 +52,14 @@ class GalleryImage(db.Model):
 
     def __repr__(self):
         return f'<GalleryImage {self.id}>'
+
+# --- NEW: Add a model for the announcement banner ---
+class AnnouncementBanner(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    main_text = db.Column(db.String(200), default="✨ Our Newest Litter Has Arrived! ✨")
+    sub_text = db.Column(db.String(300), default="A beautiful new litter from {mom_name} & {dad_name}, born on {birth_date}.")
+    button_text = db.Column(db.String(50), default="Meet the Puppies")
+
+    def __repr__(self):
+        return f'<AnnouncementBanner {self.id}>'
