@@ -1,8 +1,10 @@
 /* app/static/css/style.css */
 
 /* --- IMPORTS --- */
-/* Import page-specific styles. @import rules must be at the top. */
+/* Import page-specific and component-specific styles. @import rules must be at the top. */
 @import url("pages/parents.css");
+@import url("components/hero.css"); /* <-- ADDED THIS LINE */
+
 
 /* --- GENERAL STYLING --- */
 body {
@@ -11,12 +13,12 @@ body {
     margin: 0;
     padding: 0;
     background: #f8f9fa; /* Lighter background */
-    color: #333;
+    color: #554b4bec;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #343a40; /* Darker text for headings */
+    color: #aecdec; /* Darker text for headings */
 }
 
 /* You can add component imports here later, e.g.: */

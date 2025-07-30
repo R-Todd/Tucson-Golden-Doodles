@@ -3,15 +3,18 @@
 {% block content %}
 
 {% if hero %}
-<div class="p-5 mb-4 bg-light rounded-3" style="background-image: url('{{ hero.image_url }}'); background-size: cover; background-position: center;">
-    <div class="container-fluid py-5 text-white" style="background-color: rgba(0,0,0,0.5);">
-        <h1 class="display-5 fw-bold">{{ hero.title }}</h1>
-        <p class="col-md-8 fs-4">{{ hero.subtitle }}</p>
-        {% if hero.cta_text and hero.cta_link %}
-        <a href="{{ hero.cta_link }}" class="btn btn-primary btn-lg" type="button">{{ hero.cta_text }}</a>
-        {% endif %}
+<section class="hero-section" style="background-image: url('{{ hero.image_url }}');">
+    <div class="hero-content">
+        <h1 class="hero-title">Tucson Golden Doodles</h1>
+        <p class="hero-subtitle">Established 2010. Tucson, AZ</p>
+        <p class="hero-description">Goldens, Doodles & Golden Mountain Doodles</p>
+        <div class="hero-scroll-down">
+            <p>Website Updated July 28, 2025</p>
+            <p>See Available Puppies Below</p>
+            <a href="#about" class="scroll-arrow">&#8595;</a>
+        </div>
     </div>
-</div>
+</section>
 {% endif %}
 
 <div class="container">
