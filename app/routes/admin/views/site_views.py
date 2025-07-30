@@ -4,23 +4,17 @@ from flask import request
 from wtforms.fields import FileField
 from .base import AdminModelView
 from app.utils.image_uploader import upload_image
+from .forms import AnnouncementBannerForm # Import the new custom form
+from app.models import AnnouncementBanner # Import the model
 
 class HeroSectionAdminView(AdminModelView):
     """ Custom view for the Hero Section with image upload. """
     
-    # Define the columns to show in the list view
     column_list = ('main_title', 'subtitle', 'description')
-
-    # Define the fields to show in the edit form
     form_columns = [
-        'main_title',
-        'subtitle',
-        'description',
-        'scroll_text_main',
-        'scroll_text_secondary',
-        'image_upload' # The file upload field
+        'main_title', 'subtitle', 'description', 'scroll_text_main',
+        'scroll_text_secondary', 'image_upload'
     ]
-    
     form_extra_fields = {
         'image_upload': FileField('Upload New Background Image (Recommended: 1920x1080px)')
     }
@@ -30,7 +24,6 @@ class HeroSectionAdminView(AdminModelView):
         if obj and obj.image_url:
             if form.image_upload.render_kw is None:
                 form.image_upload.render_kw = {}
-            # Pass the original (large) image URL to the preview script
             form.image_upload.render_kw['data-current-image'] = obj.image_url
         return form
 
@@ -43,6 +36,7 @@ class HeroSectionAdminView(AdminModelView):
                 model.image_url_small = image_urls.get('small')
                 model.image_url_medium = image_urls.get('medium')
                 model.image_url_large = image_urls.get('large')
+
 
 class AboutSectionAdminView(AdminModelView):
     """ Custom view for the About Section with image upload. """
@@ -65,3 +59,20 @@ class AboutSectionAdminView(AdminModelView):
                 model.image_url_small = image_urls.get('small')
                 model.image_url_medium = image_urls.get('medium')
                 model.image_url_large = image_urls.get('large')
+
+
+# --- NEW: Create a custom Admin View for the Announcement Banner ---
+class AnnouncementBannerAdminView(AdminModelView):
+    # Use the custom form we created
+    form = AnnouncementBannerForm
+    
+    # Define the columns to show in the list view
+    column_list = ('is_active', 'main_text', 'featured_puppy')
+
+    def on_model_change(self, form, model, is_created):
+        """Saves the relationship between the banner and the selected puppy."""
+        selected_puppy = form.featured_puppy.data
+        if selected_puppy:
+            model.featured_puppy_id = selected_puppy.id
+        else:
+            model.featured_puppy_id = None

@@ -17,6 +17,28 @@
 </section>
 {% endif %}
 
+{% if announcement_banner and announcement_banner.is_active and most_recent_litter_key %}
+<div class="litter-announcement-banner">
+    <div class="container text-center">
+        <p class="h4">
+            {{ announcement_banner.main_text }}
+        </p>
+        {# Dynamically replace placeholders in the sub_text #}
+        {% set sub_text = announcement_banner.sub_text
+            .replace('{mom_name}', most_recent_litter_key[1].name)
+            .replace('{dad_name}', most_recent_litter_key[2].name)
+            .replace('{birth_date}', most_recent_litter_key[0].strftime('%B %d, %Y')) %}
+        <p>
+            {{ sub_text }}
+        </p>
+        <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ most_recent_litter_key[0].strftime('%Y%m%d') }}-{{ most_recent_litter_key[2].id }}-{{ most_recent_litter_key[1].id }}" class="btn btn-light btn-lg">
+            {{ announcement_banner.button_text }}
+        </a>
+    </div>
+</div>
+{% endif %}
+
+
 <div class="container" id="about">
 
     {% if about %}
