@@ -3,24 +3,24 @@
 {% block content %}
 
 {% if hero %}
-<section class="hero-section" style="background-image: url('{{ hero.image_url }}');">
+<section class="hero-section" style="background-image: url('{{ hero.image_url_large or hero.image_url }}');">
     <div class="hero-content">
-        <h1 class="hero-title">Tucson Golden Doodles</h1>
-        <p class="hero-subtitle">Established 2010. Tucson, AZ</p>
-        <p class="hero-description">Goldens, Doodles & Golden Mountain Doodles</p>
+        <h1 class="hero-title">{{ hero.main_title }}</h1>
+        <p class="hero-subtitle">{{ hero.subtitle }}</p>
+        <p class="hero-description">{{ hero.description }}</p>
         <div class="hero-scroll-down">
-            <p>Website Updated July 28, 2025</p>
-            <p>See Available Puppies Below</p>
+            <p>{{ hero.scroll_text_main }}</p>
+            <p>{{ hero.scroll_text_secondary }}</p>
             <a href="#about" class="scroll-arrow">&#8595;</a>
         </div>
     </div>
 </section>
 {% endif %}
 
-<div class="container">
+<div class="container" id="about">
 
     {% if about %}
-    <section id="about" class="my-5">
+    <section class="my-5">
         <div class="row align-items-center">
             <div class="col-md-6">
                 <img src="{{ about.image_url }}" class="img-fluid rounded shadow" alt="About us">
@@ -50,8 +50,8 @@
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            Parents: 
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> &amp; 
+                            Parents:
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> &amp;
                             <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.dad.id }}">{{ puppy.dad.name }}</a>
                         </small>
                     </div>

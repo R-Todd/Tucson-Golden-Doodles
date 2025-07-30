@@ -1,3 +1,5 @@
+# app/models/site_models.py
+
 from . import db
 
 # Site-wide metadata, intended for a single row of data
@@ -16,17 +18,20 @@ class SiteMeta(db.Model):
 class HeroSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(255))
-    # Add fields for responsive image sizes
     image_url_small = db.Column(db.String(255))
     image_url_medium = db.Column(db.String(255))
     image_url_large = db.Column(db.String(255))
-    title = db.Column(db.String(200))
-    subtitle = db.Column(db.String(300))
-    cta_text = db.Column(db.String(50))
-    cta_link = db.Column(db.String(255))
+    
+    # New editable text fields
+    main_title = db.Column(db.String(200), default="Copper Skye Doodles")
+    subtitle = db.Column(db.String(200), default="Established 2001")
+    description = db.Column(db.String(300), default="Arizona Goldendoodles, Bernedoodles & Golden Mountain Doodles")
+    scroll_text_main = db.Column(db.String(100), default="Website Updated")
+    scroll_text_secondary = db.Column(db.String(100), default="See Available Puppies Below")
+
 
     def __repr__(self):
-        return f'<HeroSection {self.title}>'
+        return f'<HeroSection {self.main_title}>'
 
 class AboutSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
