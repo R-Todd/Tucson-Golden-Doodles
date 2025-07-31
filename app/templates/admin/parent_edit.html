@@ -1,17 +1,15 @@
-{# r-todd/tucson-golden-doodles/Tucson-Golden-Doodles-Image_thumb/app/templates/admin/parent_edit.html #}
+{# app/templates/admin/parent_edit.html #}
 {% extends 'admin/model/edit.html' %}
 
-{# Import the render_field macro to manually place form fields #}
+{# Import the macro we need to render form fields #}
 {% from 'admin/lib.html' import render_field with context %}
 
-{#
-  Override the 'edit_form' block to create a completely custom layout.
-  We will manually render the standard fields first, then create the
-  custom cards for each image upload.
+{# 
+  Override the 'edit_form' block. This is the main content area for the form,
+  and by placing all our logic here, we ensure the correct context is available.
 #}
 {% block edit_form %}
-
-    {# --- Manually Render Parent Details --- #}
+    {# --- Manually Render Parent Details (Non-Image Fields) --- #}
     <div class="row">
         <div class="col-md-6">
             {{ render_field(form.name) }}
@@ -37,7 +35,7 @@
         <div class="col-md-12">
             <hr>
             <h4>Manage Parent Images</h4>
-            <p class="text-muted">Upload a new file to replace an existing image. The change will appear after you save.</p>
+            <p class="text-muted">Upload a new file to replace an existing image. The change will take effect after you save.</p>
         </div>
     </div>
 
@@ -47,14 +45,10 @@
             <div class="card">
                 <div class="card-header">Main Image</div>
                 <div class="card-body">
-                    {% if model.main_image_url %}
+                    {% if model and model.main_image_url %}
                         <div class="mb-3">
                             <label>Current Image:</label><br>
                             <img src="{{ model.main_image_url }}" class="img-thumbnail" style="max-height: 150px;" alt="Main Image Preview">
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL:</label>
-                            <input type="text" class="form-control" value="{{ model.main_image_url }}" readonly>
                         </div>
                     {% endif %}
                     {{ render_field(form.image_upload) }}
@@ -67,14 +61,10 @@
             <div class="card">
                 <div class="card-header">Alternate Image 1</div>
                 <div class="card-body">
-                    {% if model.alternate_image_url_1 %}
+                    {% if model and model.alternate_image_url_1 %}
                         <div class="mb-3">
                             <label>Current Image:</label><br>
                             <img src="{{ model.alternate_image_url_1 }}" class="img-thumbnail" style="max-height: 150px;" alt="Alternate Image 1 Preview">
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL:</label>
-                            <input type="text" class="form-control" value="{{ model.alternate_image_url_1 }}" readonly>
                         </div>
                     {% endif %}
                     {{ render_field(form.alternate_image_upload_1) }}
@@ -89,14 +79,10 @@
             <div class="card">
                 <div class="card-header">Alternate Image 2</div>
                 <div class="card-body">
-                    {% if model.alternate_image_url_2 %}
+                    {% if model and model.alternate_image_url_2 %}
                         <div class="mb-3">
                             <label>Current Image:</label><br>
                             <img src="{{ model.alternate_image_url_2 }}" class="img-thumbnail" style="max-height: 150px;" alt="Alternate Image 2 Preview">
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL:</label>
-                            <input type="text" class="form-control" value="{{ model.alternate_image_url_2 }}" readonly>
                         </div>
                     {% endif %}
                     {{ render_field(form.alternate_image_upload_2) }}
@@ -109,14 +95,10 @@
             <div class="card">
                 <div class="card-header">Alternate Image 3</div>
                 <div class="card-body">
-                    {% if model.alternate_image_url_3 %}
+                     {% if model and model.alternate_image_url_3 %}
                         <div class="mb-3">
                             <label>Current Image:</label><br>
                             <img src="{{ model.alternate_image_url_3 }}" class="img-thumbnail" style="max-height: 150px;" alt="Alternate Image 3 Preview">
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL:</label>
-                            <input type="text" class="form-control" value="{{ model.alternate_image_url_3 }}" readonly>
                         </div>
                     {% endif %}
                     {{ render_field(form.alternate_image_upload_3) }}
@@ -131,14 +113,10 @@
             <div class="card">
                 <div class="card-header">Alternate Image 4</div>
                 <div class="card-body">
-                    {% if model.alternate_image_url_4 %}
+                    {% if model and model.alternate_image_url_4 %}
                         <div class="mb-3">
                             <label>Current Image:</label><br>
                             <img src="{{ model.alternate_image_url_4 }}" class="img-thumbnail" style="max-height: 150px;" alt="Alternate Image 4 Preview">
-                        </div>
-                        <div class="mb-3">
-                            <label>Image URL:</label>
-                            <input type="text" class="form-control" value="{{ model.alternate_image_url_4 }}" readonly>
                         </div>
                     {% endif %}
                     {{ render_field(form.alternate_image_upload_4) }}
@@ -146,11 +124,8 @@
             </div>
         </div>
     </div>
-{% endblock %}
 
-{# The 'body' block remains the same, handling the Associated Litters section #}
-{% block body %}
-    {{ super() }}
+    {# --- Associated Litters Section (Now inside the edit_form block) --- #}
     {% if model and model.id %}
         <hr>
         <div class="row">
