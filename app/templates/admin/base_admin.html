@@ -6,15 +6,9 @@
 <a class="navbar-brand" href="{{ url_for('main.index') }}">Tucson Golden Doodles</a>
 {% endblock %}
 
-{# 3. Override the 'nav_links' block to add custom navigation #}
+{# 3. Override the 'nav_links' block to remove the redundant button #}
 {% block nav_links %}
-  {{ super() }}  {# Includes default links like Logout #}
-  <ul class="nav navbar-nav navbar-right">
-    <li>
-      {# This is the "Return to Home" button we worked on #}
-      <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary ms-2">Return to Home</a>
-    </li>
-  </ul>
+  {{ super() }}  {# This includes the default links like Logout #}
 {% endblock %}
 
 {# This block is where you will add the link to your custom CSS #}
