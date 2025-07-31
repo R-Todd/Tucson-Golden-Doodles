@@ -1,9 +1,8 @@
 from datetime import date
 from app.models import (
     Parent, Puppy, ParentRole, PuppyStatus, ParentImage, SiteMeta,
-    HeroSection, AboutSection, GalleryImage, Review
+    HeroSection, AboutSection, GalleryImage, Review, AnnouncementBanner
 )
-
 # By grouping tests into classes, the test suite becomes more organized
 # and easier to read, especially as the number of models grows.
 
