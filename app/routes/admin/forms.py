@@ -35,7 +35,15 @@ class AnnouncementBannerForm(FlaskForm):
     """Custom form for the Announcement Banner admin view."""
     is_active = BooleanField('Is Active', default=True)
     main_text = StringField('Main Text', validators=[DataRequired()])
-    sub_text = StringField('Sub Text', validators=[DataRequired()])
+    
+    # --- THIS IS THE CHANGE ---
+    # Added a description to explain the placeholders
+    sub_text = StringField(
+        'Sub Text', 
+        validators=[DataRequired()],
+        description="Use placeholders to automatically include litter info. Available placeholders: {mom_name}, {dad_name}, {birth_date}"
+    )
+    
     button_text = StringField('Button Text', validators=[DataRequired()])
     
     featured_puppy = QuerySelectField(

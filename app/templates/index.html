@@ -17,7 +17,6 @@
 </section>
 {% endif %}
 
-<!-- MODIFIED: Litter Banner now uses the litter selected in the admin panel -->
 {% if announcement_banner and announcement_banner.is_active and announcement_banner.featured_puppy %}
     {% set featured_litter_puppy = announcement_banner.featured_puppy %}
     <div class="litter-announcement-banner">
@@ -25,15 +24,15 @@
             <p class="h4">
                 {{ announcement_banner.main_text }}
             </p>
-            {# Dynamically replace placeholders in the sub_text #}
+            {# --- THIS IS THE FIX --- #}
+            {# Dynamically replace all placeholders in the sub_text, including the birth_date #}
             {% set sub_text = announcement_banner.sub_text
                 .replace('{mom_name}', featured_litter_puppy.mom.name)
-                .replace('{dad_name}', featured_litter_puppy.dad.name) %}
+                .replace('{dad_name}', featured_litter_puppy.dad.name)
+                .replace('{birth_date}', featured_litter_puppy.birth_date.strftime('%B %d, %Y')) %}
             <p>
                 {{ sub_text }}
             </p>
-            {# --- THIS IS THE FIX --- #}
-            {# The link now uses the same ID structure as the puppies page #}
             <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ featured_litter_puppy.birth_date.strftime('%Y%m%d') }}-{{ featured_litter_puppy.dad.id }}-{{ featured_litter_puppy.mom.id }}" class="btn btn-light btn-lg">
                 {{ announcement_banner.button_text }}
             </a>
@@ -52,7 +51,6 @@
             </div>
             <div class="col-md-6">
                 <h2 class="display-5">{{ about.title }}</h2>
-                {# The 'safe' filter allows rendering of the stored HTML #}
                 <div class="lead">{{ about.content_html|safe }}</div>
             </div>
         </div>
@@ -86,7 +84,7 @@
         </div>
         {% else %}
         <div class="alert alert-info" role="alert">
-            We don't have any available puppies at the moment. Please check back soon or contact us to get on the waiting list!
+            We don't have any available puppies at the moment. Please check back soon!
         </div>
         {% endif %}
     </section>
@@ -152,6 +150,5 @@
 {% endblock %}
 
 {% block extra_js %}
-{# This script enables the image gallery lightbox functionality #}
 <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
 {% endblock %}
