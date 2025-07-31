@@ -1,17 +1,40 @@
-{# app/templates/admin/parent_edit.html (Simplified for Debugging) #}
+{# app/templates/admin/parent_edit.html (Focus on Main Image Preview) #}
 {% extends 'admin/model/edit.html' %}
 
-{# Import the standard form rendering macro from Flask-Admin #}
-{% from 'admin/lib.html' import render_form with context %}
+{% from 'admin/lib.html' import render_field with context %}
 
-{# 
-  Override the edit_form block with a single call to the default renderer.
-  This bypasses all manual render_field calls to see if the form object itself is valid.
-#}
 {% block edit_form %}
-  <div class="alert alert-warning" role="alert">
-    This is a simplified debug view.
-  </div>
+    {# --- DEBUGGING --- #}
+    <div class="alert alert-info">
+        <strong>Debug:</strong> The form object is available here. Now rendering fields one by one.
+    </div>
 
-  {{ render_form(form) }}
+    {# --- Parent Details --- #}
+    <div class="row">
+        <div class="col-md-12">
+            {{ render_field(form.name) }}
+            {{ render_field(form.role) }}
+            {{ render_field(form.breed) }}
+        </div>
+    </div>
+
+    <hr>
+    <h4>Manage Main Image</h4>
+    <p class="text-muted">A preview of the current image should appear below.</p>
+
+    {# --- Main Image Card ONLY --- #}
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Main Image</div>
+                <div class="card-body">
+                    {{ render_field(form.image_upload) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }} {# This renders the 'Save' buttons #}
 {% endblock %}
