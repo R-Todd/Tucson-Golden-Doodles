@@ -3,28 +3,54 @@
 {% block content %}
 
 {% if hero %}
-<div class="p-5 mb-4 bg-light rounded-3" style="background-image: url('{{ hero.image_url }}'); background-size: cover; background-position: center;">
-    <div class="container-fluid py-5 text-white" style="background-color: rgba(0,0,0,0.5);">
-        <h1 class="display-5 fw-bold">{{ hero.title }}</h1>
-        <p class="col-md-8 fs-4">{{ hero.subtitle }}</p>
-        {% if hero.cta_text and hero.cta_link %}
-        <a href="{{ hero.cta_link }}" class="btn btn-primary btn-lg" type="button">{{ hero.cta_text }}</a>
-        {% endif %}
+<section class="hero-section" style="background-image: url('{{ hero.image_url_large or hero.image_url }}');">
+    <div class="hero-content">
+        <h1 class="hero-title">{{ hero.main_title }}</h1>
+        <p class="hero-subtitle">{{ hero.subtitle }}</p>
+        <p class="hero-description">{{ hero.description }}</p>
+        <div class="hero-scroll-down">
+            <p>{{ hero.scroll_text_main }}</p>
+            <p>{{ hero.scroll_text_secondary }}</p>
+            <a href="#about" class="scroll-arrow">&#8595;</a>
+        </div>
     </div>
-</div>
+</section>
 {% endif %}
 
-<div class="container">
+{% if announcement_banner and announcement_banner.is_active and announcement_banner.featured_puppy %}
+    {% set featured_litter_puppy = announcement_banner.featured_puppy %}
+    <div class="litter-announcement-banner">
+        <div class="container text-center">
+            <p class="h4">
+                {{ announcement_banner.main_text }}
+            </p>
+            {# --- THIS IS THE FIX --- #}
+            {# Dynamically replace all placeholders in the sub_text, including the birth_date #}
+            {% set sub_text = announcement_banner.sub_text
+                .replace('{mom_name}', featured_litter_puppy.mom.name)
+                .replace('{dad_name}', featured_litter_puppy.dad.name)
+                .replace('{birth_date}', featured_litter_puppy.birth_date.strftime('%B %d, %Y')) %}
+            <p>
+                {{ sub_text }}
+            </p>
+            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ featured_litter_puppy.birth_date.strftime('%Y%m%d') }}-{{ featured_litter_puppy.dad.id }}-{{ featured_litter_puppy.mom.id }}" class="btn btn-light btn-lg">
+                {{ announcement_banner.button_text }}
+            </a>
+        </div>
+    </div>
+{% endif %}
+
+
+<div class="container" id="about">
 
     {% if about %}
-    <section id="about" class="my-5">
+    <section class="my-5">
         <div class="row align-items-center">
             <div class="col-md-6">
                 <img src="{{ about.image_url }}" class="img-fluid rounded shadow" alt="About us">
             </div>
             <div class="col-md-6">
                 <h2 class="display-5">{{ about.title }}</h2>
-                {# The 'safe' filter allows rendering of the stored HTML #}
                 <div class="lead">{{ about.content_html|safe }}</div>
             </div>
         </div>
@@ -47,8 +73,8 @@
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            Parents: 
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> &amp; 
+                            Parents:
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> &amp;
                             <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.dad.id }}">{{ puppy.dad.name }}</a>
                         </small>
                     </div>
@@ -58,7 +84,7 @@
         </div>
         {% else %}
         <div class="alert alert-info" role="alert">
-            We don't have any available puppies at the moment. Please check back soon or contact us to get on the waiting list!
+            We don't have any available puppies at the moment. Please check back soon!
         </div>
         {% endif %}
     </section>
@@ -124,6 +150,5 @@
 {% endblock %}
 
 {% block extra_js %}
-{# This script enables the image gallery lightbox functionality #}
 <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
 {% endblock %}

@@ -7,7 +7,8 @@ def test_homepage_route(client, db):
     WHEN the '/' route is requested (GET)
     THEN check that the response is valid and contains expected content
     """
-    hero = HeroSection(title='Test Hero Title', subtitle='Test Subtitle', image_url='img/test.jpg')
+    # FIX: Change 'title' to 'main_title' to match the updated model
+    hero = HeroSection(main_title='Test Hero Title', subtitle='Test Subtitle', image_url='img/test.jpg')
     about = AboutSection(title='About Us Test', content_html='<p>Test Content</p>', image_url='img/test.jpg')
     db.session.add_all([hero, about])
     db.session.commit()
