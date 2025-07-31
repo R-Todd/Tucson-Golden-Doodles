@@ -13,3 +13,4 @@ boto3
 Flask-WTF
 beautifulsoup4
 Pillow
+WTForms-SQLAlchemy

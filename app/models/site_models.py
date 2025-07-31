@@ -1,6 +1,7 @@
 # app/models/site_models.py
 
 from . import db
+from .puppy_models import Puppy  # Import Puppy to define relationship
 
 # Site-wide metadata, intended for a single row of data
 class SiteMeta(db.Model):
@@ -53,13 +54,20 @@ class GalleryImage(db.Model):
     def __repr__(self):
         return f'<GalleryImage {self.id}>'
 
-# --- NEW: Add a model for the announcement banner ---
+
+# --- MODIFIED: AnnouncementBanner now links to a Puppy ---
 class AnnouncementBanner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    main_text = db.Column(db.String(200), default="✨ Our Newest Litter Has Arrived! ✨")
-    sub_text = db.Column(db.String(300), default="A beautiful new litter from {mom_name} & {dad_name}, born on {birth_date}.")
+    main_text = db.Column(db.String(200), default="✨ Check out our newest litter! ✨")
+    sub_text = db.Column(db.String(300), default="A beautiful new litter from {mom_name} & {dad_name}.")
     button_text = db.Column(db.String(50), default="Meet the Puppies")
+
+    # This foreign key will link the banner to one specific puppy.
+    featured_puppy_id = db.Column(db.Integer, db.ForeignKey('puppy.id'), nullable=True)
+    
+    # Define the relationship to the Puppy model
+    featured_puppy = db.relationship('Puppy', foreign_keys=[featured_puppy_id])
 
     def __repr__(self):
         return f'<AnnouncementBanner {self.id}>'

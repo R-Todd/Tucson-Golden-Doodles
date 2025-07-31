@@ -4,8 +4,8 @@ from flask import request
 from wtforms.fields import FileField
 from .base import AdminModelView
 from app.utils.image_uploader import upload_image
-from ..forms import AnnouncementBannerForm # THIS IS THE CORRECTED LINE
-from app.models import AnnouncementBanner # Import the model
+from ..forms import AnnouncementBannerForm # CORRECTED IMPORT
+from app.models import AnnouncementBanner
 
 class HeroSectionAdminView(AdminModelView):
     """ Custom view for the Hero Section with image upload. """
@@ -60,13 +60,10 @@ class AboutSectionAdminView(AdminModelView):
                 model.image_url_medium = image_urls.get('medium')
                 model.image_url_large = image_urls.get('large')
 
-
-# --- NEW: Create a custom Admin View for the Announcement Banner ---
 class AnnouncementBannerAdminView(AdminModelView):
-    # Use the custom form we created
+    """Custom Admin View for the Announcement Banner."""
     form = AnnouncementBannerForm
     
-    # Define the columns to show in the list view
     column_list = ('is_active', 'main_text', 'featured_puppy')
 
     def on_model_change(self, form, model, is_created):
