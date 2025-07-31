@@ -105,7 +105,8 @@
 
             {# Loop through each litter for the current parent #}
             {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
-                {# --- NEW LITTER BANNER --- #}
+                {# --- THIS IS THE FIX --- #}
+                {# This link now uses the same ID structure as the puppies page #}
                 <div class="litter-banner">
                     <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
                         Litter with 
