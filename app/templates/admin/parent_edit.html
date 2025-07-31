@@ -1,40 +1,120 @@
-{# app/templates/admin/parent_edit.html (Focus on Main Image Preview) #}
+{# app/templates/admin/parent_edit.html (Final Version) #}
 {% extends 'admin/model/edit.html' %}
 
 {% from 'admin/lib.html' import render_field with context %}
 
 {% block edit_form %}
-    {# --- DEBUGGING --- #}
-    <div class="alert alert-info">
-        <strong>Debug:</strong> The form object is available here. Now rendering fields one by one.
-    </div>
-
     {# --- Parent Details --- #}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             {{ render_field(form.name) }}
             {{ render_field(form.role) }}
             {{ render_field(form.breed) }}
+            {{ render_field(form.birth_date) }}
+        </div>
+        <div class="col-md-6">
+            {{ render_field(form.weight_kg) }}
+            {{ render_field(form.height_cm) }}
+            {{ render_field(form.is_active) }}
+            {{ render_field(form.is_guardian) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {{ render_field(form.description) }}
         </div>
     </div>
 
     <hr>
-    <h4>Manage Main Image</h4>
-    <p class="text-muted">A preview of the current image should appear below.</p>
+    <h4>Manage Parent Images</h4>
+    <p class="text-muted">A preview of the current image will appear below each field. Selecting a new file will show a new preview.</p>
 
-    {# --- Main Image Card ONLY --- #}
+    {# --- Image Management Cards --- #}
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header">Main Image</div>
-                <div class="card-body">
-                    {{ render_field(form.image_upload) }}
-                </div>
+                <div class="card-body">{{ render_field(form.image_upload) }}</div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Alternate Image 1</div>
+                <div class="card-body">{{ render_field(form.alternate_image_upload_1) }}</div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Alternate Image 2</div>
+                <div class="card-body">{{ render_field(form.alternate_image_upload_2) }}</div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Alternate Image 3</div>
+                <div class="card-body">{{ render_field(form.alternate_image_upload_3) }}</div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">Alternate Image 4</div>
+                <div class="card-body">{{ render_field(form.alternate_image_upload_4) }}</div>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block tail %}
-    {{ super() }} {# This renders the 'Save' buttons #}
+    {{ super() }} {# Renders the Save buttons #}
+
+    {% if model and model.id %}
+        <hr>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3>Associated Litters</h3>
+                {% if model.grouped_litters %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Litter Details</th>
+                                <th>Puppies in Litter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for (birth_date, dad, mom), puppies in model.grouped_litters.items() %}
+                            <tr>
+                                <td>
+                                    <strong>
+                                        Litter with:
+                                        {% if model.role.name == 'DAD' %}
+                                            {{ mom.name }} (Mom)
+                                        {% else %}
+                                            {{ dad.name }} (Dad)
+                                        {% endif %}
+                                    </strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        Born: {{ birth_date.strftime('%B %d, %Y') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for puppy in puppies %}
+                                        <li>
+                                            <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
+                                            - Status: {{ puppy.status.value }}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No litters found for this parent.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -14,24 +14,48 @@ class ParentAdminView(AdminModelView):
     def edit_form(self, obj=None):
         form = super(ParentAdminView, self).edit_form(obj)
         
-        # --- DEBUGGING & LOGIC FOR MAIN IMAGE ---
-        print("\n" + "="*50)
-        print("DEBUG: Preparing form for the template.")
-        
-        if obj and obj.main_image_url:
-            print(f"Found main_image_url: {obj.main_image_url}")
-            if hasattr(form, 'image_upload'):
-                if form.image_upload.render_kw is None:
-                    form.image_upload.render_kw = {}
-                # This adds the URL for our JavaScript to find
-                form.image_upload.render_kw['data-current-image'] = obj.main_image_url
-                print("Successfully added 'data-current-image' to the form field.")
-        else:
-            print("No existing main image found for this parent.")
-            
-        print("="*50 + "\n")
+        # This logic adds a 'data-current-image' attribute to each file upload field
+        # if an image already exists. Our JavaScript will use this for the preview.
+        if obj:
+            image_fields = {
+                'image_upload': obj.main_image_url,
+                'alternate_image_upload_1': obj.alternate_image_url_1,
+                'alternate_image_upload_2': obj.alternate_image_url_2,
+                'alternate_image_upload_3': obj.alternate_image_url_3,
+                'alternate_image_upload_4': obj.alternate_image_url_4,
+            }
+            for field_name, image_url in image_fields.items():
+                if hasattr(form, field_name) and image_url:
+                    field = getattr(form, field_name)
+                    if field.render_kw is None:
+                        field.render_kw = {}
+                    field.render_kw['data-current-image'] = image_url
         return form
 
+    # RESTORED: This handles the logic when you click "Save"
     def on_model_change(self, form, model, is_created):
-        # Temporarily disabled to focus on displaying the image.
-        pass
+        """Handle image uploads when a parent record is saved."""
+        main_file = request.files.get('image_upload')
+        if main_file and main_file.filename:
+            image_urls = upload_image(main_file, folder='parents', create_responsive_versions=True)
+            if image_urls:
+                model.main_image_url = image_urls.get('original')
+                model.main_image_url_small = image_urls.get('small')
+                model.main_image_url_medium = image_urls.get('medium')
+                model.main_image_url_large = image_urls.get('large')
+
+        alt_fields = [
+            'alternate_image_upload_1', 'alternate_image_upload_2',
+            'alternate_image_upload_3', 'alternate_image_upload_4'
+        ]
+        alt_model_attrs = [
+            'alternate_image_url_1', 'alternate_image_url_2',
+            'alternate_image_url_3', 'alternate_image_url_4'
+        ]
+
+        for i, field_name in enumerate(alt_fields):
+            file = request.files.get(field_name)
+            if file and file.filename:
+                url = upload_image(file, folder='parents_alternates')
+                if url:
+                    setattr(model, alt_model_attrs[i], url)
