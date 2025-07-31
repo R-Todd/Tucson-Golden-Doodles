@@ -70,7 +70,6 @@ def seed_database():
 
         # --- Homepage Content (with responsive images) ---
         hero_urls = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
-        # Check if upload was successful before proceeding
         if hero_urls is None:
             print("Error: Hero image upload failed. Cannot seed dependent data.")
             return
@@ -81,8 +80,11 @@ def seed_database():
             return
 
         hero = HeroSection(
-            title='Welcome to Tucson Golden Doodles',
-            subtitle='Your new best friend is waiting for you!',
+            main_title='Copper Skye Doodles',
+            subtitle='Established 2001',
+            description='Arizona Goldendoodles, Bernedoodles & Golden Mountain Doodles',
+            scroll_text_main=f'Website Updated {date.today().strftime("%B %d, %Y")}',
+            scroll_text_secondary='See Available Puppies Below',
             image_url=hero_urls.get('original'),
             image_url_small=hero_urls.get('small'),
             image_url_medium=hero_urls.get('medium'),
