@@ -1,64 +1,89 @@
 {# r-todd/tucson-golden-doodles/Tucson-Golden-Doodles-Syle-and-Design/app/templates/admin/parent_edit.html #}
 {% extends 'admin/model/edit.html' %}
 
-{#
-  The complex logic has been removed from this template.
-  The ParentAdminView in parent_views.py now handles preparing the form.
-#}
+{% block body %}
+  {{ super() }}
 
-{% block edit_form %}
-    {# This renders the form correctly, with the image data prepared by the view #}
-    {{ super() }}
-
-    {# The "Associated Litters" section remains unchanged #}
-    {% if model and model.id %}
-        <hr>
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Associated Litters</h3>
-                {% if model.grouped_litters %}
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Litter Details</th>
-                                <th>Puppies in Litter</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for (birth_date, dad, mom), puppies in model.grouped_litters.items() %}
-                            <tr>
-                                <td>
-                                    <strong>
-                                        Litter with:
-                                        {% if model.role.name == 'DAD' %}
-                                            {{ mom.name }} (Mom)
-                                        {% else %}
-                                            {{ dad.name }} (Dad)
-                                        {% endif %}
-                                    </strong>
-                                    <br>
-                                    <small class="text-muted">
-                                        Born: {{ birth_date.strftime('%B %d, %Y') }}
-                                    </small>
-                                </td>
-                                <td>
-                                    <ul class="list-unstyled mb-0">
-                                        {% for puppy in puppies %}
-                                        <li>
-                                            <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
-                                            - Status: {{ puppy.status.value }}
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p>No litters found for this parent.</p>
-                {% endif %}
+  {# --- THIS IS THE NEW SECTION --- #}
+  {# Display current image URLs as read-only text with links #}
+  <div class="row mt-4">
+    <div class="col-md-12">
+        <h4>Current Image URLs</h4>
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% if model.main_image_url %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Main Image:</strong>
+                            <a href="{{ model.main_image_url }}" target="_blank" class="text-truncate" style="max-width: 50%;">{{ model.main_image_url }}</a>
+                            <img src="{{ model.main_image_url }}" class="img-thumbnail" style="max-height: 50px;">
+                        </li>
+                    {% endif %}
+                    {% for i in range(1, 5) %}
+                        {% set url = getattr(model, 'alternate_image_url_' ~ i) %}
+                        {% if url %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>Alternate Image {{ i }}:</strong>
+                                <a href="{{ url }}" target="_blank" class="text-truncate" style="max-width: 50%;">{{ url }}</a>
+                                <img src="{{ url }}" class="img-thumbnail" style="max-height: 50px;">
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-    {% endif %}
+    </div>
+  </div>
+
+  {# The "Associated Litters" section remains unchanged #}
+  {% if model and model.id %}
+      <hr>
+      <div class="row">
+          <div class="col-md-12">
+              <h3>Associated Litters</h3>
+              {% if model.grouped_litters %}
+                  <table class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Litter Details</th>
+                              <th>Puppies in Litter</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for (birth_date, dad, mom), puppies in model.grouped_litters.items() %}
+                          <tr>
+                              <td>
+                                  <strong>
+                                      Litter with:
+                                      {% if model.role.name == 'DAD' %}
+                                          {{ mom.name }} (Mom)
+                                      {% else %}
+                                          {{ dad.name }} (Dad)
+                                      {% endif %}
+                                  </strong>
+                                  <br>
+                                  <small class="text-muted">
+                                      Born: {{ birth_date.strftime('%B %d, %Y') }}
+                                  </small>
+                              </td>
+                              <td>
+                                  <ul class="list-unstyled mb-0">
+                                      {% for puppy in puppies %}
+                                      <li>
+                                          <a href="{{ url_for('puppy.edit_view', id=puppy.id) }}">{{ puppy.name }}</a>
+                                          - Status: {{ puppy.status.value }}
+                                      </li>
+                                      {% endfor %}
+                                  </ul>
+                              </td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                  </table>
+              {% else %}
+                  <p>No litters found for this parent.</p>
+              {% endif %}
+          </div>
+      </div>
+  {% endif %}
 {% endblock %}
