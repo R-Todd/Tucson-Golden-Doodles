@@ -20,7 +20,7 @@ admin = Admin(
     url='/'
 )
 
-# 3. THIS IS THE FIX: Explicitly set the base_template for the admin interface
+# 3. Explicitly set the base_template for the admin interface
 admin.base_template = 'admin/base_admin.html'
 
 # This import must come AFTER the admin object is defined
