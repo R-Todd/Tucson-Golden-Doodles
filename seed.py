@@ -5,10 +5,11 @@ from datetime import date
 from app import create_app, db
 from app.models import (
     User, SiteMeta, Parent, Puppy, Review, HeroSection,
-    AboutSection, GalleryImage, ParentRole, PuppyStatus
+    AboutSection, GalleryImage, ParentRole, PuppyStatus, AnnouncementBanner
 )
 from app.utils.image_uploader import upload_image, RESPONSIVE_SIZES
 from werkzeug.datastructures import FileStorage
+import mimetypes # Import the mimetypes module
 
 # --- AWS S3 Configuration ---
 S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
@@ -33,8 +34,19 @@ def upload_seed_image(filename, folder='general', create_responsive=False):
     print(f"Uploading {filename} to S3 in folder '{folder}'...")
     try:
         with open(local_file_path, 'rb') as f:
-            # Wrap the file in FileStorage to mimic a Flask upload
-            file_storage = FileStorage(f, filename=filename)
+            # --- FIX: Determine content_type here ---
+            # Guess the MIME type based on the file extension
+            mime_type, _ = mimetypes.guess_type(local_file_path)
+            if mime_type is None:
+                # Fallback for common image types if mimetypes.guess_type fails
+                if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                    mime_type = f"image/{filename.split('.')[-1].replace('jpg', 'jpeg')}"
+                else:
+                    mime_type = "application/octet-stream" # Generic fallback
+
+            # Wrap the file in FileStorage, now with content_type
+            file_storage = FileStorage(f, filename=filename, content_type=mime_type)
+            
             # Use the main application's uploader
             return upload_image(file_storage, folder=folder, create_responsive_versions=create_responsive)
     except Exception as e:
@@ -157,6 +169,16 @@ def seed_database():
 
         review1 = Review(author_name='The Smith Family', testimonial_text='We couldn''t be happier with our puppy!', is_featured=True)
         db.session.add(review1)
+
+        # --- Announcement Banner ---
+        announcement = AnnouncementBanner(
+            is_active=True,
+            main_text="✨ Our Newest Litter Has Arrived! ✨",
+            sub_text="A beautiful new litter from {mom_name} & {dad_name}, born on {birth_date}.",
+            button_text="Meet the Puppies",
+            featured_puppy_id=puppy_river.id
+        )
+        db.session.add(announcement)
 
         db.session.commit()
         print("\n✅ Database seeded successfully and images uploaded to S3!")
