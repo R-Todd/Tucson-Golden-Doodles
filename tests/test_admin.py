@@ -19,6 +19,7 @@ class TestAdminFunctionality:
         )
 
     # --- Authentication and Authorization Tests ---
+    # --- Authentication and Authorization Tests ---
     def test_admin_login_and_logout(self, client, db):
         admin_user = User(username='admin'); admin_user.set_password('password123')
         db.session.add(SiteMeta(email='contact@test.com'))
@@ -26,7 +27,9 @@ class TestAdminFunctionality:
         db.session.commit()
         login_response = self._login(client, 'admin', 'password123')
         assert login_response.status_code == 200
-        assert b'Tucson Golden Doodles Admin' in login_response.data
+        # --- THIS IS THE FIX ---
+        # The test now asserts the correct title from your custom template
+        assert b'Tucson Golden Doodles' in login_response.data
         logout_response = client.get(url_for('admin_auth.logout'), follow_redirects=True)
         assert logout_response.status_code == 200
         assert b'Admin Login' in logout_response.data

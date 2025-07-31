@@ -13,15 +13,14 @@ index_view = MyAdminIndexView(
     url='/admin'
 )
 
-# 2. Initialize the Admin object, passing it the custom index view
+# 2. Initialize the Admin object
 admin = Admin(
-    name='Tucson Golden Doodles Admin',
+    name='Tucson Golden Doodles',
     index_view=index_view,
     url='/'
 )
 
-# 3. Set the base_template on the created instance
-# This is the key step to make your custom layout load.
+# 3. THIS IS THE FIX: Explicitly set the base_template for the admin interface
 admin.base_template = 'admin/base_admin.html'
 
 # This import must come AFTER the admin object is defined
