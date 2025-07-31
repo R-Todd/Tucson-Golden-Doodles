@@ -5,7 +5,9 @@
 {% from 'admin/lib.html' import render_field with context %}
 
 {#
-  Override the 'edit_form' block to create a completely custom layout.
+  Override only the 'edit_form' block.
+  All custom content, including the form and the associated litters table,
+  will now live inside this single block to resolve the conflict.
 #}
 {% block edit_form %}
 
@@ -144,11 +146,8 @@
             </div>
         </div>
     </div>
-{% endblock %}
 
-{# The 'body' block remains the same, handling the Associated Litters section #}
-{% block body %}
-    {{ super() }}
+    {# --- Associated Litters Section (Moved Inside the 'edit_form' block) --- #}
     {% if model and model.id %}
         <hr>
         <div class="row">
@@ -199,4 +198,5 @@
             </div>
         </div>
     {% endif %}
+
 {% endblock %}

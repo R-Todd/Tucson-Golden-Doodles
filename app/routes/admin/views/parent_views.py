@@ -1,6 +1,6 @@
 # app/routes/admin/views/parent_views.py
 
-from flask import request
+from flask import request, Flask
 from wtforms import SelectField
 from wtforms.widgets import Select
 from wtforms.fields import FileField
@@ -9,14 +9,13 @@ from app.models import ParentRole
 from app.utils.image_uploader import upload_image
 
 class ParentAdminView(AdminModelView):
-    # Use a custom template for the edit page
+    # Use a completely custom template for the edit page
     edit_template = 'admin/parent_edit.html'
     
     # Define which columns to show in the list view
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
     
-    # --- THIS IS THE CHANGE ---
-    # Exclude all image URL fields from the list view for a cleaner look
+    # Exclude all image URL fields from the list view
     column_exclude_list = [
         'main_image_url', 'main_image_url_small', 'main_image_url_medium',
         'main_image_url_large', 'alternate_image_url_1', 'alternate_image_url_2',
@@ -48,6 +47,11 @@ class ParentAdminView(AdminModelView):
             'widget': Select()
         }
     }
+
+    def __init__(self, model, session, **kwargs):
+        super(ParentAdminView, self).__init__(model, session, **kwargs)
+        # This is necessary for the custom template to access app context
+        self.app = Flask(__name__) 
 
     def edit_form(self, obj=None):
         form = super(ParentAdminView, self).edit_form(obj)
