@@ -1,35 +1,17 @@
-{# app/templates/admin/parent_edit.html #}
+{# app/templates/admin/parent_edit.html (Simplified for Debugging) #}
 {% extends 'admin/model/edit.html' %}
-{% from 'admin/lib.html' import render_field with context %}
 
+{# Import the standard form rendering macro from Flask-Admin #}
+{% from 'admin/lib.html' import render_form with context %}
+
+{# 
+  Override the edit_form block with a single call to the default renderer.
+  This bypasses all manual render_field calls to see if the form object itself is valid.
+#}
 {% block edit_form %}
-    {# --- DEBUGGING: Print the form object available in the template --- #}
-    <div class="alert alert-info">
-        <p><strong>Template Debug Info:</strong></p>
-        <pre>{{ form.__dict__ if form else 'Form object is NOT available in the template.' }}</pre>
-    </div>
-    {# --- END DEBUGGING --- #}
+  <div class="alert alert-warning" role="alert">
+    This is a simplified debug view.
+  </div>
 
-    {# --- Manually Render Parent Details (Non-Image Fields) --- #}
-    <div class="row">
-        <div class="col-md-6">
-            {{ render_field(form.name) }}
-            {{ render_field(form.role) }}
-            {{ render_field(form.breed) }}
-            {{ render_field(form.birth_date) }}
-        </div>
-        <div class="col-md-6">
-            {{ render_field(form.weight_kg) }}
-            {{ render_field(form.height_cm) }}
-            {{ render_field(form.is_active) }}
-            {{ render_field(form.is_guardian) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            {{ render_field(form.description) }}
-        </div>
-    </div>
-    
-    {# ... (rest of the file remains the same) ... #}
+  {{ render_form(form) }}
 {% endblock %}
