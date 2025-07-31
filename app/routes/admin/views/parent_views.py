@@ -6,22 +6,35 @@ from app.utils.image_uploader import upload_image
 from ..forms import ParentForm # Import the new ParentForm
 
 class ParentAdminView(AdminModelView):
-    # Use the custom template for both editing and creating
     edit_template = 'admin/parent_edit.html'
     create_template = 'admin/parent_edit.html'
-
-    # Define the columns to show in the list view
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
-
-    # Assign the custom form to the view
     form = ParentForm
+
+    # --- NEW: Add a debug print statement to the edit_form method ---
+    def edit_form(self, obj=None):
+        # This method is called by Flask-Admin to get the form for the edit page.
+        # We will get the form from the parent class first.
+        form = super(ParentAdminView, self).edit_form(obj)
+        
+        # --- DEBUGGING ---
+        # Let's print the form object and its fields to the console.
+        print("\n" + "="*50)
+        print("DEBUG: Inside ParentAdminView.edit_form")
+        print(f"Is form object valid? {form is not None}")
+        if form:
+            print(f"Form object type: {type(form)}")
+            # The _fields attribute is a dictionary of all fields in the form.
+            print(f"Fields available in form: {list(form._fields.keys())}")
+        print("="*50 + "\n")
+        # --- END DEBUGGING ---
+
+        return form
 
     def on_model_change(self, form, model, is_created):
         """Handle image uploads when a parent record is saved."""
-        # --- Main Image ---
         main_file = request.files.get('image_upload')
         if main_file and main_file.filename:
-            # This function creates and uploads multiple sizes
             image_urls = upload_image(main_file, folder='parents', create_responsive_versions=True)
             if image_urls:
                 model.main_image_url = image_urls.get('original')
@@ -29,7 +42,6 @@ class ParentAdminView(AdminModelView):
                 model.main_image_url_medium = image_urls.get('medium')
                 model.main_image_url_large = image_urls.get('large')
 
-        # --- Alternate Images ---
         alt_fields = [
             'alternate_image_upload_1', 'alternate_image_upload_2',
             'alternate_image_upload_3', 'alternate_image_upload_4'
@@ -42,8 +54,6 @@ class ParentAdminView(AdminModelView):
         for i, field_name in enumerate(alt_fields):
             file = request.files.get(field_name)
             if file and file.filename:
-                # Alternate images don't need responsive versions
                 url = upload_image(file, folder='parents_alternates')
                 if url:
-                    # e.g., setattr(model, 'alternate_image_url_1', url)
                     setattr(model, alt_model_attrs[i], url)
