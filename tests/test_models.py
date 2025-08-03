@@ -28,8 +28,6 @@ class TestSiteModels:
         assert about.content_html == '<p>Some text.</p>'
 
     def test_galleryimage_creation(self, db):
-        # --- THIS IS THE FIX ---
-        # Changed 'image_url' to 'image_s3_key' to match the updated model.
         image = GalleryImage(image_s3_key='img/gallery.jpg', caption='A test image', sort_order=1)
         db.session.add(image)
         db.session.commit()
@@ -49,8 +47,6 @@ class TestParentModels:
 
     def test_parent_image_relationship(self, db):
         parent = Parent(name='Bella', role=ParentRole.MOM, breed='Poodle')
-        # --- THIS IS THE FIX ---
-        # Changed 'image_url' to 'image_s3_key' to match the updated model.
         image = ParentImage(image_s3_key='img/bella.jpg', caption='Bella smiling')
         parent.images.append(image)
         db.session.add(parent)
