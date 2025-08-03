@@ -2,7 +2,7 @@
 
 from flask import request
 from .base import AdminModelView
-# --- MODIFIED: Import generate_presigned_url ---
+# --- Import generate_presigned_url ---
 from app.utils.image_uploader import upload_image, generate_presigned_url
 from ..forms import ParentForm 
 
@@ -15,7 +15,7 @@ class ParentAdminView(AdminModelView):
     def edit_form(self, obj=None):
         form = super(ParentAdminView, self).edit_form(obj)
         
-        # --- MODIFIED: Generate pre-signed URLs for image previews ---
+        # --- Generate pre-signed URLs for image previews ---
         if obj:
             image_fields = {
                 'image_upload': obj.main_image_s3_key,

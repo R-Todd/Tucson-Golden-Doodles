@@ -18,7 +18,7 @@ class Parent(db.Model):
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     is_guardian = db.Column(db.Boolean, default=False, nullable=False)
 
-    # --- RENAMED FIELDS for S3 Keys ---
+    # ---  FIELDS for S3 Keys ---
     main_image_s3_key = db.Column(db.String(255))
     main_image_s3_key_small = db.Column(db.String(255))
     main_image_s3_key_medium = db.Column(db.String(255))
@@ -32,7 +32,7 @@ class Parent(db.Model):
     litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
     litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
 
-    # --- THIS IS THE FIX ---
+
     # Add an explicit constructor to ensure stable object creation in tests.
     def __init__(self, **kwargs):
         super(Parent, self).__init__(**kwargs)

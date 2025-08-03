@@ -58,7 +58,7 @@ class GalleryImage(db.Model):
         return f'<GalleryImage {self.id}>'
 
 
-# --- MODIFIED: AnnouncementBanner now links to a Puppy ---
+# --- : AnnouncementBanner  links to a Puppy ---
 class AnnouncementBanner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
