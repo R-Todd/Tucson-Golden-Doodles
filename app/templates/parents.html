@@ -23,24 +23,12 @@
 
                     {% if all_carousel_keys %}
                     <div id="parentCarousel-{{ parent.id }}" class="carousel slide parent-carousel-wrapper">
-                        <div class="carousel-indicators">
-                            {% for loop_index in range(all_carousel_keys|length) %}
-                            <button type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide-to="{{ loop_index }}" class="{{ 'active' if loop.first }}" aria-current="{{ 'true' if loop.first }}" aria-label="Slide {{ loop_index + 1 }}"></button>
-                            {% endfor %}
-                        </div>
                         <div class="carousel-inner">
                             {% for s3_key in all_carousel_keys %}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                {% if loop.first and parent.main_image_s3_key_small %}
-                                    <img src="{{ parent.main_image_s3_key_large | s3_url }}"
-                                         srcset="{{ parent.main_image_s3_key_small | s3_url }} 480w,
-                                                 {{ parent.main_image_s3_key_medium | s3_url }} 800w,
-                                                 {{ parent.main_image_s3_key_large | s3_url }} 1200w"
-                                         sizes="(max-width: 767px) 90vw, 45vw"
-                                         class="d-block w-100 carousel-image" alt="Photo of {{ parent.name }}">
-                                {% else %}
-                                    <img src="{{ s3_key | s3_url }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
-                                {% endif %}
+                                {# --- THIS IS THE FIX --- #}
+                                {# Add a fallback to a placeholder image if the s3_url is None #}
+                                <img src="{{ s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
                             </div>
                             {% endfor %}
                         </div>
@@ -54,8 +42,6 @@
                     {% endif %}
                 </div>
 
-                {# --- THIS IS THE FIX --- #}
-                {# This entire column's content was missing. It is now restored. #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
                         <h3 class="breed-header">{{ parent.breed }}</h3>
@@ -94,7 +80,8 @@
                         {% for puppy in puppies %}
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
                             <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                <img src="{{ puppy.main_image_s3_key | s3_url }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                                {# --- THIS IS THE FIX --- #}
+                                <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
                         {% endfor %}

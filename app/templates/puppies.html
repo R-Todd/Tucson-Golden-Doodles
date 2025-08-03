@@ -20,12 +20,12 @@
                 <div class="row mb-4">
                     <div class="col-md-6 text-center">
                         <h4 class="h5">Mother: {{ mom.name }}</h4>
-                        {# --- MODIFIED: Use s3_url filter --- #}
+                        {# --- THIS IS THE FIX --- #}
                         <img src="{{ mom.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ mom.name }}">
                     </div>
                     <div class="col-md-6 text-center">
                         <h4 class="h5">Father: {{ dad.name }}</h4>
-                        {# --- MODIFIED: Use s3_url filter --- #}
+                        {# --- THIS IS THE FIX --- #}
                         <img src="{{ dad.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ dad.name }}">
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     {% for puppy in puppies_in_litter %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
-                            {# --- MODIFIED: Use s3_url filter --- #}
+                            {# --- THIS IS THE FIX --- #}
                             <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
                             <div class="card-body text-center">
                                 <h5 class="card-title">{{ puppy.name }}</h5>
