@@ -1,3 +1,4 @@
+# tests/test_routes.py
 from app.models import Parent, ParentRole, HeroSection, Puppy, PuppyStatus
 from datetime import date
 from unittest.mock import patch
@@ -43,5 +44,8 @@ def test_parents_page_route_with_presigned_urls(mock_generate_url, client, db):
     response = client.get('/parents')
     assert response.status_code == 200
     assert b'https://mocked-parent-url.com/parent.jpg' in response.data
-    assert b'ARCHIE' in response.data
+    #
+    # The name is rendered as 'Archie', and the `text-uppercase` class handles the styling.
+    # The test should check for the actual data in the response.
+    assert b'Archie' in response.data
     mock_generate_url.assert_called()
