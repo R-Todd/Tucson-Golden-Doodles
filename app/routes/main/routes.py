@@ -35,4 +35,5 @@ def index():
                            gallery_images=gallery_images,
                            guardian_parents=guardian_parents,
                            announcement_banner=announcement_banner,
-                           most_recent_litter_key=most_recent_litter_key)
+                           most_recent_litter_key=most_recent_litter_key,
+                           PuppyStatus=PuppyStatus)

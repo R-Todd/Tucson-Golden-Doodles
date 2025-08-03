@@ -3,7 +3,7 @@
 {% block content %}
 
 {% if hero %}
-{#--- : ADD HERO CONTENT BLOCK ---#}
+{#--- HERO CONTENT BLOCK ---#}
 <section class="hero-section" style="background-image: url('{{ (hero.image_s3_key_large or hero.image_s3_key) | s3_url }}');">
     <div class="hero-content">
         <h1 class="hero-title">{{ hero.main_title }}</h1>
@@ -18,7 +18,7 @@
 </section>
 {% endif %}
 
-{#--- : ADD ANNOUNCEMENT BANNER BLOCK ---#}
+{#--- ANNOUNCEMENT BANNER BLOCK ---#}
 {% if announcement_banner and announcement_banner.is_active and announcement_banner.featured_puppy %}
     {% set puppy = announcement_banner.featured_puppy %}
     {% set mom = puppy.mom %}
@@ -49,6 +49,7 @@
     <hr class="my-5">
     {% endif %}
 
+    {#--- AVAILABLE PUPPIES SECTION ---#}
     <section id="available-puppies" class="my-5 text-center">
         <h2 class="display-5 mb-4">Available Puppies</h2>
         {% if puppies %}
@@ -58,12 +59,26 @@
                 <div class="card h-100 shadow-sm">
                     <img src="{{ puppy.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
                     <div class="card-body">
-                        </div>
+                        <h5 class="card-title">{{ puppy.name }}</h5>
+                        <p class="card-text">
+                            <strong>Parents:</strong> 
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> & 
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.dad.id }}">{{ puppy.dad.name }}</a>
+                        </p>
+                        {% if puppy.status == PuppyStatus.AVAILABLE %}
+                            <span class="badge bg-success">{{ puppy.status.value }}</span>
+                        {% elif puppy.status == PuppyStatus.RESERVED %}
+                            <span class="badge bg-warning text-dark">{{ puppy.status.value }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ puppy.status.value }}</span>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
+            <p>We have no available puppies at this time. Please check back soon!</p>
         {% endif %}
     </section>
     <hr class="my-5">
