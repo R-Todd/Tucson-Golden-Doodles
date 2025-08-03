@@ -1,11 +1,11 @@
-Flask               # the core framework
-Flask-SQLAlchemy     # ORM integration
-Flask-Migrate        # DB migrations
-python-dotenv        # load .env vars
-PyMySQL              # MySQL driver
-cryptography         # required by certain extensions
-pytest               # testing framework
-pytest-flask         # pytest fixtures for Flask
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+python-dotenv
+PyMySQL
+cryptography
+pytest
+pytest-flask
 Flask-Admin==2.0.0a4
 Flask-Login
 werkzeug
@@ -14,3 +14,4 @@ Flask-WTF
 beautifulsoup4
 Pillow
 WTForms-SQLAlchemy
+Flask-Caching
