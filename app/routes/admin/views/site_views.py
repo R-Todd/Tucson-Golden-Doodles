@@ -3,8 +3,9 @@
 from flask import request
 from wtforms.fields import FileField
 from .base import AdminModelView
-from app.utils.image_uploader import upload_image
-from ..forms import AnnouncementBannerForm # CORRECTED IMPORT
+# --- MODIFIED: Import generate_presigned_url ---
+from app.utils.image_uploader import upload_image, generate_presigned_url
+from ..forms import AnnouncementBannerForm
 from app.models import AnnouncementBanner
 
 class HeroSectionAdminView(AdminModelView):
@@ -21,53 +22,57 @@ class HeroSectionAdminView(AdminModelView):
 
     def edit_form(self, obj=None):
         form = super(HeroSectionAdminView, self).edit_form(obj)
-        if obj and obj.image_url:
+        # --- MODIFIED: Generate pre-signed URL for image preview ---
+        if obj and obj.image_s3_key:
             if form.image_upload.render_kw is None:
                 form.image_upload.render_kw = {}
-            form.image_upload.render_kw['data-current-image'] = obj.image_url
+            form.image_upload.render_kw['data-current-image'] = generate_presigned_url(obj.image_s3_key)
         return form
 
     def on_model_change(self, form, model, is_created):
         file = request.files.get('image_upload')
         if file and file.filename:
-            image_urls = upload_image(file, folder='hero', create_responsive_versions=True)
-            if image_urls:
-                model.image_url = image_urls.get('original')
-                model.image_url_small = image_urls.get('small')
-                model.image_url_medium = image_urls.get('medium')
-                model.image_url_large = image_urls.get('large')
+            # --- MODIFIED: Save the returned S3 keys ---
+            s3_keys = upload_image(file, folder='hero', create_responsive_versions=True)
+            if s3_keys:
+                model.image_s3_key = s3_keys.get('original')
+                model.image_s3_key_small = s3_keys.get('small')
+                model.image_s3_key_medium = s3_keys.get('medium')
+                model.image_s3_key_large = s3_keys.get('large')
 
 
 class AboutSectionAdminView(AdminModelView):
     """ Custom view for the About Section with image upload. """
     form_extra_fields = { 'image_upload': FileField('Upload New Image') }
+    form_columns = ['title', 'content_html', 'image_upload']
 
     def edit_form(self, obj=None):
         form = super(AboutSectionAdminView, self).edit_form(obj)
-        if obj and obj.image_url:
+        # --- MODIFIED: Generate pre-signed URL for image preview ---
+        if obj and obj.image_s3_key:
             if form.image_upload.render_kw is None:
                 form.image_upload.render_kw = {}
-            form.image_upload.render_kw['data-current-image'] = obj.image_url
+            form.image_upload.render_kw['data-current-image'] = generate_presigned_url(obj.image_s3_key)
         return form
 
     def on_model_change(self, form, model, is_created):
         file = request.files.get('image_upload')
         if file and file.filename:
-            image_urls = upload_image(file, folder='about', create_responsive_versions=True)
-            if image_urls:
-                model.image_url = image_urls.get('original')
-                model.image_url_small = image_urls.get('small')
-                model.image_url_medium = image_urls.get('medium')
-                model.image_url_large = image_urls.get('large')
+            # --- MODIFIED: Save the returned S3 keys ---
+            s3_keys = upload_image(file, folder='about', create_responsive_versions=True)
+            if s3_keys:
+                model.image_s3_key = s3_keys.get('original')
+                model.image_s3_key_small = s3_keys.get('small')
+                model.image_s3_key_medium = s3_keys.get('medium')
+                model.image_s3_key_large = s3_keys.get('large')
 
 class AnnouncementBannerAdminView(AdminModelView):
     """Custom Admin View for the Announcement Banner."""
+    # --- This view remains unchanged as it has no image uploads ---
     form = AnnouncementBannerForm
-    
     column_list = ('is_active', 'main_text', 'featured_puppy')
 
     def on_model_change(self, form, model, is_created):
-        """Saves the relationship between the banner and the selected puppy."""
         selected_puppy = form.featured_puppy.data
         if selected_puppy:
             model.featured_puppy_id = selected_puppy.id

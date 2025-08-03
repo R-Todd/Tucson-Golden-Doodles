@@ -11,7 +11,7 @@ class Puppy(db.Model):
     dad_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
     mom_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
     
-    # --- RENAMED FIELD ---
+    # --- RENAMED FIELD -private s3 ---
     main_image_s3_key = db.Column(db.String(255))
 
     mom = db.relationship('Parent', foreign_keys=[mom_id], back_populates='litters_as_mom')

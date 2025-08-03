@@ -9,8 +9,6 @@
 
     {% if litters %}
         {% for (birth_date, mom, dad), puppies_in_litter in litters.items() %}
-        {# --- THIS IS THE FIX --- #}
-        {# This ID now perfectly matches the link from the homepage banner and parents page #}
         <div class="card shadow-sm mb-5" id="litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
             <div class="card-header bg-light">
                 <h2 class="h4 mb-0">
@@ -22,11 +20,13 @@
                 <div class="row mb-4">
                     <div class="col-md-6 text-center">
                         <h4 class="h5">Mother: {{ mom.name }}</h4>
-                        <img src="{{ mom.main_image_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ mom.name }}">
+                        {# --- MODIFIED: Use s3_url filter --- #}
+                        <img src="{{ mom.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ mom.name }}">
                     </div>
                     <div class="col-md-6 text-center">
                         <h4 class="h5">Father: {{ dad.name }}</h4>
-                        <img src="{{ dad.main_image_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ dad.name }}">
+                        {# --- MODIFIED: Use s3_url filter --- #}
+                        <img src="{{ dad.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ dad.name }}">
                     </div>
                 </div>
                 <hr>
@@ -35,7 +35,8 @@
                     {% for puppy in puppies_in_litter %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
-                            <img src="{{ puppy.main_image_url or url_for('static', filename='img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
+                            {# --- MODIFIED: Use s3_url filter --- #}
+                            <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
                             <div class="card-body text-center">
                                 <h5 class="card-title">{{ puppy.name }}</h5>
                                 {% if puppy.status == PuppyStatus.AVAILABLE %}<span class="badge bg-success">{{ puppy.status.value }}</span>
@@ -53,7 +54,6 @@
     {% else %}
     <div class="text-center p-5">
         <p class="lead">We don't have any puppies available right now, but new litters are on the way!</p>
-        <p>Please check back soon or contact us to get on the waiting list.</p>
     </div>
     {% endif %}
 </div>
