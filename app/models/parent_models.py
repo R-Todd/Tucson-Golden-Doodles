@@ -1,77 +1,85 @@
-# app/models/parent_models.py
+import boto3
+import os
+from werkzeug.utils import secure_filename
+import uuid
+from PIL import Image, ImageOps
+import io
 
-from . import db
-from .enums import ParentRole
+# --- S3 Configuration ---
+S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
+S3_REGION = os.environ.get('S3_BUCKET_REGION')
+s3_client = boto3.client("s3", region_name=S3_REGION)
+RESPONSIVE_SIZES = { "small": (480, 480), "medium": (800, 800), "large": (1200, 1200) }
 
-# Parent dogs (Sires and Dams)
-class Parent(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.Enum(ParentRole), nullable=False) # e.g., ParentRole.DAD
-    breed = db.Column(db.String(100))
-    birth_date = db.Column(db.Date)
-    weight_kg = db.Column(db.Float)
-    height_cm = db.Column(db.Float)
-    description = db.Column(db.Text)
-    main_image_url = db.Column(db.String(255))
-    
-    # New: Add fields for responsive image sizes
-    main_image_url_small = db.Column(db.String(255))
-    main_image_url_medium = db.Column(db.String(255))
-    main_image_url_large = db.Column(db.String(255))
+def upload_image(file_storage, folder='general', create_responsive_versions=False):
+    """
+    MODIFIED: Uploads a file to an S3 bucket and returns the S3 KEY or a dictionary of S3 KEYS.
+    """
+    original_filename = secure_filename(file_storage.filename)
+    unique_prefix = f"{uuid.uuid4().hex[:8]}"
 
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_guardian = db.Column(db.Boolean, default=False, nullable=False)
+    try:
+        file_storage.seek(0)
+        img = Image.open(file_storage)
+        img = ImageOps.exif_transpose(img)
+        img_format = img.format or 'JPEG'
+    except Exception as e:
+        print(f"Error processing image orientation: {e}")
+        return None
 
-    # New: Add fields for 4 alternate images
-    alternate_image_url_1 = db.Column(db.String(255))
-    alternate_image_url_2 = db.Column(db.String(255))
-    alternate_image_url_3 = db.Column(db.String(255))
-    alternate_image_url_4 = db.Column(db.String(255))
+    # --- Simple Upload (Non-responsive) ---
+    if not create_responsive_versions:
+        s3_key = f"{folder}/{unique_prefix}-{original_filename}"
+        try:
+            in_mem_file = io.BytesIO()
+            img.save(in_mem_file, format=img_format)
+            in_mem_file.seek(0)
+            s3_client.upload_fileobj(in_mem_file, S3_BUCKET, s3_key, ExtraArgs={"ContentType": file_storage.content_type})
+            return s3_key # RETURN THE KEY
+        except Exception as e:
+            print(f"Error during single S3 upload: {e}")
+            return None
 
-    # One-to-many relationship to ParentImage (kept for other potential gallery uses)
-    images = db.relationship('ParentImage', backref='parent', lazy=True, cascade="all, delete-orphan")
+    # --- Responsive Images Logic ---
+    keys = {} # Store keys instead of URLs
+    try:
+        # Upload responsive versions
+        for name, size in RESPONSIVE_SIZES.items():
+            img_copy = img.copy()
+            img_copy.thumbnail(size)
+            in_mem_file = io.BytesIO()
+            img_copy.save(in_mem_file, format=img_format)
+            in_mem_file.seek(0)
+            s3_key = f"{folder}/{unique_prefix}-{name}-{original_filename}"
+            s3_client.upload_fileobj(in_mem_file, S3_BUCKET, s3_key, ExtraArgs={"ContentType": file_storage.content_type})
+            keys[name] = s3_key # STORE THE KEY
 
-    # Relationships to Puppy, distinguishing between dad and mom roles
-    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
-    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
+        # Upload the original, full-size image
+        in_mem_original = io.BytesIO()
+        img.save(in_mem_original, format=img_format)
+        in_mem_original.seek(0)
+        s3_key_original = f"{folder}/{unique_prefix}-original-{original_filename}"
+        s3_client.upload_fileobj(in_mem_original, S3_BUCKET, s3_key_original, ExtraArgs={"ContentType": file_storage.content_type})
+        keys['original'] = s3_key_original # STORE THE KEY
 
-    @property
-    def litters(self):
-        """Returns a query for all puppies from this parent, based on role."""
-        if self.role == ParentRole.DAD:
-            return self.litters_as_dad
-        else:
-            return self.litters_as_mom
+        return keys # RETURN DICTIONARY OF KEYS
+    except Exception as e:
+        print(f"Error during responsive S3 upload: {e}")
+        return None
 
-    @property
-    def grouped_litters(self):
-        """
-        Groups this parent's puppies by litter, ordered by date.
-        A litter is defined by the birth date and parents.
-        Returns an ordered dictionary where keys are a tuple of (birth_date, dad, mom)
-        and values are the list of puppies in that litter.
-        """
-        from collections import OrderedDict
-        from itertools import groupby
-        from .puppy_models import Puppy # Local import to prevent circular dependency
-
-        puppies = self.litters.order_by(Puppy.birth_date.desc(), Puppy.name).all()
-        keyfunc = lambda p: (p.birth_date, p.dad, p.mom)
-        return OrderedDict((k, list(g)) for k, g in groupby(puppies, keyfunc))
-
-    def __repr__(self):
-        return f'<Parent {self.name}>'
-
-    def __str__(self):
-        return self.name
-
-# Gallery images for parents (kept as is)
-class ParentImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
-    image_url = db.Column(db.String(255), nullable=False)
-    caption = db.Column(db.String(255))
-
-    def __repr__(self):
-        return f'<ParentImage {self.id} for Parent {self.parent_id}>'
+def generate_presigned_url(s3_key, expiration=3600):
+    """
+    NEW: Generate a pre-signed URL to securely access a private S3 object.
+    """
+    if not s3_key:
+        return None
+    try:
+        response = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': S3_BUCKET, 'Key': s3_key},
+            ExpiresIn=expiration  # URL expires in 1 hour
+        )
+        return response
+    except Exception as e:
+        print(f"Error generating presigned URL for key {s3_key}: {e}")
+        return None
