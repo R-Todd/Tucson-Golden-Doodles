@@ -3,76 +3,45 @@
 {% block title %}Our Parents - Tucson Golden Doodles{% endblock %}
 
 {% block content %}
-<div class="container-fluid p-0"> {# Use container-fluid for full width sections #}
-
+<div class="container-fluid p-0">
     {% if parents %}
         {% for parent in parents %}
-        {# Name Banner - ADD THE ID ATTRIBUTE HERE #}
-        <div class="parent-name-banner" id="parent-{{ parent.id }}" style="background-color: #79868f;"> {# Muted background bar #}
-            <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1> {# Large, all-caps serif, white, centered #}
+        <div class="parent-name-banner" id="parent-{{ parent.id }}">
+            <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1>
         </div>
 
-        <div class="container my-5"> {# Container for the two-column layout #}
-            <div class="row g-4 parent-layout-container"> {# g-4 for consistent spacing #}
-
-                {# Left Column: Image Carousel #}
+        <div class="container my-5">
+            <div class="row g-4 parent-layout-container">
                 <div class="col-md-6 parent-image-column">
-                    {# Collect all image URLs for the carousel #}
-                    {% set all_carousel_images = [] %}
-                    {% if parent.main_image_url %}{% set _ = all_carousel_images.append(parent.main_image_url) %}{% endif %}
-                    {% if parent.alternate_image_url_1 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_1) %}{% endif %}
-                    {% if parent.alternate_image_url_2 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_2) %}{% endif %}
-                    {% if parent.alternate_image_url_3 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_3) %}{% endif %}
-                    {% if parent.alternate_image_url_4 %}{% set _ = all_carousel_images.append(parent.alternate_image_url_4) %}{% endif %}
+                    {# Image Carousel for S3 keys #}
+                    {% set all_carousel_keys = [] %}
+                    {% if parent.main_image_s3_key %}{% set _ = all_carousel_keys.append(parent.main_image_s3_key) %}{% endif %}
+                    {% if parent.alternate_image_s3_key_1 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_1) %}{% endif %}
+                    {% if parent.alternate_image_s3_key_2 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_2) %}{% endif %}
+                    {% if parent.alternate_image_s3_key_3 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_3) %}{% endif %}
+                    {% if parent.alternate_image_s3_key_4 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_4) %}{% endif %}
 
-                    {% if all_carousel_images %}
+                    {% if all_carousel_keys %}
                     <div id="parentCarousel-{{ parent.id }}" class="carousel slide parent-carousel-wrapper">
-                        <div class="carousel-indicators">
-                            {% for loop_index in range(all_carousel_images|length) %}
-                            <button type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide-to="{{ loop_index }}" class="{{ 'active' if loop.first }}" aria-current="{{ 'true' if loop.first }}" aria-label="Slide {{ loop_index + 1 }}"></button>
-                            {% endfor %}
-                        </div>
                         <div class="carousel-inner">
-                            {% for img_url in all_carousel_images %}
+                            {% for s3_key in all_carousel_keys %}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                {# Check if this is the main image and if responsive versions exist. #}
-                                {% if loop.first and parent.main_image_url_small %}
-                                    <img src="{{ parent.main_image_url_large }}"
-                                         srcset="{{ parent.main_image_url_small }} 480w,
-                                                 {{ parent.main_image_url_medium }} 800w,
-                                                 {{ parent.main_image_url_large }} 1200w"
-                                         sizes="(max-width: 767px) 90vw, 45vw"
-                                         class="d-block w-100 carousel-image"
-                                         alt="Photo of {{ parent.name }}"
-                                         {% if not loop.first %}loading="lazy"{% endif %}>
-                                {% else %}
-                                    {# Fallback for alternate images or if responsive versions don't exist #}
-                                    <img src="{{ img_url }}"
-                                         class="d-block w-100 carousel-image"
-                                         alt="Parent image {{ loop.index }}"
-                                         {% if not loop.first %}loading="lazy"{% endif %}>
-                                {% endif %}
+                                {# --- THIS IS THE FIX --- #}
+                                {# Add a fallback to a placeholder image if the s3_url is None #}
+                                <img src="{{ s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
                             </div>
                             {% endfor %}
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
                         </button>
                         <button class="carousel-control-next" type="button" data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
                         </button>
-                    </div>
-                    {% else %}
-                    {# Fallback if no images are available #}
-                    <div class="main-image-wrapper p-2">
-                        <img src="{{ url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid parent-main-image" alt="No image available">
                     </div>
                     {% endif %}
                 </div>
 
-                {# Right Column: Info #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
                         <h3 class="breed-header">{{ parent.breed }}</h3>
@@ -85,47 +54,34 @@
                         </p>
                     </div>
                     <div class="description-paragraphs mt-4">
-                        {# Check if parent.description exists before trying to split it #}
                         {% if parent.description %}
                             {% for paragraph in parent.description.split('\n') %}
                                 {% if paragraph.strip() %}
-                                    <p class="text-justify">{{ paragraph.strip() }}</p> {# Justified text #}
+                                    <p>{{ paragraph.strip() }}</p>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
                     </div>
                 </div>
-            </div> {# End .row #}
+            </div>
 
-            {# "Past Puppies" Section Header #}
             {% if parent.grouped_litters %}
             <div class="past-puppies-header mt-5 text-center">
                 <h2>{{ parent.name | upper }}'S PAST PUPPIES</h2>
             </div>
-
-            {# Loop through each litter for the current parent #}
             {% for (birth_date, dad, mom), puppies in parent.grouped_litters.items() %}
-                {# --- THIS IS THE FIX --- #}
-                {# This link now uses the same ID structure as the puppies page #}
                 <div class="litter-banner">
                     <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
-                        Litter with 
-                        {% if parent.id == mom.id %}
-                            {{ dad.name }}
-                        {% else %}
-                            {{ mom.name }}
-                        {% endif %}
-                        <small class="text-muted"> (Born: {{ birth_date.strftime('%B %Y') }})</small>
+                        Litter with {{ mom.name if parent.role.name == 'DAD' else dad.name }} (Born: {{ birth_date.strftime('%B %Y') }})
                     </a>
                 </div>
-
-                {# Past Puppies Thumbnails Row for THIS LITTER - Horizontal Scroll #}
                 <div class="past-puppies-thumbnails-row">
                     <div class="d-flex flex-nowrap overflow-auto py-2">
                         {% for puppy in puppies %}
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
                             <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                <img src="{{ puppy.main_image_url }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
+                                {# --- THIS IS THE FIX --- #}
+                                <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
                         {% endfor %}
@@ -134,23 +90,19 @@
             {% endfor %}
             {% endif %}
 
-        </div> {# End .container #}
+        </div>
         {% endfor %}
     {% else %}
-        <div class="container my-5">
-            <div class="alert alert-info text-center" role="alert">
-                There are no parent dogs to display at this time. Please check back later!
-            </div>
+    <div class="container my-5">
+        <div class="alert alert-info text-center" role="alert">
+            There are no parent dogs to display at this time.
         </div>
+    </div>
     {% endif %}
-
-</div> {# End container-fluid #}
+</div>
 {% endblock %}
 
 {% block extra_js %}
-{# This script enables the image gallery lightbox functionality #}
 <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
-
-{# Link to your new JavaScript file #}
 <script src="{{ url_for('static', filename='js/parents_carousel.js') }}"></script>
 {% endblock %}

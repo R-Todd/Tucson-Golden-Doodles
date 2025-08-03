@@ -18,16 +18,17 @@ class SiteMeta(db.Model):
 
 class HeroSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(255))
-    image_url_small = db.Column(db.String(255))
-    image_url_medium = db.Column(db.String(255))
-    image_url_large = db.Column(db.String(255))
     main_title = db.Column(db.String(200), default="Copper Skye Doodles")
     subtitle = db.Column(db.String(200), default="Established 2001")
     description = db.Column(db.String(300), default="Arizona Goldendoodles, Bernedoodles & Golden Mountain Doodles")
     scroll_text_main = db.Column(db.String(100), default="Website Updated")
     scroll_text_secondary = db.Column(db.String(100), default="See Available Puppies Below")
 
+    # --- RENAMED FIELDS ---
+    image_s3_key = db.Column(db.String(255))
+    image_s3_key_small = db.Column(db.String(255))
+    image_s3_key_medium = db.Column(db.String(255))
+    image_s3_key_large = db.Column(db.String(255))
 
     def __repr__(self):
         return f'<HeroSection {self.main_title}>'
@@ -36,18 +37,20 @@ class AboutSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
     content_html = db.Column(db.Text)
-    image_url = db.Column(db.String(255))
-    image_url_small = db.Column(db.String(255))
-    image_url_medium = db.Column(db.String(255))
-    image_url_large = db.Column(db.String(255))
 
+    # --- RENAMED FIELDS ---
+    image_s3_key = db.Column(db.String(255))
+    image_s3_key_small = db.Column(db.String(255))
+    image_s3_key_medium = db.Column(db.String(255))
+    image_s3_key_large = db.Column(db.String(255))
 
     def __repr__(self):
         return f'<AboutSection {self.title}>'
 
 class GalleryImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(255), nullable=False)
+    # --- RENAMED FIELD ---
+    image_s3_key = db.Column(db.String(255), nullable=False)
     caption = db.Column(db.String(255))
     sort_order = db.Column(db.Integer, default=0)
 
