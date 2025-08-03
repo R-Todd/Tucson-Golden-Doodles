@@ -35,6 +35,11 @@ class Parent(db.Model):
     litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
     litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
 
+    # --- THIS IS THE FIX ---
+    # Add an explicit constructor to ensure stable object creation in tests.
+    def __init__(self, **kwargs):
+        super(Parent, self).__init__(**kwargs)
+
     @property
     def litters(self):
         """Returns a query for all puppies from this parent, based on role."""
