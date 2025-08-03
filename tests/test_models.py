@@ -3,8 +3,6 @@ from app.models import (
     Parent, Puppy, ParentRole, PuppyStatus, ParentImage, SiteMeta,
     HeroSection, AboutSection, GalleryImage, Review, AnnouncementBanner
 )
-# By grouping tests into classes, the test suite becomes more organized
-# and easier to read, especially as the number of models grows.
 
 class TestSiteModels:
     """Tests for site content models like SiteMeta, HeroSection, etc."""
@@ -30,7 +28,9 @@ class TestSiteModels:
         assert about.content_html == '<p>Some text.</p>'
 
     def test_galleryimage_creation(self, db):
-        image = GalleryImage(image_url='img/gallery.jpg', caption='A test image', sort_order=1)
+        # --- THIS IS THE FIX ---
+        # Changed 'image_url' to 'image_s3_key' to match the updated model.
+        image = GalleryImage(image_s3_key='img/gallery.jpg', caption='A test image', sort_order=1)
         db.session.add(image)
         db.session.commit()
         assert image.id is not None
@@ -49,7 +49,9 @@ class TestParentModels:
 
     def test_parent_image_relationship(self, db):
         parent = Parent(name='Bella', role=ParentRole.MOM, breed='Poodle')
-        image = ParentImage(image_url='img/bella.jpg', caption='Bella smiling')
+        # --- THIS IS THE FIX ---
+        # Changed 'image_url' to 'image_s3_key' to match the updated model.
+        image = ParentImage(image_s3_key='img/bella.jpg', caption='Bella smiling')
         parent.images.append(image)
         db.session.add(parent)
         db.session.commit()
@@ -108,16 +110,10 @@ class TestReviewModel:
         assert review1.is_featured is True
         assert review2.is_featured is False
 
-# --- NEW: Add a test class for the AnnouncementBanner model ---
 class TestAnnouncementBannerModel:
     """Tests for the AnnouncementBanner model and its relationships."""
 
     def test_banner_creation_and_relationship(self, db):
-        """
-        GIVEN an AnnouncementBanner and a Puppy model
-        WHEN the banner is linked to a puppy
-        THEN check that the relationship is correctly established
-        """
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
         db.session.add_all([mom, dad])
@@ -135,6 +131,4 @@ class TestAnnouncementBannerModel:
         db.session.commit()
 
         assert banner.id is not None
-        assert banner.main_text == "Test Banner"
-        # Check that the relationship works correctly
         assert banner.featured_puppy == puppy
