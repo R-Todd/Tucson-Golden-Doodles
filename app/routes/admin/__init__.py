@@ -13,12 +13,15 @@ index_view = MyAdminIndexView(
     url='/admin'
 )
 
-# 2. Initialize the Admin object, passing it the custom index view
+# 2. Initialize the Admin object
 admin = Admin(
-    name='Tucson Golden Doodles Admin',
-    #template_mode='bootstrap3',
-    index_view=MyAdminIndexView(url='/admin')
+    name='Tucson Golden Doodles',
+    index_view=index_view,
+    url='/'
 )
+
+# 3. Explicitly set the base_template for the admin interface
+admin.base_template = 'admin/base_admin.html'
 
 # This import must come AFTER the admin object is defined
 from . import routes
