@@ -1,7 +1,7 @@
 # app/utils/template_filters.py
 
 from .image_uploader import generate_presigned_url
-from app import cache  # --- ADD THIS IMPORT ---
+# from app import cache  # --- ADD THIS IMPORT ---
 
 def setup_template_filters(app):
     """
