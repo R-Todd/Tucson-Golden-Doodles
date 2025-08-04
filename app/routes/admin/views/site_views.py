@@ -11,6 +11,8 @@ from app.models import AnnouncementBanner
 class HeroSectionAdminView(AdminModelView):
     """ Custom view for the Hero Section with image upload. """
     
+    edit_template = 'admin/hero_section_edit.html'
+
     column_list = ('main_title', 'subtitle', 'description')
     form_columns = [
         'main_title', 'subtitle', 'description', 'scroll_text_main',
@@ -43,8 +45,22 @@ class HeroSectionAdminView(AdminModelView):
 
 class AboutSectionAdminView(AdminModelView):
     """ Custom view for the About Section with image upload. """
+    # --- THIS IS THE NEW LINE TO ADD ---
+    edit_template = 'admin/about_section_edit.html'
+
     form_extra_fields = { 'image_upload': FileField('Upload New Image') }
     form_columns = ['title', 'content_html', 'image_upload']
+    
+    # --- ADD THIS NEW form_widget_args ATTRIBUTE ---
+    form_widget_args = {
+        'title': {
+            'id': 'about_title'
+        },
+        'content_html': {
+            'id': 'about_content'
+        }
+    }
+
 
     def edit_form(self, obj=None):
         form = super(AboutSectionAdminView, self).edit_form(obj)
