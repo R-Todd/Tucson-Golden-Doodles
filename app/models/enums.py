@@ -1,12 +1,18 @@
+# app/models/enums.py
+"""
+Defines enumerated types used across various models to ensure data consistency
+for fields with a predefined set of values.
+"""
+
 import enum
 
-# Enum for Parent roles to ensure data consistency
 class ParentRole(enum.Enum):
+    """Enumeration for the role of a parent dog (Sire or Dam)."""
     DAD = "Dad"
     MOM = "Mom"
 
-# Enum for Puppy status
 class PuppyStatus(enum.Enum):
+    """Enumeration for the availability status of a puppy."""
     AVAILABLE = "Available"
     RESERVED = "Reserved"
     SOLD = "Sold"
