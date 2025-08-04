@@ -12,6 +12,20 @@ class ParentAdminView(AdminModelView):
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
     form = ParentForm
 
+    # --- THIS IS THE NEW ATTRIBUTE TO ADD ---
+    form_widget_args = {
+        'name': {
+            'id': 'name'
+        },
+        'breed': {
+            'id': 'breed'
+        },
+        'description': {
+            'id': 'description',
+            'rows': 10
+        }
+    }
+
     def edit_form(self, obj=None):
         form = super(ParentAdminView, self).edit_form(obj)
         

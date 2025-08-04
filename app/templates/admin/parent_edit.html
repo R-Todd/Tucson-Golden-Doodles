@@ -1,17 +1,37 @@
-{# app/templates/admin/parent_edit.html (Simplified for Debugging) #}
+{# app/templates/admin/parent_edit.html #}
 {% extends 'admin/model/edit.html' %}
-
-{# Import the standard form rendering macro from Flask-Admin #}
 {% from 'admin/lib.html' import render_form with context %}
 
-{# 
-  Override the edit_form block with a single call to the default renderer.
-  This bypasses all manual render_field calls to see if the form object itself is valid.
-#}
+{# This block renders the standard form fields #}
 {% block edit_form %}
-  <div class="alert alert-warning" role="alert">
-    This is a simplified debug view.
-  </div>
+    {{ render_form(form) }}
+{% endblock %}
 
-  {{ render_form(form) }}
+{# This is our new block for the live preview #}
+{% block tail %}
+    {{ super() }}
+
+    <div class="live-preview-container">
+        <h3>Live Preview</h3>
+        {# This is a direct copy of the parent display HTML from parents.html #}
+        <div class="parent-name-banner">
+            <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3"></h1>
+        </div>
+        <div class="container my-5">
+            <div class="row g-4 parent-layout-container">
+                <div class="col-md-6 parent-image-column">
+                    {# Image previews are handled by admin_image_preview.js #}
+                    <p class="text-muted text-center">Image previews will appear above the "Upload" buttons when a file is selected or already exists.</p>
+                </div>
+                <div class="col-md-6 parent-info-column">
+                    <div class="text-center mt-md-0 mt-4">
+                        <h3 class="breed-header" id="preview-parent-breed"></h3>
+                    </div>
+                    <div class="description-paragraphs mt-4" id="preview-parent-description">
+                        {# Description content will be injected here by JavaScript #}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
