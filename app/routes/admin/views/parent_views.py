@@ -11,38 +11,16 @@ class ParentAdminView(AdminModelView):
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
     form = ParentForm
 
-    
-    # Assign explicit IDs to each form field so the JavaScript can find them.
     form_widget_args = {
-        'name': {
-            'id': 'name'
-        },
-        'breed': {
-            'id': 'breed'
-        },
-        'description': {
-            'id': 'description',
-            'rows': 10
-        }
+        'name': { 'id': 'name' },
+        'breed': { 'id': 'breed' },
+        'description': { 'id': 'description', 'rows': 10 }
     }
 
+    # --- THIS METHOD IS MODIFIED ---
     def edit_form(self, obj=None):
+        # The logic to add 'data-current-image' for the thumbnails has been removed.
         form = super(ParentAdminView, self).edit_form(obj)
-        
-        if obj:
-            image_fields = {
-                'image_upload': obj.main_image_s3_key,
-                'alternate_image_upload_1': obj.alternate_image_s3_key_1,
-                'alternate_image_upload_2': obj.alternate_image_s3_key_2,
-                'alternate_image_upload_3': obj.alternate_image_s3_key_3,
-                'alternate_image_upload_4': obj.alternate_image_s3_key_4,
-            }
-            for field_name, image_key in image_fields.items():
-                if hasattr(form, field_name) and image_key:
-                    field = getattr(form, field_name)
-                    if field.render_kw is None:
-                        field.render_kw = {}
-                    field.render_kw['data-current-image'] = generate_presigned_url(image_key)
         return form
 
     def on_model_change(self, form, model, is_created):

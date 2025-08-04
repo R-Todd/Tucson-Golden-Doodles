@@ -20,33 +20,18 @@ class HeroSectionAdminView(AdminModelView):
         'image_upload': FileField('Upload New Background Image (Recommended: 1920x1080px)')
     }
 
-    
-    # Assign explicit IDs to each form field so the JavaScript can find them.
-    # The 'id' directly corresponds to the ID the JavaScript will look for.
     form_widget_args = {
-        'main_title': {
-            'id': 'main_title'
-        },
-        'subtitle': {
-            'id': 'subtitle'
-        },
-        'description': {
-            'id': 'description'
-        },
-        'scroll_text_main': {
-            'id': 'scroll_text_main'
-        },
-        'scroll_text_secondary': {
-            'id': 'scroll_text_secondary'
-        },
+        'main_title': { 'id': 'main_title' },
+        'subtitle': { 'id': 'subtitle' },
+        'description': { 'id': 'description' },
+        'scroll_text_main': { 'id': 'scroll_text_main' },
+        'scroll_text_secondary': { 'id': 'scroll_text_secondary' },
     }
 
+    # --- THIS METHOD IS MODIFIED ---
     def edit_form(self, obj=None):
+        # The logic to add 'data-current-image' for the thumbnail has been removed.
         form = super(HeroSectionAdminView, self).edit_form(obj)
-        if obj and obj.image_s3_key:
-            if form.image_upload.render_kw is None:
-                form.image_upload.render_kw = {}
-            form.image_upload.render_kw['data-current-image'] = generate_presigned_url(obj.image_s3_key)
         return form
 
     def on_model_change(self, form, model, is_created):
@@ -66,23 +51,15 @@ class AboutSectionAdminView(AdminModelView):
     form_extra_fields = { 'image_upload': FileField('Upload New Image') }
     form_columns = ['title', 'content_html', 'image_upload']
     
-    
-    # Assign explicit IDs to the title and content fields.
     form_widget_args = {
-        'title': {
-            'id': 'about_title'
-        },
-        'content_html': {
-            'id': 'about_content'
-        }
+        'title': { 'id': 'about_title' },
+        'content_html': { 'id': 'about_content' }
     }
 
+    # --- THIS METHOD IS MODIFIED ---
     def edit_form(self, obj=None):
+        # The logic to add 'data-current-image' for the thumbnail has been removed.
         form = super(AboutSectionAdminView, self).edit_form(obj)
-        if obj and obj.image_s3_key:
-            if form.image_upload.render_kw is None:
-                form.image_upload.render_kw = {}
-            form.image_upload.render_kw['data-current-image'] = generate_presigned_url(obj.image_s3_key)
         return form
 
     def on_model_change(self, form, model, is_created):

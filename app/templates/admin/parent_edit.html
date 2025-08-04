@@ -19,10 +19,15 @@
         <div class="container my-5">
             <div class="row g-4 parent-layout-container">
                 <div class="col-md-6 parent-image-column">
-                    {# Replace the placeholder text with an actual image preview #}
                     <div class="parent-carousel-wrapper">
+                        {# --- THIS IS THE FIX --- #}
+                        {#
+                          Add a conditional check to handle the 'create' view where 'model' does not exist.
+                          - If the model and its image key exist (i.e., we are editing), generate the pre-signed URL.
+                          - Otherwise (i.e., we are creating), use a placeholder image.
+                        #}
                         <img id="preview-parent-image" 
-                             src="{{ model.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" 
+                             src="{% if model and model.main_image_s3_key %}{{ model.main_image_s3_key | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}"
                              class="d-block w-100 carousel-image" 
                              alt="Parent image preview">
                     </div>
@@ -38,4 +43,5 @@
             </div>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/admin_content_preview.js') }}"></script>
 {% endblock %}
