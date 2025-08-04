@@ -20,8 +20,14 @@
         <div class="container my-5">
             <div class="row g-4 parent-layout-container">
                 <div class="col-md-6 parent-image-column">
-                    {# Image previews are handled by admin_image_preview.js #}
-                    <p class="text-muted text-center">Image previews will appear above the "Upload" buttons when a file is selected or already exists.</p>
+                    {# --- THIS IS THE FIX --- #}
+                    {# Replace the placeholder text with an actual image preview #}
+                    <div class="parent-carousel-wrapper">
+                        <img id="preview-parent-image" 
+                             src="{{ model.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" 
+                             class="d-block w-100 carousel-image" 
+                             alt="Parent image preview">
+                    </div>
                 </div>
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
