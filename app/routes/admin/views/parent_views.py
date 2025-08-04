@@ -2,7 +2,6 @@
 
 from flask import request
 from .base import AdminModelView
-# --- Import generate_presigned_url ---
 from app.utils.image_uploader import upload_image, generate_presigned_url
 from ..forms import ParentForm 
 
@@ -12,7 +11,8 @@ class ParentAdminView(AdminModelView):
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
     form = ParentForm
 
-    # --- THIS IS THE NEW ATTRIBUTE TO ADD ---
+    
+    # Assign explicit IDs to each form field so the JavaScript can find them.
     form_widget_args = {
         'name': {
             'id': 'name'
@@ -29,7 +29,6 @@ class ParentAdminView(AdminModelView):
     def edit_form(self, obj=None):
         form = super(ParentAdminView, self).edit_form(obj)
         
-        # --- Generate pre-signed URLs for image previews ---
         if obj:
             image_fields = {
                 'image_upload': obj.main_image_s3_key,
@@ -43,18 +42,14 @@ class ParentAdminView(AdminModelView):
                     field = getattr(form, field_name)
                     if field.render_kw is None:
                         field.render_kw = {}
-                    # Generate a temporary URL for the preview
                     field.render_kw['data-current-image'] = generate_presigned_url(image_key)
         return form
 
     def on_model_change(self, form, model, is_created):
-        """Handle image uploads and save S3 keys when a parent record is saved."""
         main_file = request.files.get('image_upload')
         if main_file and main_file.filename:
-            # upload_image now returns a dictionary of S3 keys
             s3_keys = upload_image(main_file, folder='parents', create_responsive_versions=True)
             if s3_keys:
-                # Assign the keys to the renamed s3_key model fields
                 model.main_image_s3_key = s3_keys.get('original')
                 model.main_image_s3_key_small = s3_keys.get('small')
                 model.main_image_s3_key_medium = s3_keys.get('medium')
@@ -64,7 +59,6 @@ class ParentAdminView(AdminModelView):
             'alternate_image_upload_1', 'alternate_image_upload_2',
             'alternate_image_upload_3', 'alternate_image_upload_4'
         ]
-        # Update model attributes to the new s3_key names
         alt_model_attrs = [
             'alternate_image_s3_key_1', 'alternate_image_s3_key_2',
             'alternate_image_s3_key_3', 'alternate_image_s3_key_4'
@@ -73,7 +67,6 @@ class ParentAdminView(AdminModelView):
         for i, field_name in enumerate(alt_fields):
             file = request.files.get(field_name)
             if file and file.filename:
-                # upload_image now returns a single S3 key
                 key = upload_image(file, folder='parents_alternates')
                 if key:
                     setattr(model, alt_model_attrs[i], key)
