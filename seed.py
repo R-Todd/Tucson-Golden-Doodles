@@ -70,9 +70,9 @@ def seed_database():
 
         hero_keys = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
         db.session.add(HeroSection(
-            main_title='Copper Skye Doodles',
-            subtitle='Established 2001',
-            description='Arizona Goldendoodles, Bernedoodles & Golden Mountain Doodles',
+            main_title='Tucson Golden Doodles',
+            subtitle='Established 2013',
+            description='Arizona Goldendoodles, Bernedoodles',
             scroll_text_main=f'Website Updated {date.today().strftime("%B %d, %Y")}',
             scroll_text_secondary='See Available Puppies Below',
             image_s3_key=hero_keys.get('original') if hero_keys else None,
