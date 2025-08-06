@@ -23,10 +23,10 @@
   {{ super() }}
 {% endblock %}
 
-{# : Add custom JavaScript for the admin panel #}
+{# Add custom JavaScript for the admin panel #}
 {% block tail %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/admin_image_preview.js') }}"></script>
-    {# --- THIS IS THE NEW LINE TO ADD --- #}
-    <script src="{{ url_for('static', filename='js/admin_content_preview.js') }}"></script>
+    {# --- REMOVE THE CONFLICTING GLOBAL SCRIPT --- #}
+    {# <script src="{{ url_for('static', filename='js/admin_content_preview.js') }}"></script> #}
 {% endblock %}
