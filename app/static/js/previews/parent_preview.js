@@ -1,29 +1,30 @@
 // app/static/js/previews/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Helper to sync text-based inputs to a preview element
+    // --- 1. HELPER FUNCTIONS ---
+
+    // Syncs text inputs (name, breed, description)
     const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
-
         if (inputElement && previewElement) {
             const update = () => {
                 if (attribute === 'innerHTML') {
-                    previewElement.innerHTML = inputElement.value;
+                    // Replace newlines with <br> for proper HTML rendering
+                    previewElement.innerHTML = inputElement.value.replace(/\n/g, '<br>');
                 } else {
                     previewElement.textContent = inputElement.value;
                 }
             };
-            update();
+            update(); // Run once on load
             inputElement.addEventListener('keyup', update);
         }
     };
 
-    // Helper to format and sync the weight preview
+    // Syncs the weight input with correct formatting
     const syncWeightPreview = () => {
         const weightInput = document.getElementById('weight_kg');
         const weightPreview = document.getElementById('preview-parent-weight');
-
         if (weightInput && weightPreview) {
             const updateWeight = () => {
                 const kg = parseFloat(weightInput.value);
@@ -34,41 +35,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     weightPreview.textContent = 'Weight: N/A';
                 }
             };
-            updateWeight();
+            updateWeight(); // Run once on load
             weightInput.addEventListener('keyup', updateWeight);
         }
     };
 
-    // Generalized function to handle live image previews for file inputs
+    // Reads an image file and updates the src of a preview image tag
     const handleImagePreview = (inputId, previewImgId) => {
         const inputElement = document.getElementById(inputId);
         const previewImgElement = document.getElementById(previewImgId);
-
         if (inputElement && previewImgElement) {
             inputElement.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         previewImgElement.src = e.target.result;
-                    }
+                    };
                     reader.readAsDataURL(this.files[0]);
                 }
             });
         }
     };
 
-    // --- Sync all text fields ---
+    // --- 2. INITIALIZE ALL LIVE PREVIEWS ---
+
+    // Initialize text and weight previews
     syncInputToPreview('name', 'preview-parent-name');
     syncInputToPreview('breed', 'preview-parent-breed');
     syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
     syncWeightPreview();
 
-    // --- Initialize preview ONLY for the main image ---
+    // Initialize all five image previews
     handleImagePreview('image_upload', 'preview-parent-image');
-    
-    // --- ALTERNATE IMAGE HANDLERS REMOVED ---
     handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
     handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
     handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
+
+
+    // --- 3. INITIALIZE THE CAROUSEL ---
+
+    const liveCarouselElement = document.getElementById('live-preview-carousel');
+    if (liveCarouselElement) {
+        // Create the carousel instance and save it to a variable.
+        // This single line activates the buttons and all functionality.
+        const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
+            interval: false, // Turn off auto-play
+            ride: false      // Explicitly prevent auto-start
+        });
+    }
 });

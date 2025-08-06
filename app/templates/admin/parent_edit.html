@@ -11,14 +11,13 @@
 
     <div class="live-preview-container">
         <h3>Live Preview</h3>
-
         <div class="parent-name-banner">
             <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3"></h1>
         </div>
-
         <div class="container my-5">
             <div class="row g-4 parent-layout-container">
                 <div class="col-md-6 parent-image-column">
+                    {# 1. Ensure data-bs-ride="carousel" is REMOVED from this line #}
                     <div id="live-preview-carousel" class="carousel slide parent-carousel-wrapper">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
@@ -45,7 +44,6 @@
                         </button>
                     </div>
                 </div>
-
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
                         <h3 class="breed-header" id="preview-parent-breed"></h3>
@@ -56,6 +54,6 @@
             </div>
         </div>
     </div>
+    {# 2. Load ONLY the main preview script. The other carousel script has been deleted. #}
     <script src="{{ url_for('static', filename='js/previews/parent_preview.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/previews/live_preview_carousel.js') }}"></script>
 {% endblock %}
