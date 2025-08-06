@@ -1,4 +1,4 @@
-// app/static/js/admin_content_preview.js
+// app/static/js/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- Helper function to link a form input to a preview element ---
