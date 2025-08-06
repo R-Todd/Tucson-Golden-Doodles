@@ -72,13 +72,41 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
 
-    // --- 3. INITIALIZE THE CAROUSEL ---
+    // --- 3. INITIALIZE THE CAROUSEL (REVISED) ---
 
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
-        // Create the carousel instance and save it to a variable
+        // Initialize the carousel instance, making sure it pauses on hover
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 8000 
+            interval: 8000,
+            pause: 'hover' // Pauses the cycling when the mouse is over the carousel
         });
+
+        // This function will permanently stop the auto-cycling
+        // once the admin interacts with the controls.
+        function stopAutoCycle() {
+            previewCarousel.pause(); // Pause the current cycle
+            
+            // Access the carousel's internal configuration to permanently disable the interval
+            const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
+            if (carouselInstance) {
+                carouselInstance._config.interval = false;
+            }
+        }
+
+        // Find the control buttons within this specific carousel
+        const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
+        const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
+
+        // Add click listeners to stop the carousel on manual interaction
+        if (prevButton) {
+            prevButton.addEventListener('click', stopAutoCycle);
+        }
+        if (nextButton) {
+            nextButton.addEventListener('click', stopAutoCycle);
+        }
+
+        // Explicitly start the carousel's automatic cycling
+        previewCarousel.cycle();
     }
 });
