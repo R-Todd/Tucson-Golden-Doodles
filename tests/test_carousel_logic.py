@@ -10,27 +10,26 @@ from selenium.webdriver.support import expected_conditions as EC
 from app.models import User, Parent, ParentRole, SiteMeta
 
 # --- THIS IS THE FIX ---
-# We've added `db` to the function signature to ensure
-# the database creation fixture runs before this one.
-@pytest.fixture(scope='module')
-def setup_parent_data(app, db):
+# The scope is changed from 'module' to 'function' to ensure the database
+# objects are created and used within the same active session as the test.
+@pytest.fixture(scope='function')
+def setup_parent_data(db):
     """Set up a user and parent for the selenium tests."""
-    with app.app_context():
-        # Clean up previous data to ensure a fresh start
-        db.session.query(User).delete()
-        db.session.query(Parent).delete()
-        db.session.query(SiteMeta).delete()
+    # Clean up previous data to ensure a fresh start
+    db.session.query(User).delete()
+    db.session.query(Parent).delete()
+    db.session.query(SiteMeta).delete()
 
-        admin_user = User(username='admin_sel')
-        admin_user.set_password('selenium_pw')
-        parent = Parent(
-            name='Archie', role=ParentRole.DAD,
-            main_image_s3_key='parents/archie.jpg',
-            alternate_image_s3_key_1='parents/archie-2.jpg'
-        )
-        db.session.add_all([admin_user, parent, SiteMeta(email='test@test.com')])
-        db.session.commit()
-        return admin_user, parent
+    admin_user = User(username='admin_sel')
+    admin_user.set_password('selenium_pw')
+    parent = Parent(
+        name='Archie', role=ParentRole.DAD,
+        main_image_s3_key='parents/archie.jpg',
+        alternate_image_s3_key_1='parents/archie-2.jpg'
+    )
+    db.session.add_all([admin_user, parent, SiteMeta(email='test@test.com')])
+    db.session.commit()
+    return admin_user, parent
 
 def test_live_preview_carousel_functionality(chrome_driver, live_server, setup_parent_data):
     """
@@ -77,9 +76,10 @@ def test_live_preview_carousel_functionality(chrome_driver, live_server, setup_p
     time.sleep(1) # Wait for the slide transition to complete
 
     active_item_after_click = carousel.find_element(By.CSS_SELECTOR, '.carousel-item.active')
-    # Since it already cycled to the 2nd image and there are only two images,
-    # clicking next should wrap around back to the 1st image.
-    assert first_image in active_item_after_click.find_elements(By.TAG_NAME, 'img'), "Next button did not cycle the image correctly."
+    # Since it already cycled to the 2nd image and there are only two images with content,
+    # clicking next should show the 3rd item which has a placeholder.
+    third_image = carousel.find_element(By.ID, 'preview-alt-image-2')
+    assert third_image in active_item_after_click.find_elements(By.TAG_NAME, 'img'), "Next button did not cycle the image correctly."
     print("✅ Test Passed: 'Next' button successfully changed the slide.")
 
     # 6. Verify that auto-cycling has STOPPED after manual interaction
