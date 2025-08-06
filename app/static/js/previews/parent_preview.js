@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // NEW: Generalized function to handle live image previews for file inputs
+    // Generalized function to handle live image previews for file inputs
     const handleImagePreview = (inputId, previewImgId) => {
         const inputElement = document.getElementById(inputId);
         const previewImgElement = document.getElementById(previewImgId);
@@ -69,4 +69,11 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
     handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
+
+    // --- NEW: Initialize the Bootstrap Carousel ---
+    // This line finds the carousel element by its ID and activates it, making the buttons work.
+    const liveCarouselElement = document.getElementById('live-preview-carousel');
+    if (liveCarouselElement) {
+        new bootstrap.Carousel(liveCarouselElement);
+    }
 });

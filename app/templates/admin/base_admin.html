@@ -1,32 +1,31 @@
-{# 1. Extend the default Flask-Admin base template #}
+{# app/templates/admin/base_admin.html #}
 {% extends 'admin/base.html' %}
 
-{# 2. Override the 'brand' block to use your site's name and link to the homepage #}
 {% block brand %}
 <a class="navbar-brand" href="{{ url_for('main.index') }}">Tucson Golden Doodles</a>
 {% endblock %}
 
-{# 3. Override the 'nav_links' block to remove the redundant button #}
 {% block nav_links %}
-  {{ super() }}  {# This includes the default links like Logout #}
+  {{ super() }}
 {% endblock %}
 
-{# This block is where you will add the link to your custom CSS #}
 {% block head_css %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
 {% endblock %}
 
-{#  This block renders flash messages, including form errors, #}
-{# and ensures the template context is complete for JavaScript to run. #}
 {% block messages %}
   {{ super() }}
 {% endblock %}
 
-{# Add custom JavaScript for the admin panel #}
+{# --- THIS BLOCK IS CORRECTED --- #}
 {% block tail %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='js/admin_image_preview.js') }}"></script>
-    {# --- REMOVE THE CONFLICTING GLOBAL SCRIPT --- #}
-    {# <script src="{{ url_for('static', filename='js/admin_content_preview.js') }}"></script> #}
+
+    {# 1. ADD this script tag to load Bootstrap's JavaScript bundle. #}
+    {# This is required for Bootstrap components like carousels and modals to function. #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    {# 2. REMOVE the old script tag that pointed to a non-existent file. #}
+    {# <script src="{{ url_for('static', filename='js/admin_image_preview.js') }}"></script> #}
 {% endblock %}
