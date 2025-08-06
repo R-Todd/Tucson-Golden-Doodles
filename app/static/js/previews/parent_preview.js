@@ -78,8 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (liveCarouselElement) {
         // Create the carousel instance and save it to a variable
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 8000, // Turn off auto-play
-            ride: true // Ensure it doesn't start on its own
+            interval: 8000 
         });
     }
 });
