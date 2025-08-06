@@ -1,10 +1,33 @@
 # tests/conftest.py
 
 import pytest
+import threading
+from werkzeug.serving import make_server
 from app import create_app, db as _db
 from config import TestingConfig
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+class LiveServer:
+    """A simple live server implementation that runs in a thread."""
+    def __init__(self, app, host='127.0.0.1', port=5000):
+        self._app = app
+        self._host = host
+        self._port = port
+        self._server = make_server(self._host, self._port, self._app)
+        self._thread = threading.Thread(target=self._server.serve_forever)
+        self._thread.daemon = True
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._server.shutdown()
+        self._thread.join()
+
+    @property
+    def url(self):
+        return f"http://{self._host}:{self._port}"
 
 @pytest.fixture(scope='session')
 def app():
@@ -30,9 +53,7 @@ def session(db):
     connection = db.engine.connect()
     transaction = connection.begin()
     db.session.begin_nested()
-
     yield db.session
-
     db.session.rollback()
     transaction.rollback()
     connection.close()
@@ -51,3 +72,11 @@ def chrome_driver():
     driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
+
+@pytest.fixture(scope='session')
+def live_server(app):
+    """Fixture to run the application in a live server thread."""
+    server = LiveServer(app)
+    server.start()
+    yield server
+    server.stop()
