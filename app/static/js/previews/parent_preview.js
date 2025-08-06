@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     previewElement.textContent = inputElement.value;
                 }
             };
-            update();
+            // No need to call update() on load, as Jinja now pre-fills the values.
             inputElement.addEventListener('keyup', update);
         }
     };
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     weightPreview.textContent = 'Weight: N/A';
                 }
             };
-            updateWeight();
             weightInput.addEventListener('keyup', updateWeight);
         }
     };
@@ -72,33 +71,28 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
 
-    // --- 3. INITIALIZE THE CAROUSEL (REVISED) ---
-
+    // --- 3. INITIALIZE THE CAROUSEL (UNIFIED LOGIC) ---
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
-        // Initialize the carousel instance, making sure it pauses on hover
+        // Initialize with the same settings as the main site's carousel
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 8000,
-            pause: 'hover' // Pauses the cycling when the mouse is over the carousel
+            interval: 5000, // Auto-cycle every 5 seconds
+            pause: 'hover'  // Pause on hover
         });
 
-        // This function will permanently stop the auto-cycling
-        // once the admin interacts with the controls.
+        // Function to permanently stop auto-cycling on user interaction
         function stopAutoCycle() {
-            previewCarousel.pause(); // Pause the current cycle
-            
-            // Access the carousel's internal configuration to permanently disable the interval
+            previewCarousel.pause();
             const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
             if (carouselInstance) {
+                // We access the internal config to permanently stop the auto-cycle
                 carouselInstance._config.interval = false;
             }
         }
 
-        // Find the control buttons within this specific carousel
         const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
         const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
 
-        // Add click listeners to stop the carousel on manual interaction
         if (prevButton) {
             prevButton.addEventListener('click', stopAutoCycle);
         }
@@ -106,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nextButton.addEventListener('click', stopAutoCycle);
         }
 
-        // Explicitly start the carousel's automatic cycling
+        // Start the carousel cycling automatically
         previewCarousel.cycle();
     }
 });

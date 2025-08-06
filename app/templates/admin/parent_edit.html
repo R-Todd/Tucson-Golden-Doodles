@@ -9,17 +9,21 @@
 {% block tail %}
     {{ super() }}
 
+    {# 1. ADD THIS LINK to import the necessary CSS from the main site. #}
+    <link href="{{ url_for('static', filename='css/pages/parents.css') }}" rel="stylesheet">
+
     <div class="live-preview-container">
         <h3>Live Preview</h3>
         <div class="parent-name-banner">
-            <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3"></h1>
+            <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3">{{ model.name or 'Parent Name' }}</h1>
         </div>
         <div class="container my-5">
             <div class="row g-4 parent-layout-container">
+                {# This column now perfectly matches the structure from parents.html #}
                 <div class="col-md-6 parent-image-column">
-                    {# 1. Ensure data-bs-ride="carousel" is REMOVED from this line #}
                     <div id="live-preview-carousel" class="carousel slide parent-carousel-wrapper">
                         <div class="carousel-inner">
+                            {# Each item has a static ID for the preview script to target #}
                             <div class="carousel-item active">
                                 <img id="preview-parent-image" src="{% if model and model.main_image_s3_key %}{{ model.main_image_s3_key | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Main image preview">
                             </div>
@@ -44,16 +48,30 @@
                         </button>
                     </div>
                 </div>
+                {# The info column remains the same #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
-                        <h3 class="breed-header" id="preview-parent-breed"></h3>
-                        <p class="weight-header" id="preview-parent-weight"></p>
+                        <h3 class="breed-header" id="preview-parent-breed">{{ model.breed or 'Breed' }}</h3>
+                        <p class="weight-header" id="preview-parent-weight">
+                            {% if model.weight_kg is not none %}
+                                {{ model.weight_kg }} kg / {{ (model.weight_kg * 2.20462)|round(1) }} lbs
+                            {% else %}
+                                Weight: N/A
+                            {% endif %}
+                        </p>
                     </div>
-                    <div class="description-paragraphs mt-4" id="preview-parent-description"></div>
+                    <div class="description-paragraphs mt-4" id="preview-parent-description">
+                        {% if model.description %}
+                            {% for paragraph in model.description.split('\n') %}
+                                {% if paragraph.strip() %}<p>{{ paragraph.strip() }}</p>{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    {# 2. Load ONLY the main preview script. The other carousel script has been deleted. #}
+
+    {# 2. We will now ONLY load the single, unified preview script. #}
     <script src="{{ url_for('static', filename='js/previews/parent_preview.js') }}"></script>
 {% endblock %}
