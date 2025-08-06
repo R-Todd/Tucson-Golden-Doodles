@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('image_upload', 'preview-parent-image');
     
     // --- ALTERNATE IMAGE HANDLERS REMOVED ---
-    // handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
-    // handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
-    // handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
-    // handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
+    handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
+    handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
+    handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
+    handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 });
