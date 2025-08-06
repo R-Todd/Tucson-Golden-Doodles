@@ -1,4 +1,4 @@
-// app/static/js/parent_preview.js
+// app/static/js/previews/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- Helper function to link a form input to a preview element ---
@@ -8,29 +8,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (inputElement && previewElement) {
             // Set initial preview text on page load
-            if (attribute === 'textContent') {
-                previewElement.textContent = inputElement.value;
-            } else {
+            if (attribute === 'innerHTML') {
                 previewElement.innerHTML = inputElement.value;
+            } else {
+                previewElement.textContent = inputElement.value;
             }
-
 
             // Add event listener to update preview on input
             inputElement.addEventListener('keyup', () => {
-                if (attribute === 'textContent') {
-                    previewElement.textContent = inputElement.value;
-                } else {
+                if (attribute === 'innerHTML') {
                     previewElement.innerHTML = inputElement.value;
+                } else {
+                    previewElement.textContent = inputElement.value;
                 }
             });
         }
     };
 
-    // --- Hero Section Preview ---
-    syncInputToPreview('main_title', 'preview-main-title');
-    syncInputToPreview('subtitle', 'preview-subtitle');
-    syncInputToPreview('description', 'preview-description');
-    syncInputToPreview('scroll_text_main', 'preview-scroll-main');
-    syncInputToPreview('scroll_text_secondary', 'preview-scroll-secondary');
-
+    // --- Parent Section Preview ---
+    syncInputToPreview('name', 'preview-parent-name');
+    syncInputToPreview('breed', 'preview-parent-breed');
+    // The description for a parent can contain multiple paragraphs, so we use 'innerHTML'.
+    syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
 });
