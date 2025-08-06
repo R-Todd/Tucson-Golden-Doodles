@@ -1,0 +1,33 @@
+{# app/templates/admin/hero_section_edit.html #}
+{% extends 'admin/model/edit.html' %}
+{% from 'admin/lib.html' import render_form with context %}
+
+{# This block renders the standard form fields #}
+{% block edit_form %}
+    {{ render_form(form) }}
+{% endblock %}
+
+{# This is our new block for the live preview #}
+{% block tail %}
+    {{ super() }}
+
+    <div class="live-preview-container">
+        <h3>Live Preview</h3>
+        <div class="hero-preview-wrapper">
+            {# This is a direct copy of the hero-section HTML from index.html #}
+            {# The background image is dynamically set from the current object #}
+            <section class="hero-section" style="background-image: url('{{ model.image_s3_key | s3_url }}');">
+                <div class="hero-content">
+                    {# These IDs match the ones used in our JavaScript for real-time updates #}
+                    <h1 class="hero-title" id="preview-main-title"></h1>
+                    <h2 class="hero-subtitle" id="preview-subtitle"></h2>
+                    <p class="hero-description" id="preview-description"></p>
+                    <div class="hero-scroll-down">
+                        <p id="preview-scroll-main"></p>
+                        <p id="preview-scroll-secondary"></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}
