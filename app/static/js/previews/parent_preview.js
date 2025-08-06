@@ -63,14 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
     syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
     syncWeightPreview();
 
-    // --- Initialize image previews for the carousel ---
+    // --- Initialize preview ONLY for the main image ---
     handleImagePreview('image_upload', 'preview-parent-image');
-    handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
-    handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
-    handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
-    handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
-
-    // --- THIS BLOCK HAS BEEN REMOVED ---
-    // The explicit new bootstrap.Carousel() call was conflicting with the
-    // data-bs-ride="carousel" attribute in the HTML and has been removed.
+    
+    // --- ALTERNATE IMAGE HANDLERS REMOVED ---
+    // handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
+    // handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
+    // handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
+    // handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 });
