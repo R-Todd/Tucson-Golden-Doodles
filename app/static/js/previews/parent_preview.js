@@ -1,7 +1,7 @@
 // app/static/js/previews/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- 1. HELPER FUNCTIONS ---
+    // --- 1. DEFINE HELPER FUNCTIONS ---
 
     // Syncs text inputs (name, breed, description)
     const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
@@ -10,13 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputElement && previewElement) {
             const update = () => {
                 if (attribute === 'innerHTML') {
-                    // Replace newlines with <br> for proper HTML rendering
                     previewElement.innerHTML = inputElement.value.replace(/\n/g, '<br>');
                 } else {
                     previewElement.textContent = inputElement.value;
                 }
             };
-            update(); // Run once on load
+            update();
             inputElement.addEventListener('keyup', update);
         }
     };
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     weightPreview.textContent = 'Weight: N/A';
                 }
             };
-            updateWeight(); // Run once on load
+            updateWeight();
             weightInput.addEventListener('keyup', updateWeight);
         }
     };
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // --- 2. INITIALIZE ALL LIVE PREVIEWS ---
+    // --- 2. INITIALIZE ALL PREVIEWS ---
 
     // Initialize text and weight previews
     syncInputToPreview('name', 'preview-parent-name');
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
     syncWeightPreview();
 
-    // Initialize all five image previews
+    // Initialize all image previews
     handleImagePreview('image_upload', 'preview-parent-image');
     handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
     handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
@@ -77,11 +76,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
-        // Create the carousel instance and save it to a variable.
-        // This single line activates the buttons and all functionality.
+        // Create the carousel instance and save it to a variable
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: false, // Turn off auto-play
-            ride: false      // Explicitly prevent auto-start
+            interval: 8000, // Turn off auto-play
+            ride: true // Ensure it doesn't start on its own
         });
     }
 });
