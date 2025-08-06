@@ -1,3 +1,4 @@
+# requirements.txt
 Flask
 Flask-SQLAlchemy
 Flask-Migrate
@@ -15,3 +16,4 @@ beautifulsoup4
 Pillow
 WTForms-SQLAlchemy
 Flask-Caching
+selenium

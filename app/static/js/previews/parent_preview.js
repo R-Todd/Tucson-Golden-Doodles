@@ -62,34 +62,38 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
 
-    // --- 3. INITIALIZE THE CAROUSEL (REVISED LOGIC) ---
+    // --- 3. INITIALIZE THE CAROUSEL (FINAL CORRECTED LOGIC) ---
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 5000,
-            pause: 'hover'
+            interval: 5000, // The auto-cycle interval 
+            //pause: 'hover'  // The hover behavior you like
         });
 
-        // This function will be called once, the first time a user
-        // manually interacts with the carousel.
-        const handleManualInteraction = () => {
-            // Stop the carousel from auto-playing further.
-            previewCarousel.pause();
+        const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
+        const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
 
+        // This function will run only ONCE when a control button is clicked.
+        const stopAutoCycleOnClick = () => {
+            previewCarousel.pause(); // Pause the auto-cycle
             const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
             if (carouselInstance) {
-                carouselInstance._config.interval = false;
+                carouselInstance._config.interval = false; // Permanently disable auto-cycling
             }
-
-            // IMPORTANT: Remove the event listener so this only runs once.
-            liveCarouselElement.removeEventListener('slide.bs.carousel', handleManualInteraction);
+            // Clean up the event listeners so this doesn't run again.
+            if (prevButton) prevButton.removeEventListener('click', stopAutoCycleOnClick);
+            if (nextButton) nextButton.removeEventListener('click', stopAutoCycleOnClick);
         };
 
-        // Listen for the 'slide' event, which fires before the transition starts.
-        // This is the key change to fix the button functionality.
-        liveCarouselElement.addEventListener('slide.bs.carousel', handleManualInteraction);
+        // Attach the listener directly to the buttons' CLICK events.
+        if (prevButton) {
+            prevButton.addEventListener('click', stopAutoCycleOnClick);
+        }
+        if (nextButton) {
+            nextButton.addEventListener('click', stopAutoCycleOnClick);
+        }
 
-        // Start the automatic cycling initially.
+        // Initially start the carousel's automatic cycling.
         previewCarousel.cycle();
     }
 });
