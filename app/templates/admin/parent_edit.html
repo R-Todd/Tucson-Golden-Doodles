@@ -42,6 +42,7 @@
                                 <img id="preview-alt-image-4" src="{% if model and model.alternate_image_s3_key_4 %}{{ model.alternate_image_s3_key_4 | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Alternate image 4 preview">
                             </div>
                         </div>
+                        {# buttons do not work #}
                         <button class="carousel-control-prev" type="button" data-bs-target="#live-preview-carousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         </button>

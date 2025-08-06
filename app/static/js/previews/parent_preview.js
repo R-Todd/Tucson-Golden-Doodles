@@ -70,10 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
-    // --- NEW: Initialize the Bootstrap Carousel ---
-    // This line finds the carousel element by its ID and activates it, making the buttons work.
-    const liveCarouselElement = document.getElementById('live-preview-carousel');
-    if (liveCarouselElement) {
-        new bootstrap.Carousel(liveCarouselElement);
-    }
+    // --- THIS BLOCK HAS BEEN REMOVED ---
+    // The explicit new bootstrap.Carousel() call was conflicting with the
+    // data-bs-ride="carousel" attribute in the HTML and has been removed.
 });
