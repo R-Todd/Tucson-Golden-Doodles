@@ -1,9 +1,7 @@
 // app/static/js/previews/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- 1. DEFINE HELPER FUNCTIONS ---
-
-    // Syncs text inputs (name, breed, description)
+    // --- 1. DEFINE HELPER FUNCTIONS (No changes here) ---
     const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
@@ -15,12 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     previewElement.textContent = inputElement.value;
                 }
             };
-            // No need to call update() on load, as Jinja now pre-fills the values.
             inputElement.addEventListener('keyup', update);
         }
     };
 
-    // Syncs the weight input with correct formatting
     const syncWeightPreview = () => {
         const weightInput = document.getElementById('weight_kg');
         const weightPreview = document.getElementById('preview-parent-weight');
@@ -38,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Reads an image file and updates the src of a preview image tag
     const handleImagePreview = (inputId, previewImgId) => {
         const inputElement = document.getElementById(inputId);
         const previewImgElement = document.getElementById(previewImgId);
@@ -55,15 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // --- 2. INITIALIZE ALL PREVIEWS ---
-
-    // Initialize text and weight previews
+    // --- 2. INITIALIZE ALL PREVIEWS (No changes here) ---
     syncInputToPreview('name', 'preview-parent-name');
     syncInputToPreview('breed', 'preview-parent-breed');
     syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
     syncWeightPreview();
-
-    // Initialize all image previews
     handleImagePreview('image_upload', 'preview-parent-image');
     handleImagePreview('alternate_image_upload_1', 'preview-alt-image-1');
     handleImagePreview('alternate_image_upload_2', 'preview-alt-image-2');
@@ -71,36 +62,34 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
 
-    // --- 3. INITIALIZE THE CAROUSEL (UNIFIED LOGIC) ---
+    // --- 3. INITIALIZE THE CAROUSEL (REVISED LOGIC) ---
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
-        // Initialize with the same settings as the main site's carousel
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 5000, // Auto-cycle every 5 seconds
-            pause: 'hover'  // Pause on hover
+            interval: 5000,
+            pause: 'hover'
         });
 
-        // Function to permanently stop auto-cycling on user interaction
-        function stopAutoCycle() {
+        // This function will be called once, the first time a user
+        // manually interacts with the carousel.
+        const handleManualInteraction = () => {
+            // Stop the carousel from auto-playing further.
             previewCarousel.pause();
+
             const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
             if (carouselInstance) {
-                // We access the internal config to permanently stop the auto-cycle
                 carouselInstance._config.interval = false;
             }
-        }
 
-        const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
-        const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
+            // IMPORTANT: Remove the event listener so this only runs once.
+            liveCarouselElement.removeEventListener('slide.bs.carousel', handleManualInteraction);
+        };
 
-        if (prevButton) {
-            prevButton.addEventListener('click', stopAutoCycle);
-        }
-        if (nextButton) {
-            nextButton.addEventListener('click', stopAutoCycle);
-        }
+        // Listen for the 'slide' event, which fires before the transition starts.
+        // This is the key change to fix the button functionality.
+        liveCarouselElement.addEventListener('slide.bs.carousel', handleManualInteraction);
 
-        // Start the carousel cycling automatically
+        // Start the automatic cycling initially.
         previewCarousel.cycle();
     }
 });
