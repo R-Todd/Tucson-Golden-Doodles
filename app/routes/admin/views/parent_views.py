@@ -11,7 +11,7 @@ class ParentAdminView(AdminModelView):
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
     form = ParentForm
 
-    # --- THIS IS THE CORRECTED SECTION ---
+   
     # We've added the 'weight_kg' field here so the JavaScript can find it.
     form_widget_args = {
         'name': { 'id': 'name' },
