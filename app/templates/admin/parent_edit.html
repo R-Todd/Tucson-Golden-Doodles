@@ -7,17 +7,22 @@
     {{ render_form(form) }}
 {% endblock %}
 
-{# This is our new block for the live preview #}
+{# This block contains the enhanced live preview #}
 {% block tail %}
     {{ super() }}
 
     <div class="live-preview-container">
         <h3>Live Preview</h3>
+
+        {# 1. Name Banner - Mirrored from parents.html #}
         <div class="parent-name-banner">
             <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3"></h1>
         </div>
+
+        {# 2. Main Content Area - Mirrored from parents.html #}
         <div class="container my-5">
             <div class="row g-4 parent-layout-container">
+                {# Image Column #}
                 <div class="col-md-6 parent-image-column">
                     <div class="parent-carousel-wrapper">
                         <img id="preview-parent-image" 
@@ -26,17 +31,22 @@
                              alt="Parent image preview">
                     </div>
                 </div>
+
+                {# Info Column #}
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
+                        {# 3. Breed (Styled) #}
                         <h3 class="breed-header" id="preview-parent-breed"></h3>
+                        {# 4. Weight (Styled with new ID) #}
+                        <p class="weight-header" id="preview-parent-weight"></p>
                     </div>
+                    {# 5. Description (Styled for paragraphs) #}
                     <div class="description-paragraphs mt-4" id="preview-parent-description">
-                        {# Description content will be injected here by JavaScript #}
+                        {# Content will be injected by JavaScript #}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {# CORRECTED: This now points to the dedicated parent preview script #}
     <script src="{{ url_for('static', filename='js/previews/parent_preview.js') }}"></script>
 {% endblock %}
