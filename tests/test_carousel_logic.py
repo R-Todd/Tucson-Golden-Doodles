@@ -9,11 +9,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from app.models import User, Parent, ParentRole, SiteMeta
 
+# --- THIS IS THE FIX ---
+# We've added `db` to the function signature to ensure
+# the database creation fixture runs before this one.
 @pytest.fixture(scope='module')
-def setup_parent_data(app):
+def setup_parent_data(app, db):
     """Set up a user and parent for the selenium tests."""
     with app.app_context():
-        from app import db
         # Clean up previous data to ensure a fresh start
         db.session.query(User).delete()
         db.session.query(Parent).delete()
@@ -41,13 +43,13 @@ def test_live_preview_carousel_functionality(chrome_driver, live_server, setup_p
     driver = chrome_driver
 
     # 1. Log in to the admin panel
-    driver.get(url_for('admin_auth.login', _external=True))
+    driver.get(f"{live_server.url}{url_for('admin_auth.login')}")
     driver.find_element(By.ID, 'username').send_keys(admin_user.username)
     driver.find_element(By.ID, 'password').send_keys('selenium_pw')
     driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
 
     # 2. Navigate to the Parent Edit Page
-    driver.get(url_for('parent.edit_view', id=parent.id, _external=True))
+    driver.get(f"{live_server.url}{url_for('parent.edit_view', id=parent.id)}")
 
     # 3. Verify the carousel and initial state
     wait = WebDriverWait(driver, 10)
@@ -62,8 +64,7 @@ def test_live_preview_carousel_functionality(chrome_driver, live_server, setup_p
     print("\n✅ Test Passed: Carousel is present and initial image is correct.")
 
     # 4. Verify auto-cycling
-    # The interval is 5s, so we wait slightly longer to see if it changes
-    time.sleep(6)
+    time.sleep(6) # The interval is 5s, so we wait slightly longer
     
     active_item_after_cycle = carousel.find_element(By.CSS_SELECTOR, '.carousel-item.active')
     assert second_image in active_item_after_cycle.find_elements(By.TAG_NAME, 'img'), "Carousel did not auto-cycle to the second image."
@@ -73,16 +74,15 @@ def test_live_preview_carousel_functionality(chrome_driver, live_server, setup_p
     next_button = carousel.find_element(By.CSS_SELECTOR, '.carousel-control-next')
     next_button.click()
     
-    # Wait for the slide transition to complete
-    time.sleep(1) 
+    time.sleep(1) # Wait for the slide transition to complete
 
     active_item_after_click = carousel.find_element(By.CSS_SELECTOR, '.carousel-item.active')
-    # Since it already cycled to the 2nd image, clicking next should bring it back to the 1st
+    # Since it already cycled to the 2nd image and there are only two images,
+    # clicking next should wrap around back to the 1st image.
     assert first_image in active_item_after_click.find_elements(By.TAG_NAME, 'img'), "Next button did not cycle the image correctly."
     print("✅ Test Passed: 'Next' button successfully changed the slide.")
 
     # 6. Verify that auto-cycling has STOPPED after manual interaction
-    # If the interval was correctly disabled, the slide should NOT change now.
     current_active_image_src = active_item_after_click.find_element(By.TAG_NAME, 'img').get_attribute('src')
     
     time.sleep(6) # Wait for another cycle period

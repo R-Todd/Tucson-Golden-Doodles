@@ -25,6 +25,12 @@ class LiveServer:
         self._server.shutdown()
         self._thread.join()
 
+    # --- THIS IS THE FIX ---
+    # The pytest-flask plugin expects the server object to have an 'app' attribute.
+    @property
+    def app(self):
+        return self._app
+
     @property
     def url(self):
         return f"http://{self._host}:{self._port}"
@@ -76,7 +82,8 @@ def chrome_driver():
 @pytest.fixture(scope='session')
 def live_server(app):
     """Fixture to run the application in a live server thread."""
-    server = LiveServer(app)
+    # We use a known port to make URLs predictable.
+    server = LiveServer(app, port=5001)
     server.start()
     yield server
     server.stop()
