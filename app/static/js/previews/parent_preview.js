@@ -1,7 +1,7 @@
 // app/static/js/previews/parent_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- 1. DEFINE HELPER FUNCTIONS (No changes here) ---
+    // --- 1. DEFINE HELPER FUNCTIONS ---
     const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // --- 2. INITIALIZE ALL PREVIEWS (No changes here) ---
+    // --- 2. INITIALIZE ALL PREVIEWS ---
     syncInputToPreview('name', 'preview-parent-name');
     syncInputToPreview('breed', 'preview-parent-breed');
     syncInputToPreview('description', 'preview-parent-description', 'innerHTML');
@@ -66,26 +66,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
         const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 5000, // The auto-cycle interval 
-            //pause: 'hover'  // The hover behavior you like
+            interval: 5000,
+            pause: 'hover'
         });
 
         const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
         const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
 
-        // This function will run only ONCE when a control button is clicked.
         const stopAutoCycleOnClick = () => {
-            previewCarousel.pause(); // Pause the auto-cycle
+            previewCarousel.pause();
             const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
             if (carouselInstance) {
-                carouselInstance._config.interval = false; // Permanently disable auto-cycling
+                carouselInstance._config.interval = false;
             }
-            // Clean up the event listeners so this doesn't run again.
             if (prevButton) prevButton.removeEventListener('click', stopAutoCycleOnClick);
             if (nextButton) nextButton.removeEventListener('click', stopAutoCycleOnClick);
         };
 
-        // Attach the listener directly to the buttons' CLICK events.
         if (prevButton) {
             prevButton.addEventListener('click', stopAutoCycleOnClick);
         }
@@ -93,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
             nextButton.addEventListener('click', stopAutoCycleOnClick);
         }
 
-        // Initially start the carousel's automatic cycling.
         previewCarousel.cycle();
     }
 });
