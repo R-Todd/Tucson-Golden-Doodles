@@ -1,7 +1,26 @@
 {# app/templates/admin/reviews/list_bs5.html #}
-{% extends 'admin/base_bs5.html' %}
+{% extends 'admin/model/list.html' %} {# <-- This is the key change #}
 
-{# This block allows Flask-Admin to render the table of reviews within our BS5 environment #}
-{% block body %}
-  {{ super() }}
+{# By extending the default list.html, we inherit all the logic
+   that renders the table, pagination, and action buttons.
+   We then override the asset blocks to inject Bootstrap 5. #}
+
+{% block head_css %}
+    {# Load Bootstrap 5 CSS from a CDN #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    {# We still call super() to get Flask-Admin's other necessary CSS files #}
+    {{ super() }}
+
+    {# Load any necessary custom CSS #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
+{% endblock %}
+
+{% block tail %}
+    {# We call super() here to get Flask-Admin's necessary JS for modals, etc. #}
+    {{ super() }}
+
+    {# Then, we load the Bootstrap 5 JavaScript bundle. The browser will use this
+       for BS5 components, while the older components still have access to BS4 JS. #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 {% endblock %}
