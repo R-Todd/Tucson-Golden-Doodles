@@ -17,7 +17,8 @@ from .views import (
 # === View Registration ===
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
-admin.add_view(AdminModelView(Review, db.session))
+# Old - bootstrap v4 registration: admin.add_view(AdminModelView(Review, db.session))
+admin.add_view(AdminModelView(Review, db.session, base_template='admin/base_bs5.html'))
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
