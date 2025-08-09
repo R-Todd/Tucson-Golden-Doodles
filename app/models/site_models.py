@@ -1,10 +1,23 @@
 # app/models/site_models.py
+"""
+Defines various models for managing site-wide content and configuration.
+
+These models are typically for content that is edited by an admin and displayed
+on various pages of the public-facing website, such as the homepage hero,
+about section, gallery, and contact information.
+"""
 
 from . import db
 from .puppy_models import Puppy  # Import Puppy to define relationship
 
-# Site-wide metadata, intended for a single row of data
 class SiteMeta(db.Model):
+    """
+    Stores site-wide metadata and contact information.
+
+    This table is intended to have only a single row, acting as a central
+    configuration point for details like phone number, email, and social media links
+    that may appear in multiple places (e.g., header, footer).
+    """
     id = db.Column(db.Integer, primary_key=True)
     phone_number = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -12,11 +25,16 @@ class SiteMeta(db.Model):
     social_instagram_url = db.Column(db.String(255))
 
     def __repr__(self):
+        """Provides a developer-friendly representation of the SiteMeta object."""
         return f'<SiteMeta {self.id}>'
 
-# --- Homepage Content Models ---
-
 class HeroSection(db.Model):
+    """
+    Manages the content for the homepage's main hero section.
+
+    Intended for a single row of data to control the main title, subtitle,
+    description, and background images of the hero banner.
+    """
     id = db.Column(db.Integer, primary_key=True)
     main_title = db.Column(db.String(200), default="Copper Skye Doodles")
     subtitle = db.Column(db.String(200), default="Established 2001")
@@ -24,53 +42,79 @@ class HeroSection(db.Model):
     scroll_text_main = db.Column(db.String(100), default="Website Updated")
     scroll_text_secondary = db.Column(db.String(100), default="See Available Puppies Below")
 
-    # --- RENAMED FIELDS ---
+    # S3 keys for the hero background image, with responsive sizes.
     image_s3_key = db.Column(db.String(255))
     image_s3_key_small = db.Column(db.String(255))
     image_s3_key_medium = db.Column(db.String(255))
     image_s3_key_large = db.Column(db.String(255))
 
     def __repr__(self):
+        """Provides a developer-friendly representation of the HeroSection object."""
         return f'<HeroSection {self.main_title}>'
 
 class AboutSection(db.Model):
+    """
+    Manages the content for the 'About Us' section on the homepage.
+
+    Intended for a single row of data to control the title, text content (HTML),
+    and associated image for this section.
+    """
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
     content_html = db.Column(db.Text)
 
-    # --- RENAMED FIELDS ---
+    # S3 keys for the section's image, with responsive sizes.
     image_s3_key = db.Column(db.String(255))
     image_s3_key_small = db.Column(db.String(255))
     image_s3_key_medium = db.Column(db.String(255))
     image_s3_key_large = db.Column(db.String(255))
 
     def __repr__(self):
+        """Provides a developer-friendly representation of the AboutSection object."""
         return f'<AboutSection {self.title}>'
 
 class GalleryImage(db.Model):
+    """
+    Represents a single image in the main site gallery.
+
+    This is for a general-purpose photo gallery, separate from the images
+    associated with specific parents or puppies.
+    """
     id = db.Column(db.Integer, primary_key=True)
-    # --- RENAMED FIELD ---
+    # S3 key for the full-resolution gallery image.
     image_s3_key = db.Column(db.String(255), nullable=False)
     caption = db.Column(db.String(255))
+    # Used to control the display order of images in the gallery.
     sort_order = db.Column(db.Integer, default=0)
 
     def __repr__(self):
+        """Provides a developer-friendly representation of the GalleryImage object."""
         return f'<GalleryImage {self.id}>'
 
 
-# --- : AnnouncementBanner  links to a Puppy ---
 class AnnouncementBanner(db.Model):
+    """
+    Manages the content for a site-wide announcement banner.
+
+    This is typically used to highlight new litters or important news. It can
+    optionally be linked to a specific puppy to create a direct call-to-action.
+    Intended to have only one active banner at a time.
+    """
     id = db.Column(db.Integer, primary_key=True)
+    # Controls whether the banner is currently displayed on the site.
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    main_text = db.Column(db.String(200), default="✨ Check out our newest litter! ✨")
+    main_text = db.Column(db.String(200), default=" Check out our newest litter! ")
     sub_text = db.Column(db.String(300), default="A beautiful new litter from {mom_name} & {dad_name}.")
     button_text = db.Column(db.String(50), default="Meet the Puppies")
 
-    # This foreign key will link the banner to one specific puppy.
+    # An optional foreign key to link the banner to one specific puppy,
+    # allowing the call-to-action button to lead to a puppy's detail page.
     featured_puppy_id = db.Column(db.Integer, db.ForeignKey('puppy.id'), nullable=True)
     
-    # Define the relationship to the Puppy model
+    # The relationship to the Puppy model, allowing easy access to the
+    # featured_puppy object from a banner instance.
     featured_puppy = db.relationship('Puppy', foreign_keys=[featured_puppy_id])
 
     def __repr__(self):
+        """Provides a developer-friendly representation of the AnnouncementBanner object."""
         return f'<AnnouncementBanner {self.id}>'

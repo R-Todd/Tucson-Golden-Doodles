@@ -11,7 +11,7 @@ from app.models import Puppy, ParentRole
 from collections import OrderedDict
 from itertools import groupby
 
-# --- Announcement Banner Form (Existing) ---
+# --- Announcement Banner Form  ---
 
 def get_litters():
     """
