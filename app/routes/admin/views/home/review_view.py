@@ -9,7 +9,6 @@ class ReviewAdminView(AdminModelView):
     create_template = 'admin/reviews/create_bs5.html'
     edit_template = 'admin/reviews/edit_bs5.html'
 
-    # --- ADD THESE LINES ---
     # Specify columns to display in the list view
     column_list = ('author_name', 'is_featured', 'testimonial_text')
 
@@ -22,10 +21,8 @@ class ReviewAdminView(AdminModelView):
             'rows': 10
         }
     }
-    # --- END OF ADDED LINES ---
 
-    def on_model_change(self, form, model, is_created):
-        """
-        This function is called when a review is created or updated.
-        """
-        pass
+    #
+    # The empty 'on_model_change' method has been completely removed.
+    # Flask-Admin will now handle saving automatically.
+    #
