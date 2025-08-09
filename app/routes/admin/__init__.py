@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask_admin import Admin
 from .views.base import MyAdminIndexView
 
+
 bp = Blueprint('admin_auth', __name__, url_prefix='/admin')
 
 # 1. Create the custom index view for your dashboard

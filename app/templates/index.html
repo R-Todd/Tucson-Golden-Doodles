@@ -101,6 +101,28 @@
     <hr class="my-5">
     {% endif %}
 
+    {#--- REVIEWS/TESTIMONIALS SECTION ---#}
+    {% if reviews %}
+    <section id="testimonials" class="my-5">
+        <h2 class="display-5 text-center mb-4">What Our Families Are Saying</h2>
+        <div class="row">
+            {% for review in reviews %}
+            <div class="col-md-6 mx-auto mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>"{{ review.testimonial_text }}"</p>
+                            <footer class="blockquote-footer mt-2">{{ review.author_name }}</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <hr class="my-5">
+    {% endif %}
+
     {% if gallery_images %}
     <section id="gallery" class="my-5">
         <h2 class="display-5 text-center mb-4">Gallery</h2>

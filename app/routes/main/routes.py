@@ -1,4 +1,5 @@
 # app/routes/main/routes.py
+
 from flask import render_template
 from app.routes.main import bp
 from app.models import (
@@ -31,7 +32,7 @@ def index():
                            hero=hero_data,
                            about=about_data,
                            puppies=available_puppies,
-                           reviews=featured_reviews,
+                           reviews=featured_reviews, 
                            gallery_images=gallery_images,
                            guardian_parents=guardian_parents,
                            announcement_banner=announcement_banner,

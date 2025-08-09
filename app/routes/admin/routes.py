@@ -10,14 +10,14 @@ from app.models import (
 )
 from . import bp, admin
 from .views import (
-    AdminModelView, ParentAdminView, PuppyAdminView, HeroSectionAdminView,
-    AboutSectionAdminView, AnnouncementBannerAdminView
+    ParentAdminView, PuppyAdminView, HeroSectionAdminView,
+    AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView
 )
 
 # === View Registration ===
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
-admin.add_view(AdminModelView(Review, db.session))
+admin.add_view(ReviewAdminView(Review, db.session)) # <-- bootstap 5 LINE
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))

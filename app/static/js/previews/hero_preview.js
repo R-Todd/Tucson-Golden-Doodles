@@ -1,7 +1,7 @@
-// app/static/js/admin_content_preview.js
+// app/static/js/previews/hero_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Helper function to link a form input to a preview element ---
+    // Helper function to link a form input to a preview element
     const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 previewElement.innerHTML = inputElement.value;
             }
-
 
             // Add event listener to update preview on input
             inputElement.addEventListener('keyup', () => {
@@ -32,5 +31,4 @@ document.addEventListener('DOMContentLoaded', function() {
     syncInputToPreview('description', 'preview-description');
     syncInputToPreview('scroll_text_main', 'preview-scroll-main');
     syncInputToPreview('scroll_text_secondary', 'preview-scroll-secondary');
-
 });
