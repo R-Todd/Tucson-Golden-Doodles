@@ -13,6 +13,12 @@
     {%- endif -%}
 {% endblock %}
 
+
+{#  renders the 'edit' and 'delete' buttons for each row. #}
+{% block list_row_actions %}
+  {{ super() }}
+{% endblock %}
+
 {# 2. Completely override the tail_js block to prevent BS4 JS and jQuery #}
 {% block tail_js %}
     <script src="{{ url_for('admin.static', filename='vendor/jquery.min.js', v='3.5.1') }}"></script>
