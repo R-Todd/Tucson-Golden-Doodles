@@ -32,7 +32,7 @@ def index():
                            hero=hero_data,
                            about=about_data,
                            puppies=available_puppies,
-                           reviews=featured_reviews, # <-- THE FIX IS HERE
+                           reviews=featured_reviews, 
                            gallery_images=gallery_images,
                            guardian_parents=guardian_parents,
                            announcement_banner=announcement_banner,

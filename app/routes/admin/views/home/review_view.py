@@ -5,6 +5,16 @@ from flask import request
 
 class ReviewAdminView(AdminModelView):
     """A custom view for Reviews that uses an organized Bootstrap 5 template."""
+    
+    # --- THIS IS THE FIX ---
+    # By explicitly setting these to True, we ensure Flask-Admin knows
+    # that these actions are allowed and should have buttons.
+    can_create = True
+    can_edit = True
+    can_delete = True
+    # --- END OF FIX ---
+
+    # Template configuration
     list_template = 'admin/reviews/list_bs5.html'
     create_template = 'admin/reviews/create_bs5.html'
     edit_template = 'admin/reviews/edit_bs5.html'
@@ -21,8 +31,3 @@ class ReviewAdminView(AdminModelView):
             'rows': 10
         }
     }
-
-    #
-    # The empty 'on_model_change' method has been completely removed.
-    # Flask-Admin will now handle saving automatically.
-    #
