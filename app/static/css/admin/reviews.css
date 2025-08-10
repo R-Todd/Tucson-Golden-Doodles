@@ -1,9 +1,27 @@
-/* app/static/css/admin/reviews.css */
+/* app/static/css/components/reviews.css */
 
-/* Custom styles for the Bootstrap 5 review pages can go here. */
-/* For now, it can be empty, but it's ready for future customizations. */
+#testimonials .card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
 
-/* Example: Add more spacing to the review form */
-.review-form-container {
-    padding: 20px;
+#testimonials .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+#testimonials .blockquote {
+    font-size: 1.1rem;
+    color: #555;
+    font-style: italic;
+    border-left: 4px solid #aecdec; /* A nice accent color */
+    padding-left: 1.5rem;
+}
+
+#testimonials .blockquote-footer {
+    font-weight: 600;
+    color: #333;
+    font-style: normal;
 }

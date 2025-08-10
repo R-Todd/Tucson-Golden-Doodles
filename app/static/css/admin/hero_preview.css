@@ -1,0 +1,19 @@
+/* app/static/css/admin/hero_preview.css */
+
+/* Wrapper to constrain the hero preview */
+.hero-preview-wrapper {
+    height: 350px; /* Reduced height for a compact preview */
+    overflow: hidden; /* Hide parts of the background that don't fit */
+    position: relative;
+    border-radius: 5px;
+}
+
+/* Apply the real hero section styles, but scoped to the preview */
+.hero-preview-wrapper .hero-section {
+    height: 100%;
+    width: 100%;
+    transform: scale(1); /* Ensure it's not scaled down */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
