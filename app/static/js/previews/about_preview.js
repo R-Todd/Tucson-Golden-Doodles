@@ -2,36 +2,26 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     /**
-     * A helper function to synchronize a form input's value with a preview element.
+     * A helper function to synchronize a standard form input's value with a preview element.
      * @param {string} inputId - The ID of the form input element.
      * @param {string} previewId - The ID of the element to display the preview.
-     * @param {string} attribute - The attribute to update on the preview element ('textContent' or 'innerHTML').
      */
-    const syncInputToPreview = (inputId, previewId, attribute = 'textContent') => {
+    const syncInputToPreview = (inputId, previewId) => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
 
         if (inputElement && previewElement) {
-            // Update preview on page load with the initial value from the form field.
-            if (attribute === 'innerHTML') {
-                previewElement.innerHTML = inputElement.value;
-            } else {
-                previewElement.textContent = inputElement.value;
-            }
-
-            // Add an event listener to update the preview in real-time as the user types.
+            // Update preview on page load with the initial value.
+            previewElement.textContent = inputElement.value;
+            // Add event listener for real-time updates.
             inputElement.addEventListener('keyup', () => {
-                if (attribute === 'innerHTML') {
-                    previewElement.innerHTML = inputElement.value;
-                } else {
-                    previewElement.textContent = inputElement.value;
-                }
+                previewElement.textContent = inputElement.value;
             });
         }
     };
 
     /**
-     * A helper function to handle updating an image preview when a new file is selected.
+     * A helper function to update an image preview when a new file is selected.
      * @param {string} inputId - The ID of the file input element.
      * @param {string} previewImgId - The ID of the img element to update.
      */
@@ -41,23 +31,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (inputElement && previewImgElement) {
             inputElement.addEventListener('change', function() {
-                // Check if a file was selected.
                 if (this.files && this.files[0]) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
-                        // Set the src attribute of the preview image to the new file data.
+                    reader.onload = (e) => {
                         previewImgElement.src = e.target.result;
                     };
-                    // Read the file as a data URL to display it.
                     reader.readAsDataURL(this.files[0]);
                 }
             });
         }
     };
 
-    // --- Initialize all live previews for the "About" section ---
+    // --- Initialize standard previews ---
     syncInputToPreview('about_title', 'preview-about-title');
-    // Use 'innerHTML' for the content to correctly render any HTML tags.
-    syncInputToPreview('about_content_html', 'preview-about-content', 'innerHTML'); 
     handleImagePreview('image_upload', 'preview-about-image');
+
+    // --- THIS IS THE UPDATED LOGIC FOR CKEDITOR ---
+    // We check if the CKEDITOR library has loaded and our instance exists.
+    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances.content_html) {
+        const previewElement = document.getElementById('preview-about-content');
+        const editor = CKEDITOR.instances.content_html;
+
+        // Set the initial content for the preview on page load.
+        if (previewElement) {
+            previewElement.innerHTML = editor.getData();
+        }
+
+        // Use the editor's 'change' event to update the preview.
+        // This is more reliable than 'keyup'.
+        editor.on('change', function() {
+            if (previewElement) {
+                previewElement.innerHTML = this.getData();
+            }
+        });
+    }
 });
