@@ -6,7 +6,7 @@ from flask import request
 class ReviewAdminView(AdminModelView):
     """A custom view for Reviews that uses an organized Bootstrap 5 template."""
     
-    # --- THIS IS THE FIX ---
+    # --- ---
     # By explicitly setting these to True, we ensure Flask-Admin knows
     # that these actions are allowed and should have buttons.
     can_create = True
