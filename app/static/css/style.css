@@ -3,8 +3,9 @@
 /* --- IMPORTS --- */
 /* Import page-specific and component-specific styles. @import rules must be at the top. */
 @import url("pages/parents.css");
-@import url("components/hero.css"); 
-@import url("components/banner.css"); /* <-- ADDED THIS LINE */
+@import url("components/hero.css");
+@import url("components/banner.css"); 
+@import url("components/reviews.css");
 
 
 /* --- GENERAL STYLING --- */

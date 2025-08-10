@@ -6,43 +6,43 @@ from .base import AdminModelView
 from app.utils.image_uploader import upload_image, generate_presigned_url
 from ..forms import AnnouncementBannerForm
 from app.models import AnnouncementBanner
-
-class HeroSectionAdminView(AdminModelView):
-    """ Custom view for the Hero Section with image upload. """
+# bs4 implementation
+# class HeroSectionAdminView(AdminModelView):
+#     """ Custom view for the Hero Section with image upload. """
     
-    edit_template = 'admin/hero_section_edit.html'
-    column_list = ('main_title', 'subtitle', 'description')
-    form_columns = [
-        'main_title', 'subtitle', 'description', 'scroll_text_main',
-        'scroll_text_secondary', 'image_upload'
-    ]
-    form_extra_fields = {
-        'image_upload': FileField('Upload New Background Image (Recommended: 1920x1080px)')
-    }
+#     edit_template = 'admin/hero_section_edit.html'
+#     column_list = ('main_title', 'subtitle', 'description')
+#     form_columns = [
+#         'main_title', 'subtitle', 'description', 'scroll_text_main',
+#         'scroll_text_secondary', 'image_upload'
+#     ]
+#     form_extra_fields = {
+#         'image_upload': FileField('Upload New Background Image (Recommended: 1920x1080px)')
+#     }
 
-    form_widget_args = {
-        'main_title': { 'id': 'main_title' },
-        'subtitle': { 'id': 'subtitle' },
-        'description': { 'id': 'description' },
-        'scroll_text_main': { 'id': 'scroll_text_main' },
-        'scroll_text_secondary': { 'id': 'scroll_text_secondary' },
-    }
+#     form_widget_args = {
+#         'main_title': { 'id': 'main_title' },
+#         'subtitle': { 'id': 'subtitle' },
+#         'description': { 'id': 'description' },
+#         'scroll_text_main': { 'id': 'scroll_text_main' },
+#         'scroll_text_secondary': { 'id': 'scroll_text_secondary' },
+#     }
 
-    # --- THIS METHOD IS MODIFIED ---
-    def edit_form(self, obj=None):
-        # The logic to add 'data-current-image' for the thumbnail has been removed.
-        form = super(HeroSectionAdminView, self).edit_form(obj)
-        return form
+#     # --- THIS METHOD IS MODIFIED ---
+#     def edit_form(self, obj=None):
+#         # The logic to add 'data-current-image' for the thumbnail has been removed.
+#         form = super(HeroSectionAdminView, self).edit_form(obj)
+#         return form
 
-    def on_model_change(self, form, model, is_created):
-        file = request.files.get('image_upload')
-        if file and file.filename:
-            s3_keys = upload_image(file, folder='hero', create_responsive_versions=True)
-            if s3_keys:
-                model.image_s3_key = s3_keys.get('original')
-                model.image_s3_key_small = s3_keys.get('small')
-                model.image_s3_key_medium = s3_keys.get('medium')
-                model.image_s3_key_large = s3_keys.get('large')
+#     def on_model_change(self, form, model, is_created):
+#         file = request.files.get('image_upload')
+#         if file and file.filename:
+#             s3_keys = upload_image(file, folder='hero', create_responsive_versions=True)
+#             if s3_keys:
+#                 model.image_s3_key = s3_keys.get('original')
+#                 model.image_s3_key_small = s3_keys.get('small')
+#                 model.image_s3_key_medium = s3_keys.get('medium')
+#                 model.image_s3_key_large = s3_keys.get('large')
 
 
 class AboutSectionAdminView(AdminModelView):

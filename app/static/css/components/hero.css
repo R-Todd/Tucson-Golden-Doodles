@@ -32,8 +32,8 @@
 }
 
 .hero-title {
-    font-family: 'Playfair Display', serif; /* Uses the serif font you already have */
-    font-size: 4.5rem; /* Large font size */
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: bisque;
@@ -80,4 +80,3 @@
         transform: translateY(-10px);
     }
 }
-

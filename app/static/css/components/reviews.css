@@ -1,0 +1,30 @@
+/* app/static/css/components/reviews.css */
+
+/* --- Testimonials/Reviews Section --- */
+#testimonials .card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#testimonials .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+#testimonials .blockquote {
+    font-size: 1.1rem;
+    color: #555;
+    font-style: normal;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    border-left: 4px solid #aecdec; /* Accent color */
+    padding-left: 1.5rem;
+}
+
+#testimonials .blockquote-footer {
+    font-weight: 600;
+    color: #333;
+    font-style: normal;
+}
