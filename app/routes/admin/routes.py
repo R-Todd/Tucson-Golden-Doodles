@@ -17,12 +17,15 @@ from .views import (
 # === View Registration ===
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
-# === Updated  Bootstap 5 View Registration === #
-admin.add_view(ReviewAdminView(Review, db.session)) # <-- bootstap 5 LINE
-# ===admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
+
+# === Bootstrap 5 View Registrations === #
+admin.add_view(ReviewAdminView(Review, db.session))
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section", category="Home"))
-# admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
-admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner", category="Home"))
+# --- THIS IS THE FIX ---
+# Add the category to group this view with the Hero Section in the admin menu.
+admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section", category="Home"))
+# --- END OF FIX ---
+admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
 admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
 
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))
