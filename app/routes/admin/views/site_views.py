@@ -45,32 +45,32 @@ from app.models import AnnouncementBanner
 #                 model.image_s3_key_large = s3_keys.get('large')
 
 
-class AboutSectionAdminView(AdminModelView):
-    """ Custom view for the About Section with image upload. """
-    edit_template = 'admin/about_section_edit.html'
-    form_extra_fields = { 'image_upload': FileField('Upload New Image') }
-    form_columns = ['title', 'content_html', 'image_upload']
+# class AboutSectionAdminView(AdminModelView):
+#     """ Custom view for the About Section with image upload. """
+#     edit_template = 'admin/about_section_edit.html'
+#     form_extra_fields = { 'image_upload': FileField('Upload New Image') }
+#     form_columns = ['title', 'content_html', 'image_upload']
     
-    form_widget_args = {
-        'title': { 'id': 'about_title' },
-        'content_html': { 'id': 'about_content' }
-    }
+#     form_widget_args = {
+#         'title': { 'id': 'about_title' },
+#         'content_html': { 'id': 'about_content' }
+#     }
 
-    # --- THIS METHOD IS MODIFIED ---
-    def edit_form(self, obj=None):
-        # The logic to add 'data-current-image' for the thumbnail has been removed.
-        form = super(AboutSectionAdminView, self).edit_form(obj)
-        return form
+#     # --- THIS METHOD IS MODIFIED ---
+#     def edit_form(self, obj=None):
+#         # The logic to add 'data-current-image' for the thumbnail has been removed.
+#         form = super(AboutSectionAdminView, self).edit_form(obj)
+#         return form
 
-    def on_model_change(self, form, model, is_created):
-        file = request.files.get('image_upload')
-        if file and file.filename:
-            s3_keys = upload_image(file, folder='about', create_responsive_versions=True)
-            if s3_keys:
-                model.image_s3_key = s3_keys.get('original')
-                model.image_s3_key_small = s3_keys.get('small')
-                model.image_s3_key_medium = s3_keys.get('medium')
-                model.image_s3_key_large = s3_keys.get('large')
+#     def on_model_change(self, form, model, is_created):
+#         file = request.files.get('image_upload')
+#         if file and file.filename:
+#             s3_keys = upload_image(file, folder='about', create_responsive_versions=True)
+#             if s3_keys:
+#                 model.image_s3_key = s3_keys.get('original')
+#                 model.image_s3_key_small = s3_keys.get('small')
+#                 model.image_s3_key_medium = s3_keys.get('medium')
+#                 model.image_s3_key_large = s3_keys.get('large')
 
 class AnnouncementBannerAdminView(AdminModelView):
     """Custom Admin View for the Announcement Banner."""
