@@ -1,5 +1,6 @@
 /* app/static/css/components/reviews.css */
 
+/* --- Testimonials/Reviews Section --- */
 #testimonials .card {
     border: none;
     border-radius: 12px;
@@ -15,8 +16,10 @@
 #testimonials .blockquote {
     font-size: 1.1rem;
     color: #555;
-    font-style: italic;
-    border-left: 4px solid #aecdec; /* A nice accent color */
+    font-style: normal;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    border-left: 4px solid #aecdec; /* Accent color */
     padding-left: 1.5rem;
 }
 
