@@ -5,7 +5,6 @@
 {% block head_css %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
-    {# --- ADD THIS LINE --- #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/announcement_preview.css') }}">
 {% endblock %}
 
@@ -19,22 +18,20 @@
             <h3>Live Preview</h3>
             <div id="banner-preview-wrapper">
                 <h4 class="h4" id="preview-main-text">{{ model.main_text }}</h4>
-                <p id="preview-sub-text">
-                    {# This part will be dynamically updated by the JS #}
-                </p>
+                <p id="preview-sub-text"></p>
                 <a href="#" class="btn btn-outline-light" id="preview-button-text">{{ model.button_text }}</a>
             </div>
         </div>
     </div>
 
     {# --- DATA FOR JAVASCRIPT --- #}
-    {# Pass litter data to the template so the JS can access it #}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const select = document.getElementById('featured_puppy');
             if (select) {
-                // Loop through the options and add data attributes
-                {% for puppy in form.featured_puppy.query %}
+                {# --- THIS IS THE FIX --- #}
+                {# Iterate over the field's object_list instead of the non-existent 'query' attribute #}
+                {% for puppy in form.featured_puppy.object_list %}
                     const option_{{ puppy.id }} = select.querySelector('option[value="{{ puppy.id }}"]');
                     if (option_{{ puppy.id }}) {
                         option_{{ puppy.id }}.setAttribute('data-mom-name', '{{ puppy.mom.name }}');
@@ -42,7 +39,7 @@
                         option_{{ puppy.id }}.setAttribute('data-birth-date', '{{ puppy.birth_date.strftime("%B %d, %Y") }}');
                     }
                 {% endfor %}
-                // Trigger a change event on load to populate the preview initially
+                {# --- END OF FIX --- #}
                 select.dispatchEvent(new Event('change'));
             }
         });
@@ -53,6 +50,5 @@
 {# Block 3: JavaScript Loading #}
 {% block tail %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    {# --- ADD THIS LINE --- #}
     <script src="{{ url_for('static', filename='js/previews/announcement_preview.js') }}"></script>
 {% endblock %}

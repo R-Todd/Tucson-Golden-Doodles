@@ -18,16 +18,14 @@ class TestAdminAnnouncementBS5:
         Fixture to create a clean database, add necessary data (admin user, parents, puppy),
         and log in the client before each test.
         """
-        # Create an admin user and log them in
         admin_user = User(username='admin')
         admin_user.set_password('password')
         db.session.add(admin_user)
         
-        # Create necessary parent and puppy data for the form's QuerySelectField
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
         db.session.add_all([mom, dad])
-        db.session.commit() # Commit parents to get their IDs
+        db.session.commit()
 
         self.puppy1 = Puppy(name='Featured Puppy', birth_date=date(2025, 1, 1), mom_id=mom.id, dad_id=dad.id)
         db.session.add(self.puppy1)
@@ -48,7 +46,7 @@ class TestAdminAnnouncementBS5:
         """
         client = setup_and_login
 
-        # 1. CREATE: Post data to the create view to make a new banner
+        # 1. CREATE
         create_response = client.post(
             url_for('announcementbanner.create_view'),
             data={
@@ -66,19 +64,19 @@ class TestAdminAnnouncementBS5:
         assert banner.is_active is True
         assert banner.featured_puppy_id == self.puppy1.id
 
-        # 2. READ: Check the list view for the newly created record
+        # 2. READ
         list_response = client.get(url_for('announcementbanner.index_view'))
         assert list_response.status_code == 200
         assert b'New Litter Available!' in list_response.data
 
-        # 3. UPDATE: Edit the banner to deactivate it
+        # 3. UPDATE
         edit_response = client.post(
             url_for('announcementbanner.edit_view', id=banner.id),
             data={
                 'main_text': 'New Litter (Updated)',
                 'sub_text': banner.sub_text,
                 'button_text': banner.button_text,
-                'is_active': '', # Unchecking the 'is_active' box
+                'is_active': '',
                 'featured_puppy': self.puppy1.id
             },
             follow_redirects=True
@@ -88,25 +86,46 @@ class TestAdminAnnouncementBS5:
         assert banner.main_text == 'New Litter (Updated)'
         assert banner.is_active is False
 
-        # 4. DELETE: Remove the banner record
+        # 4. DELETE
         delete_response = client.post(
             url_for('announcementbanner.delete_view', id=banner.id),
             data={'id': banner.id},
             follow_redirects=True
         )
         assert b'Record was successfully deleted.' in delete_response.data
-        deleted_banner = db.session.get(AnnouncementBanner, banner.id)
-        assert deleted_banner is None
+        assert db.session.get(AnnouncementBanner, banner.id) is None
 
-    def test_banner_view_loads_bs5_template(self, setup_and_login, db):
+    def test_announcement_edit_view_loads_live_preview(self, setup_and_login, db):
         """
-        Confirms that the create view is loading the correct BS5 template by
-        checking for a class that is specific to our BS5 implementation.
+        Confirms that the edit view correctly loads the live preview HTML structure
+        and that all necessary elements have their required IDs for JavaScript to function.
         """
         client = setup_and_login
-        response = client.get(url_for('announcementbanner.create_view'))
+        # Create a banner to edit
+        banner = AnnouncementBanner(main_text="Test Banner", button_text="Click Me", featured_puppy_id=self.puppy1.id)
+        db.session.add(banner)
+        db.session.commit()
+
+        response = client.get(url_for('announcementbanner.edit_view', id=banner.id))
+        assert response.status_code == 200
         soup = BeautifulSoup(response.data, 'html.parser')
 
-        # The 'container' with a 'mt-4' margin is unique to our BS5 templates
-        form_container = soup.find('div', class_='container mt-4')
-        assert form_container is not None, "The view did not load the Bootstrap 5 template."
+        # 1. Check for the main preview container
+        preview_container = soup.find('div', class_='live-preview-container')
+        assert preview_container is not None, "The live-preview-container div is missing."
+        assert preview_container.find('h3').text == "Live Preview"
+
+        # 2. Check for the specific preview wrapper with its ID
+        wrapper = preview_container.find('div', id='banner-preview-wrapper')
+        assert wrapper is not None, "The banner-preview-wrapper div is missing."
+
+        # 3. Verify that all preview elements have their required IDs
+        assert wrapper.find('h4', id='preview-main-text') is not None
+        assert wrapper.find('p', id='preview-sub-text') is not None
+        assert wrapper.find('a', id='preview-button-text') is not None
+
+        # 4. Verify that the form inputs have IDs for the JavaScript to target
+        assert soup.find('input', id='main_text') is not None
+        assert soup.find('input', id='sub_text') is not None
+        assert soup.find('input', id='button_text') is not None
+        assert soup.find('select', id='featured_puppy') is not None
