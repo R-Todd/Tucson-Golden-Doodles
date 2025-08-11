@@ -9,7 +9,7 @@
 
     {% if litters %}
         {% for (birth_date, mom, dad), puppies_in_litter in litters.items() %}
-        <div class="card shadow-sm mb-5" id="litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
+        <div class="card shadow-sm mb-5 litter-card" id="litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
             <div class="card-header bg-light">
                 <h2 class="h4 mb-0">
                     Litter from <strong>{{ mom.name }}</strong> &amp; <strong>{{ dad.name }}</strong>
@@ -17,25 +17,26 @@
                 <p class="text-muted mb-0">Born on: {{ birth_date.strftime('%B %d, %Y') }}</p>
             </div>
             <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-6 text-center">
-                        <h4 class="h5">Mother: {{ mom.name }}</h4>
-                        {# --- THIS IS THE FIX --- #}
-                        <img src="{{ mom.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ mom.name }}">
+                <div class="row mb-4 align-items-center litter-parents-section">
+                    <div class="col-md-6 text-center parent-profile">
+                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ mom.id }}">
+                            <img src="{{ mom.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded-circle parent-image" alt="Photo of {{ mom.name }}">
+                            <h4 class="h5 mt-2">Mother: {{ mom.name }}</h4>
+                        </a>
                     </div>
-                    <div class="col-md-6 text-center">
-                        <h4 class="h5">Father: {{ dad.name }}</h4>
-                        {# --- THIS IS THE FIX --- #}
-                        <img src="{{ dad.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded shadow-sm" alt="Photo of {{ dad.name }}">
+                    <div class="col-md-6 text-center parent-profile">
+                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ dad.id }}">
+                            <img src="{{ dad.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="img-fluid rounded-circle parent-image" alt="Photo of {{ dad.name }}">
+                             <h4 class="h5 mt-2">Father: {{ dad.name }}</h4>
+                        </a>
                     </div>
                 </div>
                 <hr>
-                <h4 class="h5 text-center mt-4">Puppies</h4>
-                <div class="row">
+                <h4 class="h5 text-center mt-4">Puppies In This Litter</h4>
+                <div class="row justify-content-center">
                     {% for puppy in puppies_in_litter %}
                     <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            {# --- THIS IS THE FIX --- #}
+                        <div class="card h-100 puppy-card">
                             <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="card-img-top" alt="{{ puppy.name }}">
                             <div class="card-body text-center">
                                 <h5 class="card-title">{{ puppy.name }}</h5>

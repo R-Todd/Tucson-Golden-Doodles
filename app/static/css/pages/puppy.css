@@ -1,0 +1,34 @@
+/* app/static/css/pages/puppies.css */
+
+.litter-card .card-header {
+    border-bottom: 2px solid #aecdec;
+}
+
+.litter-parents-section .parent-profile a {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.litter-parents-section .parent-profile a:hover {
+    transform: scale(1.05);
+}
+
+/* Adjust the width and height here for a smaller profile picture */
+.litter-parents-section .parent-image {
+    width: 120px;  /* Changed from 150px */
+    height: 120px; /* Changed from 150px */
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.puppy-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.puppy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
