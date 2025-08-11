@@ -1,32 +1,46 @@
 // app/static/js/previews/announcement_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
+    // --- PART 1: Populate Dropdown Data Attributes ---
+    // This logic was formerly in announcement_edit_preview.js
 
-    /**
-     * Synchronizes a form input's value with a preview element's text content.
-     * @param {string} inputId - The ID of the form input element.
-     * @param {string} previewId - The ID of the element to display the preview.
-     */
+    const select = document.getElementById('featured_puppy');
+    const litterDataElement = document.getElementById('litter-data-for-js');
+
+    if (select && litterDataElement) {
+        try {
+            const litters = JSON.parse(litterDataElement.textContent);
+            litters.forEach(litter => {
+                const option = select.querySelector(`option[value="${litter.id}"]`);
+                if (option) {
+                    option.setAttribute('data-mom-name', litter.mom_name);
+                    option.setAttribute('data-dad-name', litter.dad_name);
+                    option.setAttribute('data-birth-date', litter.birth_date);
+                }
+            });
+        } catch (e) {
+            console.error("Failed to parse litter data JSON:", e);
+        }
+    }
+
+    // --- PART 2: Handle Live Preview Updates ---
+    // This is the core logic from the original announcement_preview.js
+
     const syncInputToPreview = (inputId, previewId) => {
         const inputElement = document.getElementById(inputId);
         const previewElement = document.getElementById(previewId);
 
         if (inputElement && previewElement) {
-            // Update on page load
             previewElement.textContent = inputElement.value;
-            // Update in real-time
             inputElement.addEventListener('keyup', () => {
                 previewElement.textContent = inputElement.value;
             });
         }
     };
 
-    /**
-     * Handles the special logic for the sub-text, which uses placeholders.
-     */
     const syncSubtextPreview = () => {
         const subtextInput = document.getElementById('sub_text');
-        const litterSelect = document.getElementById('featured_puppy');
+        const litterSelect = document.getElementById('featured_puppy'); // Already defined as 'select'
         const previewElement = document.getElementById('preview-sub-text');
 
         if (!subtextInput || !litterSelect || !previewElement) return;
@@ -36,27 +50,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedOption = litterSelect.options[litterSelect.selectedIndex];
 
             if (selectedOption && selectedOption.value) {
-                // Get data attributes from the selected option
                 const momName = selectedOption.getAttribute('data-mom-name');
                 const dadName = selectedOption.getAttribute('data-dad-name');
                 const birthDate = selectedOption.getAttribute('data-birth-date');
                 
-                // Replace placeholders
-                subtext = subtext.replace('{mom_name}', momName)
-                                 .replace('{dad_name}', dadName)
-                                 .replace('{birth_date}', birthDate);
+                if (momName && dadName && birthDate) {
+                    subtext = subtext.replace('{mom_name}', momName)
+                                     .replace('{dad_name}', dadName)
+                                     .replace('{birth_date}', birthDate);
+                }
             }
             previewElement.textContent = subtext;
         };
         
-        // Update on load and when inputs change
-        updateSubtext();
+        updateSubtext(); // Initial call
         subtextInput.addEventListener('keyup', updateSubtext);
         litterSelect.addEventListener('change', updateSubtext);
     };
 
-    // --- Initialize all live previews ---
+    // Initialize all preview functionalities
     syncInputToPreview('main_text', 'preview-main-text');
     syncInputToPreview('button_text', 'preview-button-text');
     syncSubtextPreview();
+
+    // Finally, trigger the change event to ensure the preview is populated on page load
+    if (select) {
+        select.dispatchEvent(new Event('change'));
+    }
 });
