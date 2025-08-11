@@ -4,11 +4,28 @@
 {% block head_css %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    {# --- ADDED: Font Awesome for the checkmark icon --- #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
 {% endblock %}
 
 {% block tail %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{# --- ADDED: Renders a checkmark for boolean fields --- #}
+{% block list_table_value %}
+  {% if col_name in ['is_active', 'is_guardian'] %}
+    {% if get_value(row, col_name) %}
+      <div class="text-center">
+        <i class="fas fa-check-circle text-success"></i>
+      </div>
+    {% endif %}
+  {% else %}
+    {{ super() }}
+  {% endif %}
 {% endblock %}
 
 {% block list_row_actions %}
