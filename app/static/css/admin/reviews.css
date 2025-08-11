@@ -1,0 +1,32 @@
+/* app/static/css/admin/reviews.css */
+
+/* Styles for the review preview card in the admin edit view */
+#review-preview-wrapper {
+    max-width: 600px; /* Set a max-width for realistic preview */
+    margin: 0 auto;   /* Center the preview card */
+}
+
+#review-preview-wrapper .card {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+#review-preview-wrapper .blockquote {
+    font-size: 1.1rem;
+    color: #555;
+    font-style: normal;
+    font-weight: 400;
+    font-family: 'Open Sans', sans-serif;
+    border-left: 4px solid #aecdec; /* Accent color */
+    padding-left: 1.5rem;
+    margin-bottom: 0;
+}
+
+#review-preview-wrapper .blockquote-footer {
+    font-weight: 600;
+    color: #333;
+    font-style: normal;
+    margin-top: 1rem;
+}

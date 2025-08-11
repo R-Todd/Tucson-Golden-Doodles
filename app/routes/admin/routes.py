@@ -11,7 +11,7 @@ from app.models import (
 from . import bp, admin
 from .views import (
     ParentAdminView, PuppyAdminView, HeroSectionAdminView,
-    AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView
+    AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
 
 # === View Registration ===
@@ -20,13 +20,14 @@ admin.add_view(PuppyAdminView(Puppy, db.session))
 
 # === Bootstrap 5 View Registrations === #
 admin.add_view(ReviewAdminView(Review, db.session))
-admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section", category="Home"))
-# --- THIS IS THE FIX ---
+admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 # Add the category to group this view with the Hero Section in the admin menu.
-admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section", category="Home"))
-# --- END OF FIX ---
+admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
+#  
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
-admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
+# 
+admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery Images"))
+
 
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))
 

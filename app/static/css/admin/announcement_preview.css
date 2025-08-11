@@ -1,0 +1,25 @@
+/* app/static/css/admin/announcement_preview.css */
+
+/* Styles the wrapper for the live preview to mimic the real banner. */
+#banner-preview-wrapper {
+    background: #4a5568; /* Matches the public-facing banner color */
+    color: #ffffff;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 5px solid #2d3748;
+    border-radius: 5px; /* Add a slight radius for the admin view */
+}
+
+/* Ensure the preview text is readable */
+#banner-preview-wrapper .h4,
+#banner-preview-wrapper p {
+    color: #ffffff;
+}
+
+#banner-preview-wrapper .btn {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    border-width: 2px;
+}

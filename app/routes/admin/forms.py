@@ -10,6 +10,8 @@ from wtforms_sqlalchemy.fields import QuerySelectField
 from app.models import Puppy, ParentRole
 from collections import OrderedDict
 from itertools import groupby
+# --- ADD THIS IMPORT ---
+from sqlalchemy.orm import joinedload
 
 # --- Announcement Banner Form  ---
 
@@ -18,7 +20,14 @@ def get_litters():
     Queries all puppies and groups them into litters, returning one
     representative puppy from each litter for the dropdown.
     """
-    puppies = Puppy.query.order_by(Puppy.birth_date.desc(), Puppy.mom_id, Puppy.dad_id).all()
+    # Verify this is correct
+    # Eagerly load the mom and dad relationships to prevent N+1 queries
+    # and ensure the data is available in the template.
+    puppies = Puppy.query.options(
+        joinedload(Puppy.mom),
+        joinedload(Puppy.dad)
+    ).order_by(Puppy.birth_date.desc(), Puppy.mom_id, Puppy.dad_id).all()
+    # --- END OF FIX ---
     
     keyfunc = lambda p: (p.birth_date, p.mom, p.dad)
     
@@ -58,7 +67,7 @@ class AnnouncementBannerForm(FlaskForm):
         description="Select a litter to feature in the banner."
     )
 
-# --- Parent Form (New) ---
+# --- Parent Form ----
 
 class ParentForm(FlaskForm):
     """Custom form for creating and editing Parent records."""

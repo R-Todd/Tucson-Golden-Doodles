@@ -6,13 +6,9 @@ from flask import request
 class ReviewAdminView(AdminModelView):
     """A custom view for Reviews that uses an organized Bootstrap 5 template."""
     
-    # --- ---
-    # By explicitly setting these to True, we ensure Flask-Admin knows
-    # that these actions are allowed and should have buttons.
     can_create = True
     can_edit = True
     can_delete = True
-    # --- END OF FIX ---
 
     # Template configuration
     list_template = 'admin/reviews/list_bs5.html'
@@ -25,9 +21,15 @@ class ReviewAdminView(AdminModelView):
     # Specify the fields to include in the create and edit forms
     form_columns = ('author_name', 'testimonial_text', 'is_featured')
 
-    # Make the text area larger for a better editing experience
+    # --- THIS IS THE FIX ---
+    # Add IDs to the form widgets so the preview JavaScript can find them.
     form_widget_args = {
+        'author_name': {
+            'id': 'author_name'
+        },
         'testimonial_text': {
+            'id': 'testimonial_text',
             'rows': 10
         }
     }
+    # --- END OF FIX ---
