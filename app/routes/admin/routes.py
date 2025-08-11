@@ -20,11 +20,11 @@ admin.add_view(PuppyAdminView(Puppy, db.session))
 
 # === Bootstrap 5 View Registrations === #
 admin.add_view(ReviewAdminView(Review, db.session))
-admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section", category="Home"))
+admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 # Add the category to group this view with the Hero Section in the admin menu.
-admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section", category="Home"))
+admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
 #  
-admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner", category="Home"))
+admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
 # 
 admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
 
