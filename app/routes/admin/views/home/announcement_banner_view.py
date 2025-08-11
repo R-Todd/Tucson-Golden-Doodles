@@ -1,30 +1,24 @@
 # app/routes/admin/views/home/announcement_banner_view.py
 
 from ..base import AdminModelView
-from ...forms import AnnouncementBannerForm
+from ...forms import AnnouncementBannerForm, get_litters
+import json
 
 class AnnouncementBannerAdminView(AdminModelView):
     """
     Custom Admin View for the Announcement Banner, now using isolated Bootstrap 5 templates.
     """
-    # --- Action Buttons ---
     can_create = True
     can_edit = True
     can_delete = True
 
-    # --- Template Configuration ---
-    # Point the view to the new, dedicated BS5 templates.
     list_template = 'admin/announcement_banner/list_bs5.html'
     create_template = 'admin/announcement_banner/create_bs5.html'
     edit_template = 'admin/announcement_banner/edit_bs5.html'
 
-    # --- Form & Column Configuration ---
-    # Use the custom form that includes the litter selection dropdown.
     form = AnnouncementBannerForm
-    # Define the columns to display in the list view for quick reference.
     column_list = ('is_active', 'main_text', 'featured_puppy')
 
-    # Add IDs to the form fields for the live preview JavaScript to target.
     form_widget_args = {
         'main_text': { 'id': 'main_text' },
         'sub_text': { 'id': 'sub_text' },
@@ -32,14 +26,31 @@ class AnnouncementBannerAdminView(AdminModelView):
         'featured_puppy': { 'id': 'featured_puppy' }
     }
 
+    def _get_template_args(self):
+        """
+        Injects a JSON-serialized list of litters into the template context.
+        This provides a clean data source for the preview JavaScript.
+        """
+        args = super()._get_template_args()
+        litters_raw = get_litters()
+        
+        # Serialize the necessary data into a list of dictionaries
+        litters_for_json = [
+            {
+                "id": puppy.id,
+                "mom_name": puppy.mom.name,
+                "dad_name": puppy.dad.name,
+                "birth_date": puppy.birth_date.strftime("%B %d, %Y")
+            }
+            for puppy in litters_raw
+        ]
+        
+        args['litters_json'] = json.dumps(litters_for_json)
+        return args
+
     def on_model_change(self, form, model, is_created):
-        """
-        Handles saving the featured_puppy relationship from the form.
-        """
         selected_puppy = form.featured_puppy.data
         if selected_puppy:
-            # A representative puppy from the litter was selected, save its ID.
             model.featured_puppy_id = selected_puppy.id
         else:
-            # No litter was selected.
             model.featured_puppy_id = None
