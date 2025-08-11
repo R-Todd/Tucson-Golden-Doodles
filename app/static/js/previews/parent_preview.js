@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     previewElement.textContent = inputElement.value;
                 }
             };
+            update(); // Initial sync
             inputElement.addEventListener('keyup', update);
         }
     };
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     weightPreview.textContent = 'Weight: N/A';
                 }
             };
+            updateWeight(); // Initial sync
             weightInput.addEventListener('keyup', updateWeight);
         }
     };
@@ -41,9 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             inputElement.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImgElement.src = e.target.result;
-                    };
+                    reader.onload = (e) => previewImgElement.src = e.target.result;
                     reader.readAsDataURL(this.files[0]);
                 }
             });
@@ -61,35 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
     handleImagePreview('alternate_image_upload_3', 'preview-alt-image-3');
     handleImagePreview('alternate_image_upload_4', 'preview-alt-image-4');
 
-
-    // --- 3. INITIALIZE THE CAROUSEL (FINAL CORRECTED LOGIC) ---
+    // --- 3. INITIALIZE THE CAROUSEL ---
     const liveCarouselElement = document.getElementById('live-preview-carousel');
     if (liveCarouselElement) {
-        const previewCarousel = new bootstrap.Carousel(liveCarouselElement, {
-            interval: 5000,
-            pause: 'hover'
+        new bootstrap.Carousel(liveCarouselElement, {
+            interval: false, // Don't auto-cycle in the admin preview
         });
-
-        const prevButton = liveCarouselElement.querySelector('.carousel-control-prev');
-        const nextButton = liveCarouselElement.querySelector('.carousel-control-next');
-
-        const stopAutoCycleOnClick = () => {
-            previewCarousel.pause();
-            const carouselInstance = bootstrap.Carousel.getInstance(liveCarouselElement);
-            if (carouselInstance) {
-                carouselInstance._config.interval = false;
-            }
-            if (prevButton) prevButton.removeEventListener('click', stopAutoCycleOnClick);
-            if (nextButton) nextButton.removeEventListener('click', stopAutoCycleOnClick);
-        };
-
-        if (prevButton) {
-            prevButton.addEventListener('click', stopAutoCycleOnClick);
-        }
-        if (nextButton) {
-            nextButton.addEventListener('click', stopAutoCycleOnClick);
-        }
-
-        previewCarousel.cycle();
     }
 });

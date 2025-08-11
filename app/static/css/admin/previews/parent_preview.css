@@ -1,0 +1,32 @@
+/* app/static/css/admin/previews/parent_preview.css */
+
+.live-preview-container .parent-layout-container {
+    padding-top: 1rem;
+}
+
+.live-preview-container .parent-name-banner {
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.live-preview-container .parent-name-banner h1 {
+    font-size: 2.2rem;
+}
+
+.live-preview-container .parent-carousel-wrapper {
+    max-width: 90%; /* Make carousel slightly smaller in preview */
+}
+
+.live-preview-container .carousel-image {
+    height: 400px; /* Adjust height for admin preview */
+}
+
+.live-preview-container .description-paragraphs {
+    font-size: 0.9rem;
+    max-height: 250px; /* Limit height and allow scrolling */
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fdfdfd;
+}
