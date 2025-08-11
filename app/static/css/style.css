@@ -6,6 +6,8 @@
 @import url("components/hero.css");
 @import url("components/banner.css"); 
 @import url("components/reviews.css");
+/* --- ADD THIS LINE --- */
+@import url("components/gallery.css");
 
 
 /* --- GENERAL STYLING --- */
