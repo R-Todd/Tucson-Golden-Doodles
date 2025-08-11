@@ -10,7 +10,7 @@ from wtforms_sqlalchemy.fields import QuerySelectField
 from app.models import Puppy, ParentRole
 from collections import OrderedDict
 from itertools import groupby
-# --- ADD THIS IMPORT ---
+# ---  ---
 from sqlalchemy.orm import joinedload
 
 # --- Announcement Banner Form  ---
@@ -27,7 +27,7 @@ def get_litters():
         joinedload(Puppy.mom),
         joinedload(Puppy.dad)
     ).order_by(Puppy.birth_date.desc(), Puppy.mom_id, Puppy.dad_id).all()
-    # --- END OF FIX ---
+    
     
     keyfunc = lambda p: (p.birth_date, p.mom, p.dad)
     
