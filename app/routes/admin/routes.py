@@ -11,7 +11,7 @@ from app.models import (
 from . import bp, admin
 from .views import (
     ParentAdminView, PuppyAdminView, HeroSectionAdminView,
-    AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView
+    AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
 
 # === View Registration ===
@@ -26,7 +26,8 @@ admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Secti
 #  
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
 # 
-admin.add_view(AdminModelView(GalleryImage, db.session, name="Gallery Images"))
+admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery Images"))
+
 
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))
 
