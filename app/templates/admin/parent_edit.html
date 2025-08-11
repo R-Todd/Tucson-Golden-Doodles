@@ -1,0 +1,77 @@
+{# app/templates/admin/parent_edit.html #}
+{% extends 'admin/model/edit.html' %}
+{% from 'admin/lib.html' import render_form with context %}
+
+{% block edit_form %}
+    {{ render_form(form) }}
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+
+    {# 1. ADD THIS LINK to import the necessary CSS from the main site. #}
+    <link href="{{ url_for('static', filename='css/pages/parents.css') }}" rel="stylesheet">
+
+    <div class="live-preview-container">
+        <h3>Live Preview</h3>
+        <div class="parent-name-banner">
+            <h1 id="preview-parent-name" class="display-5 text-white text-uppercase text-center py-3">{{ model.name or 'Parent Name' }}</h1>
+        </div>
+        <div class="container my-5">
+            <div class="row g-4 parent-layout-container">
+                {# This column now perfectly matches the structure from parents.html #}
+                <div class="col-md-6 parent-image-column">
+                    <div id="live-preview-carousel" class="carousel slide parent-carousel-wrapper">
+                        <div class="carousel-inner">
+                            {# Each item has a static ID for the preview script to target #}
+                            <div class="carousel-item active">
+                                <img id="preview-parent-image" src="{% if model and model.main_image_s3_key %}{{ model.main_image_s3_key | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Main image preview">
+                            </div>
+                            <div class="carousel-item">
+                                <img id="preview-alt-image-1" src="{% if model and model.alternate_image_s3_key_1 %}{{ model.alternate_image_s3_key_1 | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Alternate image 1 preview">
+                            </div>
+                            <div class="carousel-item">
+                                <img id="preview-alt-image-2" src="{% if model and model.alternate_image_s3_key_2 %}{{ model.alternate_image_s3_key_2 | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Alternate image 2 preview">
+                            </div>
+                            <div class="carousel-item">
+                                <img id="preview-alt-image-3" src="{% if model and model.alternate_image_s3_key_3 %}{{ model.alternate_image_s3_key_3 | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Alternate image 3 preview">
+                            </div>
+                             <div class="carousel-item">
+                                <img id="preview-alt-image-4" src="{% if model and model.alternate_image_s3_key_4 %}{{ model.alternate_image_s3_key_4 | s3_url }}{% else %}{{ url_for('static', filename='img/placeholder.jpg') }}{% endif %}" class="d-block w-100 carousel-image" alt="Alternate image 4 preview">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#live-preview-carousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#live-preview-carousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+                {# The info column remains the same #}
+                <div class="col-md-6 parent-info-column">
+                    <div class="text-center mt-md-0 mt-4">
+                        <h3 class="breed-header" id="preview-parent-breed">{{ model.breed or 'Breed' }}</h3>
+                        <p class="weight-header" id="preview-parent-weight">
+                            {% if model.weight_kg is not none %}
+                                {{ model.weight_kg }} kg / {{ (model.weight_kg * 2.20462)|round(1) }} lbs
+                            {% else %}
+                                Weight: N/A
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="description-paragraphs mt-4" id="preview-parent-description">
+                        {% if model.description %}
+                            {% for paragraph in model.description.split('\n') %}
+                                {% if paragraph.strip() %}<p>{{ paragraph.strip() }}</p>{% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# 2. We will now ONLY load the single, unified preview script. #}
+    <script src="{{ url_for('static', filename='js/previews/parent_preview.js') }}"></script>
+{% endblock %}
