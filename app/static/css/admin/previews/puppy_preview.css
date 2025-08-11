@@ -1,0 +1,42 @@
+/* app/static/css/admin/puppy_preview.css */
+
+/* Styles the wrapper for the puppy preview card. */
+#puppy-preview-wrapper {
+    max-width: 400px; /* Constrain the width for a card-like appearance */
+    margin: 0 auto;   /* Center the preview card within its container */
+}
+
+/* Styles the main card element for the puppy preview. */
+#puppy-preview-wrapper .card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Ensures the image respects the card's rounded corners */
+}
+
+/* Styles the preview image. */
+#preview-puppy-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    background-color: #f8f9fa;
+}
+
+/* Styles the body of the card, containing the puppy's details. */
+#puppy-preview-wrapper .card-body {
+    text-align: center;
+}
+
+/* Styles the main title (puppy's name) in the preview. */
+#preview-puppy-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #343a40;
+}
+
+/* Provides consistent spacing for the details section. */
+.puppy-details p {
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}

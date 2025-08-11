@@ -32,8 +32,7 @@ class TestAdminFunctionality:
 
     # --- Puppy CRUD Tests (MODIFIED) ---
 
-    # We patch both the uploader and the URL generator now.
-    @patch('app.routes.admin.views.puppy_views.generate_presigned_url', MagicMock(return_value='http://presigned-url.com/preview.jpg'))
+    # This patch is correct as upload_image is used in the view.
     @patch('app.routes.admin.views.puppy_views.upload_image', return_value='puppies/new_puppy.jpg')
     def test_create_puppy_with_valid_data_saves_s3_key(self, mock_upload, client, db):
         admin_user = User(username='admin'); admin_user.set_password('pw')
@@ -60,15 +59,13 @@ class TestAdminFunctionality:
         assert response.status_code == 200
         assert b'Record was successfully created.' in response.data
         
-        # VERIFY: Check that the S3 KEY was saved, not a full URL.
         puppy = Puppy.query.filter_by(name='Test Puppy').first()
         assert puppy is not None
-        assert puppy.main_image_s3_key == 'puppies/new_puppy.jpg' # Check for the key
-        mock_upload.assert_called_once() # Ensure the uploader was called
+        assert puppy.main_image_s3_key == 'puppies/new_puppy.jpg'
+        mock_upload.assert_called_once()
 
     # --- Parent CRUD Tests (MODIFIED) ---
 
-    @patch('app.routes.admin.views.parent_views.generate_presigned_url', MagicMock(return_value='http://presigned-url.com/preview.jpg'))
     @patch('app.routes.admin.views.parent_views.upload_image')
     def test_edit_parent_record_saves_s3_keys(self, mock_upload, client, db):
         admin_user = User(username='admin'); admin_user.set_password('pw')
@@ -106,7 +103,6 @@ class TestAdminFunctionality:
         assert response.status_code == 200
         db.session.refresh(parent)
         
-        # VERIFY: Check that all the correct S3 keys were saved
         assert parent.name == 'New Name'
         assert parent.main_image_s3_key == 'parents/main-original.jpg'
         assert parent.main_image_s3_key_large == 'parents/main-large.jpg'

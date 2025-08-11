@@ -10,8 +10,6 @@ from app.models import User, AboutSection, SiteMeta, db
 class TestAdminAboutBS5:
     """
     Test suite for the Bootstrap 5 implementation of the About Section admin panel.
-    It verifies CRUD functionality and the presence of the live preview feature,
-    including the CKEditor integration.
     """
 
     @pytest.fixture(autouse=True)
@@ -46,7 +44,7 @@ class TestAdminAboutBS5:
             url_for('aboutsection.create_view'),
             data={
                 'title': 'Initial About Title',
-                'content_html': '<p>Original content with <b>bold</b>.</p>',
+                'content_html': 'Original content.\nWith line breaks.',
                 'image_upload': (io.BytesIO(b"fake-image-data"), 'test.jpg')
             },
             content_type='multipart/form-data',
@@ -55,7 +53,7 @@ class TestAdminAboutBS5:
         assert b'Record was successfully created.' in create_response.data
         about = AboutSection.query.filter_by(title='Initial About Title').first()
         assert about is not None
-        assert about.content_html == '<p>Original content with <b>bold</b>.</p>'
+        assert about.content_html == 'Original content.\nWith line breaks.'
         mock_upload_image.assert_called_once()
 
         # 2. READ
@@ -66,7 +64,7 @@ class TestAdminAboutBS5:
         # 3. UPDATE
         edit_response = client.post(
             url_for('aboutsection.edit_view', id=about.id),
-            data={'title': 'Updated Title', 'content_html': '<p>Updated content.</p>'},
+            data={'title': 'Updated Title', 'content_html': 'Updated content.'},
             follow_redirects=True
         )
         assert b'Record was successfully saved.' in edit_response.data
@@ -82,10 +80,10 @@ class TestAdminAboutBS5:
         assert b'Record was successfully deleted.' in delete_response.data
         assert db.session.get(AboutSection, about.id) is None
 
-    def test_about_edit_view_loads_ckeditor_and_preview(self, setup_and_login, db):
+    def test_about_edit_view_loads_live_preview(self, setup_and_login, db):
         """
-        Confirms the edit view is set up for CKEditor by checking for
-        the target textarea and the necessary script tag.
+        Confirms the edit view correctly loads the live preview elements
+        and the standard textarea for content.
         """
         client = setup_and_login
         about = AboutSection(title='Test About', content_html='<p>Content</p>', image_s3_key='about/test.jpg')
@@ -96,17 +94,12 @@ class TestAdminAboutBS5:
         assert response.status_code == 200
         soup = BeautifulSoup(response.data, 'html.parser')
 
-        # --- THIS IS THE FIX ---
-        # 1. Verify that the target TEXTAREA for CKEditor exists.
+        # Verify that the content field is now a standard textarea.
         textarea = soup.find('textarea', id='content_html')
-        assert textarea is not None, "The target textarea for CKEditor is missing."
+        assert textarea is not None
+        assert 'form-control' in textarea.get('class', [])
 
-        # 2. Verify that the script to load CKEditor is included in the page.
-        ckeditor_script = soup.find('script', src=lambda s: s and 'cdn.ckeditor.com' in s)
-        assert ckeditor_script is not None, "The CKEditor script tag was not found in the HTML."
-        # --- END OF FIX ---
-
-        # 3. Verify the live preview elements are still present.
+        # Verify the live preview elements are still present.
         preview_container = soup.find('div', class_='live-preview-container')
         assert preview_container is not None
         assert preview_container.find('h2', id='preview-about-title') is not None
