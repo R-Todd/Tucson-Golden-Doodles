@@ -3,22 +3,23 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from config import Config
 from flask_caching import Cache
+from flask_ckeditor import CKEditor
 from datetime import datetime, timezone
+# ---  ---
+from config import Config
+# --- END OF FIX ---
 
 from app.models import db, User
 from app.routes.admin import admin
-# --- : Import the setup function ---
 from app.utils.template_filters import setup_template_filters
 
-# --- INITIALIZE THE CACHE ---
 cache = Cache()
-
-# Initialize Flask extensions
 migrate = Migrate()
 login = LoginManager()
 login.login_view = 'admin_auth.login'
+# --- INITIALIZE CKEDITOR ---
+ckeditor = CKEditor()
 
 def create_app(config_class=Config):
     """Application factory function."""
@@ -30,8 +31,9 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login.init_app(app)
     admin.init_app(app)
-    # --- Initialize img cache ---
     cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache'})
+    # --- ADD THIS LINE ---
+    ckeditor.init_app(app)
     
     # Register the custom template filter ---
     # This makes the `| s3_url` filter available in all Jinja2 templates
