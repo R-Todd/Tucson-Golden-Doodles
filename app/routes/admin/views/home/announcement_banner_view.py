@@ -24,6 +24,14 @@ class AnnouncementBannerAdminView(AdminModelView):
     # Define the columns to display in the list view for quick reference.
     column_list = ('is_active', 'main_text', 'featured_puppy')
 
+    # Add IDs to the form fields for the live preview JavaScript to target.
+    form_widget_args = {
+        'main_text': { 'id': 'main_text' },
+        'sub_text': { 'id': 'sub_text' },
+        'button_text': { 'id': 'button_text' },
+        'featured_puppy': { 'id': 'featured_puppy' }
+    }
+
     def on_model_change(self, form, model, is_created):
         """
         Handles saving the featured_puppy relationship from the form.
