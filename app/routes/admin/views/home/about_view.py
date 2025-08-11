@@ -4,7 +4,7 @@ from flask import request
 from wtforms.fields import FileField
 
 # Import the rich-text editor field from Flask-Admin.
-from flask_admin.form.fields import CKEditorField
+from flask_ckeditor import CKEditorField
 
 from ..base import AdminModelView
 from app.utils.image_uploader import upload_image

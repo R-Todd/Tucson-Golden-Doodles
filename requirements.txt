@@ -16,3 +16,4 @@ beautifulsoup4
 Pillow
 WTForms-SQLAlchemy
 Flask-Caching
+Flask-CKEditor
