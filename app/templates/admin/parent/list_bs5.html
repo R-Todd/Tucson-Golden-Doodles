@@ -1,0 +1,66 @@
+{# app/templates/admin/parent/list_bs5.html #}
+{% extends 'admin/model/list.html' %}
+
+{% block head_css %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    {# --- ADDED: Font Awesome for the checkmark icon --- #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_custom.css') }}">
+{% endblock %}
+
+{% block tail %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{# --- ADDED: Renders a checkmark for boolean fields --- #}
+{% block list_table_value %}
+  {% if col_name in ['is_active', 'is_guardian'] %}
+    {% if get_value(row, col_name) %}
+      <div class="text-center">
+        <i class="fas fa-check-circle text-success"></i>
+      </div>
+    {% endif %}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% block list_row_actions %}
+  <div class="btn-group" role="group">
+    <a class="btn btn-sm btn-outline-primary" href="{{ get_url('.edit_view', id=row.id, url=return_url) }}"><i class="bi-pencil-fill"></i></a>
+    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-record-id="{{ row.id }}"><i class="bi-trash-fill"></i></button>
+  </div>
+{% endblock %}
+
+{% block body %}
+    {{ super() }}
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header"><h5 class="modal-title">Confirm Deletion</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+          <div class="modal-body">Are you sure you want to delete this parent record?</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form id="deleteRecordForm" method="POST" action="{{ get_url('.delete_view', url=return_url) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+              <input type="hidden" name="id" id="delete-form-id-input">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('deleteConfirmationModal');
+        modal.addEventListener('show.bs.modal', function (event) {
+          var button = event.relatedTarget;
+          var recordId = button.getAttribute('data-record-id');
+          modal.querySelector('#delete-form-id-input').value = recordId;
+        });
+      });
+    </script>
+{% endblock %}
