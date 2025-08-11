@@ -1,8 +1,9 @@
 # app/routes/admin/views/home/announcement_banner_view.py
 
-from ..base import AdminModelView
-from ...forms import AnnouncementBannerForm, get_litters
 import json
+from ..base import AdminModelView
+# This import is updated to point to the new dedicated form file
+from app.routes.admin.forms.announcement_forms import AnnouncementBannerForm, get_litters 
 
 class AnnouncementBannerAdminView(AdminModelView):
     """
@@ -16,7 +17,8 @@ class AnnouncementBannerAdminView(AdminModelView):
     create_template = 'admin/announcement_banner/create_bs5.html'
     edit_template = 'admin/announcement_banner/edit_bs5.html'
 
-    form = AnnouncementBannerForm
+    # The form is now imported from its new location
+    form = AnnouncementBannerForm 
     column_list = ('is_active', 'main_text', 'featured_puppy')
 
     form_widget_args = {
