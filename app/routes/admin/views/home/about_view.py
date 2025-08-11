@@ -2,10 +2,6 @@
 
 from flask import request
 from wtforms.fields import FileField
-
-# Import the rich-text editor field from Flask-Admin.
-from flask_ckeditor import CKEditorField
-
 from ..base import AdminModelView
 from app.utils.image_uploader import upload_image
 
@@ -15,14 +11,11 @@ class AboutSectionAdminView(AdminModelView):
     can_edit = True
     can_delete = True
 
-    # --- CKEditorField ---
-    # Override the form field for 'content_html' to use the CKEditor widget.
-    form_overrides = dict(content_html=CKEditorField)
-
-
+    # The 'form_overrides' line has been removed to disable CKEditor.
     list_template = 'admin/about/list_bs5.html'
     create_template = 'admin/about/create_bs5.html'
     edit_template = 'admin/about/edit_bs5.html'
+    
     column_list = ('title',)
     form_columns = [
         'title', 
@@ -32,9 +25,14 @@ class AboutSectionAdminView(AdminModelView):
     form_extra_fields = {
         'image_upload': FileField('Upload New Image')
     }
-    # We no longer need to style 'content_html' here, so it's removed.
+    # Add widget arguments for the new standard textarea.
     form_widget_args = {
-        'title': { 'id': 'about_title' }
+        'title': { 'id': 'about_title' },
+        'content_html': {
+            'id': 'content_html',
+            'rows': 10,
+            'class': 'form-control'
+        }
     }
 
     def on_model_change(self, form, model, is_created):
