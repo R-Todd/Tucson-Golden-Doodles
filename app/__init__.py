@@ -4,9 +4,11 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_caching import Cache
-# --- ADD THIS IMPORT ---
 from flask_ckeditor import CKEditor
 from datetime import datetime, timezone
+# ---  ---
+from config import Config
+# --- END OF FIX ---
 
 from app.models import db, User
 from app.routes.admin import admin

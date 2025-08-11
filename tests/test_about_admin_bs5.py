@@ -84,7 +84,8 @@ class TestAdminAboutBS5:
 
     def test_about_edit_view_loads_ckeditor_and_preview(self, setup_and_login, db):
         """
-        Confirms the edit view loads the CKEditor and the live preview elements.
+        Confirms the edit view is set up for CKEditor by checking for
+        the target textarea and the necessary script tag.
         """
         client = setup_and_login
         about = AboutSection(title='Test About', content_html='<p>Content</p>', image_s3_key='about/test.jpg')
@@ -95,15 +96,15 @@ class TestAdminAboutBS5:
         assert response.status_code == 200
         soup = BeautifulSoup(response.data, 'html.parser')
 
-        # --- THIS IS THE UPDATED TEST LOGIC ---
-        # 1. Verify that the CKEditor container is present.
-        # Flask-Admin's CKEditorField wraps the editor in a div with this class.
-        ckeditor_div = soup.find('div', class_='ck-editor-container')
-        assert ckeditor_div is not None, "The CKEditor container was not found in the HTML."
+        # --- THIS IS THE FIX ---
+        # 1. Verify that the target TEXTAREA for CKEditor exists.
+        textarea = soup.find('textarea', id='content_html')
+        assert textarea is not None, "The target textarea for CKEditor is missing."
 
-        # 2. Verify the textarea (now hidden) for CKEditor exists.
-        assert ckeditor_div.find('textarea', id='content_html') is not None, "The target textarea for CKEditor is missing."
-        # --- END OF UPDATED TEST LOGIC ---
+        # 2. Verify that the script to load CKEditor is included in the page.
+        ckeditor_script = soup.find('script', src=lambda s: s and 'cdn.ckeditor.com' in s)
+        assert ckeditor_script is not None, "The CKEditor script tag was not found in the HTML."
+        # --- END OF FIX ---
 
         # 3. Verify the live preview elements are still present.
         preview_container = soup.find('div', class_='live-preview-container')

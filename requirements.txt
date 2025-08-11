@@ -17,3 +17,4 @@ Pillow
 WTForms-SQLAlchemy
 Flask-Caching
 Flask-CKEditor
+bleach
