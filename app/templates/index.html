@@ -85,14 +85,20 @@
 
     {% if guardian_parents %}
     <section id="guardian-parents" class="my-5 text-center">
-        <h2 class="display-5 mb-4">Guardian Parents</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <h2 class="display-5 mb-4">Our Guardian Parents</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
             {% for parent in guardian_parents %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="{{ parent.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ parent.name }}">
-                    <div class="card-body">
-                        </div>
+                    {# --- THIS IS THE CHANGE --- #}
+                    <a href="{{ url_for('parents.list_parents') }}#parent-{{ parent.id }}">
+                        <img src="{{ parent.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ parent.name }}">
+                    </a>
+                    <div class="card-footer">
+                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ parent.id }}" class="text-decoration-none text-dark">
+                            <h5 class="card-title mb-0">{{ parent.name }}</h5>
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
