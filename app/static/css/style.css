@@ -3,10 +3,11 @@
 /* --- IMPORTS --- */
 /* Import page-specific and component-specific styles. @import rules must be at the top. */
 @import url("pages/parents.css");
+@import url("pages/puppy.css");
 @import url("components/hero.css");
 @import url("components/banner.css"); 
 @import url("components/reviews.css");
-/* --- ADD THIS LINE --- */
+
 @import url("components/gallery.css");
 
 
@@ -22,5 +23,5 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #aecdec; /* Darker text for headings */
+    color: #4fa1ff; /* Darker text for headings */
 }
