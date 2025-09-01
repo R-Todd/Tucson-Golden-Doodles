@@ -1,5 +1,5 @@
 {# app/templates/admin/dashboard.html #}
-{% extends 'admin/base_bs5.html' %}
+{% extends 'admin/base_admin.html' %}
 
 
 {# This block injects our custom stylesheet into the page head #}
@@ -8,7 +8,6 @@
     <link href="{{ url_for('static', filename='css/admin/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
 
-<!-- removed super() call -->
 {% block body %}
 <div class="container py-4">
     <div class="page-header mb-4">
