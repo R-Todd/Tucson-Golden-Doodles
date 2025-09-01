@@ -6,7 +6,11 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
     """Set Flask configuration variables from environment variables."""
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'a-super-secret-key-for-dev'
+    SECRET_KEY = os.environ.get('SECRET_KEY') 
+    # Throw error if the secret key is not found
+    if not SECRET_KEY:
+        raise ValueError("No Secret_Key set for Flask application.")
+    
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
