@@ -6,6 +6,14 @@ from getpass import getpass
 # Create an app instance using the default configuration
 app = create_app()
 
+# --- TO-RUN --- #
+# Step 1 - set FLASK_APP=manage.py
+# Step 2 - flask create-admin
+# Step 3 - pytest
+# ---  END    --- #
+
+
+## Sets and per-enviorment test user credentials to be used by pytest 
 @app.cli.command("create-admin")
 def create_admin():
     """Creates a new admin user."""
