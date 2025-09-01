@@ -59,12 +59,14 @@ def seed_database():
         print("Seeding new data and uploading all images to S3...")
 
         # --- Basic Site and Admin Setup ---
-        admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
-        admin_password = os.environ.get('ADMIN_PASSWORD', 'password')
-        admin_user = User(username=admin_username)
-        admin_user.set_password(admin_password)
-        db.session.add(admin_user)
-        print(f"Admin user '{admin_username}' created.")
+        # admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+        # admin_password = os.environ.get('ADMIN_PASSWORD', 'password')
+        # admin_user = User(username=admin_username)
+        # admin_user.set_password(admin_password)
+        # db.session.add(admin_user)
+        # print(f"Admin user '{admin_username}' created.")
+        # - Admin creation logic is now removed.
+
 
         db.session.add(SiteMeta(phone_number='520-555-1234', email='contact@tucsondoodles.com'))
 
