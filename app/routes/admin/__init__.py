@@ -22,7 +22,7 @@ admin = Admin(
 )
 
 # 3. Explicitly set the base_template for the admin interface
-admin.base_template = 'admin/base_admin.html'
+admin.base_template = 'admin/base_bs5.html'
 
 # This import must come AFTER the admin object is defined
 from . import routes

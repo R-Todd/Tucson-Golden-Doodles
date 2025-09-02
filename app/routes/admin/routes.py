@@ -14,35 +14,45 @@ from .views import (
     AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
 
-# === View Registration ===
+# Register admin views for different models
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 
-# === Bootstrap 5 View Registrations === #
+# Register admin views for site content using Bootstrap 5 templates
 admin.add_view(ReviewAdminView(Review, db.session))
+# Custom name for HeroSection view in the admin interface
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
+# Custom name for AboutSection view in the admin interface
 admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
+# Custom name for AnnouncementBanner view in the admin interface
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
+# Custom name for GalleryImage view in the admin interface
 admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery Images"))
 
-# === Logout Link ===
+# Add a logout link to the admin menu
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))
 
 
-# === Authentication Route Definitions ===
+# Define authentication routes for admin login and logout --------------------- CODE REVIEW
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # If the user is already authenticated, redirect to the admin index page
     if current_user.is_authenticated:
         return redirect(url_for('admin.index'))
+    # Handle POST request for login
     if request.method == 'POST':
+        # Query the user by username
         user = User.query.filter_by(username=request.form['username']).first()
+        # Check if user exists and password is correct
         if user is None or not user.check_password(request.form['password']):
             return 'Invalid username or password'
+        # Log the user in
         login_user(user)
         return redirect(url_for('admin.index'))
     return render_template('login.html')
 
 @bp.route('/logout')
 def logout():
+    # Log the user out
     logout_user()
     return redirect(url_for('main.index'))
