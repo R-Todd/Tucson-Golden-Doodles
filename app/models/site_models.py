@@ -7,17 +7,26 @@ on various pages of the public-facing website, such as the homepage hero,
 about section, gallery, and contact information.
 """
 
+# app/models/site_models.py
+"""
+Defines various models for managing site-wide content and configuration.
+"""
+
 from . import db
 from .puppy_models import Puppy  # Import Puppy to define relationship
 
-class SiteMeta(db.Model):
+# Change the class name from SiteMeta to SiteDetails.
+class SiteDetails(db.Model):
     """
-    Stores site-wide metadata and contact information.
+    Stores site-wide details and contact information.
 
     This table is intended to have only a single row, acting as a central
     configuration point for details like phone number, email, and social media links
     that may appear in multiple places (e.g., header, footer).
     """
+    # The table name is explicitly set to 'site_details' for clarity.
+    __tablename__ = 'site_details'
+    
     id = db.Column(db.Integer, primary_key=True)
     phone_number = db.Column(db.String(20))
     email = db.Column(db.String(120))
@@ -25,8 +34,8 @@ class SiteMeta(db.Model):
     social_instagram_url = db.Column(db.String(255))
 
     def __repr__(self):
-        """Provides a developer-friendly representation of the SiteMeta object."""
-        return f'<SiteMeta {self.id}>'
+        """Provides a developer-friendly representation of the SiteDetails object."""
+        return f'<SiteDetails {self.id}>'
 
 class HeroSection(db.Model):
     """

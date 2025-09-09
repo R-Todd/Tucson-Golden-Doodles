@@ -46,9 +46,9 @@ def create_app(config_class=Config):
     @app.context_processor
     def inject_utility_vars():
         """Injects variables into all templates."""
-        from app.models import SiteMeta
+        from app.models import SiteDetails
         return dict(
-            site_meta=SiteMeta.query.first(),
+            site_meta=SiteDetails.query.first(),
             now=datetime.now(timezone.utc)
         )
 
