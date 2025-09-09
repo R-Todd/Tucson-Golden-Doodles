@@ -7,7 +7,7 @@ load_dotenv(os.path.join(basedir, '.env'))
 class Config:
     """Set Flask configuration variables from environment variables."""
     # Flask-related configurations
-    SECRET_KEY = os.environ.get('SECRET_KEY') 
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     # Throw error if the secret key is not found - Replaces hardcoded backup key
     if not SECRET_KEY:
         raise ValueError("No Secret_Key set for Flask application.")

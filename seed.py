@@ -81,6 +81,8 @@ def seed_database():
             image_s3_key_large=hero_keys.get('large') if hero_keys else None
         ))
 
+        # --- About Section Setup ---
+        # Upload about image and create AboutSection entry
         about_keys = upload_seed_image('about-us.jpg', 'about', create_responsive=True)
         db.session.add(AboutSection(
             title='About Our Family',
@@ -89,7 +91,7 @@ def seed_database():
         ))
 
         # --- Create Fully Detailed Parent Dogs ---
-        
+        # Define and add multiple parent dogs with detailed descriptions and images
         # Archie
         archie_main_keys = upload_seed_image('archie.jpg', 'parents', create_responsive=True)
         parent_archie = Parent(
@@ -156,28 +158,35 @@ def seed_database():
 
         db.session.add_all([parent_archie, parent_penelope, parent_buckeye, parent_minnie])
         db.session.commit()
-        print("Parents created with full details and alternate images.")
+        print("Parents created with full details and alternate images.") # Commit parents to get their IDs
 
         # --- Create Puppies and Assign to Parents ---
-        
+        # Define and add puppies, linking them to their parents by ID
         # Litter 1: Archie & Penelope
+        # Available puppy
         puppy_river = Puppy(name='River', birth_date=date(2024, 1, 15), status=PuppyStatus.AVAILABLE, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('river.jpg', 'puppies'))
+        # Reserved puppy
         puppy_benson = Puppy(name='Benson', birth_date=date(2024, 1, 15), status=PuppyStatus.RESERVED, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('benson.jpg', 'puppies'))
+        # Sold puppies
         pup_ap_1 = Puppy(name='Coca', birth_date=date(2024, 1, 15), status=PuppyStatus.SOLD, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-archie-pup-1.jpg', 'puppies'))
         pup_ap_2 = Puppy(name='Spot', birth_date=date(2024, 1, 15), status=PuppyStatus.SOLD, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-archie-pup-2.jpg', 'puppies'))
         
         # Litter 2: Buckeye & Minnie
+        # Available puppy
         pup_bm_1 = Puppy(name='Oreo', birth_date=date(2024, 2, 20), status=PuppyStatus.AVAILABLE, dad_id=parent_buckeye.id, mom_id=parent_minnie.id, main_image_s3_key=upload_seed_image('minnie-buckeye-pup-1.jpg', 'puppies'))
         
         # Litter 3: Buckeye & Penelope
+        # Available puppy
         pup_bp_1 = Puppy(name='Patches', birth_date=date(2024, 3, 1), status=PuppyStatus.AVAILABLE, dad_id=parent_buckeye.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-buckey-pup-1.jpg', 'puppies'))
         
         db.session.add_all([puppy_river, puppy_benson, pup_ap_1, pup_ap_2, pup_bm_1, pup_bp_1])
         print("Puppies created and assigned to parents.")
 
         # --- Final Touches: Reviews and Banners ---
+        # Add a featured review
         db.session.add(Review(author_name='The Smith Family', testimonial_text='We had an amazing experience from start to finish. Our puppy is healthy, well-socialized, and the perfect addition to our family. We couldn''t be happier!', is_featured=True))
-
+        
+        # Add an announcement banner, linking to a specific puppy
         announcement = AnnouncementBanner(
             is_active=True,
             main_text=" Our Newest Litter Has Arrived! ",
@@ -186,7 +195,7 @@ def seed_database():
             featured_puppy_id=puppy_river.id
         )
         db.session.add(announcement)
-
+        
         db.session.commit()
         print("\n✅ Database seeded successfully with full details!")
 

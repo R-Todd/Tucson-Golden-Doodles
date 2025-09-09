@@ -14,10 +14,11 @@ class User(UserMixin, db.Model):
     This model integrates with Flask-Login (`UserMixin`) to provide session
     management for authenticated users. Tp storee credentials securely.
     """
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    # Password hash storage. Length is increased for security
-    password_hash = db.Column(db.String(256)) 
+    id = db.Column(db.Integer, primary_key=True) # Unique identifier for the user
+    username = db.Column(db.String(64), index=True, unique=True) # User's unique username for login
+    # Password hash storage. Length is increased for security to accommodate various hashing algorithms.
+    # It's crucial to store password hashes, not plain passwords.
+    password_hash = db.Column(db.String(256))
 
     def set_password(self, password):
         """Hashes the given password and stores it."""
