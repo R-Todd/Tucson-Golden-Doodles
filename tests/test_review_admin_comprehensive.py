@@ -3,7 +3,7 @@
 import pytest
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, Review, SiteMeta, db
+from app.models import User, Review, SiteDetails, db
 
 class TestAdminReviewComprehensive:
     """
@@ -18,7 +18,7 @@ class TestAdminReviewComprehensive:
         """
         admin_user = User(username='admin')
         admin_user.set_password('password')
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 

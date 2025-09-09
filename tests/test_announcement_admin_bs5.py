@@ -3,7 +3,7 @@
 import pytest
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, AnnouncementBanner, Puppy, Parent, ParentRole, SiteMeta, db
+from app.models import User, AnnouncementBanner, Puppy, Parent, ParentRole, SiteDetails, db
 from datetime import date
 
 class TestAdminAnnouncementBS5:
@@ -29,7 +29,7 @@ class TestAdminAnnouncementBS5:
 
         self.puppy1 = Puppy(name='Featured Puppy', birth_date=date(2025, 1, 1), mom_id=mom.id, dad_id=dad.id)
         db.session.add(self.puppy1)
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.commit()
 
         client.post(

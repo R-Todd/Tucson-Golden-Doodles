@@ -1,14 +1,14 @@
 from datetime import date
 from app.models import (
-    Parent, Puppy, ParentRole, PuppyStatus, ParentImage, SiteMeta,
+    Parent, Puppy, ParentRole, PuppyStatus, ParentImage, SiteDetails,
     HeroSection, AboutSection, GalleryImage, Review, AnnouncementBanner
 )
 
 class TestSiteModels:
-    """Tests for site content models like SiteMeta, HeroSection, etc."""
+    """Tests for site content models like SiteDetails, HeroSection, etc."""
 
     def test_sitemeta_creation(self, db):
-        meta = SiteMeta(phone_number='555-555-5555', email='test@example.com')
+        meta = SiteDetails(phone_number='555-555-5555', email='test@example.com')
         db.session.add(meta)
         db.session.commit()
         assert meta.id is not None

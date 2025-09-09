@@ -5,7 +5,7 @@ import io
 from unittest.mock import patch
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, GalleryImage, SiteMeta, db
+from app.models import User, GalleryImage, SiteDetails, db
 
 class TestAdminGalleryBS5:
     """
@@ -17,7 +17,7 @@ class TestAdminGalleryBS5:
         """ Fixture to set up a clean database and log in an admin user. """
         admin_user = User(username='admin')
         admin_user.set_password('password')
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 

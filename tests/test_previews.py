@@ -1,7 +1,7 @@
 # tests/test_previews.py
 
 from flask import url_for
-from app.models import User, HeroSection, SiteMeta
+from app.models import User, HeroSection, SiteDetails
 from bs4 import BeautifulSoup
 
 def test_admin_hero_section_edit_page_has_live_preview(client, db):
@@ -15,9 +15,9 @@ def test_admin_hero_section_edit_page_has_live_preview(client, db):
     # Create a dummy admin user and log them in
     admin_user = User(username='admin')
     admin_user.set_password('password123')
-    # A HeroSection and SiteMeta are needed for the page to render
+    # A HeroSection and SiteDetails are needed for the page to render
     hero = HeroSection(main_title='Initial Title')
-    db.session.add_all([admin_user, hero, SiteMeta(email='contact@test.com')])
+    db.session.add_all([admin_user, hero, SiteDetails(email='contact@test.com')])
     db.session.commit()
 
     # Log in the user

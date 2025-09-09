@@ -5,7 +5,7 @@ import io
 from unittest.mock import patch
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, Parent, ParentRole, SiteMeta, db
+from app.models import User, Parent, ParentRole, SiteDetails, db
 
 class TestAdminParentBS5:
     """
@@ -21,7 +21,7 @@ class TestAdminParentBS5:
         """
         admin_user = User(username='admin')
         admin_user.set_password('password')
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 

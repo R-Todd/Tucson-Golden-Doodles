@@ -5,7 +5,7 @@ import io
 from unittest.mock import patch
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, HeroSection, SiteMeta, db
+from app.models import User, HeroSection, SiteDetails, db
 
 class TestAdminHeroBS5:
     """
@@ -17,13 +17,13 @@ class TestAdminHeroBS5:
     @pytest.fixture(autouse=True)
     def setup_and_login(self, client, db):
         """
-        Fixture to create a clean database, add a SiteMeta record,
+        Fixture to create a clean database, add a SiteDetails record,
         create an admin user, and log them in before each test.
         """
         admin_user = User(username='admin')
         admin_user.set_password('password')
-        # A SiteMeta record is often needed for the base template to render
-        db.session.add(SiteMeta(email='contact@test.com'))
+        # A SiteDetails record is often needed for the base template to render
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
 

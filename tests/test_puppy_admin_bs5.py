@@ -5,7 +5,7 @@ import io
 from unittest.mock import patch
 from flask import url_for
 from bs4 import BeautifulSoup
-from app.models import User, Puppy, Parent, ParentRole, SiteMeta, db
+from app.models import User, Puppy, Parent, ParentRole, SiteDetails, db
 from datetime import date
 
 class TestAdminPuppyBS5:
@@ -26,7 +26,7 @@ class TestAdminPuppyBS5:
         self.mom = Parent(name='Test Mom', role=ParentRole.MOM, is_active=True)
         self.dad = Parent(name='Test Dad', role=ParentRole.DAD, is_active=True)
         db.session.add_all([self.mom, self.dad])
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.commit()
 
         client.post(

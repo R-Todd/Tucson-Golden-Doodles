@@ -4,7 +4,7 @@ import io
 from unittest.mock import patch, MagicMock
 from flask import url_for
 from app.models import (
-    User, Parent, Puppy, SiteMeta, ParentRole, PuppyStatus, Review
+    User, Parent, Puppy, SiteDetails, ParentRole, PuppyStatus, Review
 )
 from bs4 import BeautifulSoup
 
@@ -20,7 +20,7 @@ class TestAdminFunctionality:
     # --- Authentication tests remain the same ---
     def test_admin_login_and_logout(self, client, db):
         admin_user = User(username='admin'); admin_user.set_password('password123')
-        db.session.add(SiteMeta(email='contact@test.com'))
+        db.session.add(SiteDetails(email='contact@test.com'))
         db.session.add(admin_user)
         db.session.commit()
         login_response = self._login(client, 'admin', 'password123')
@@ -38,7 +38,7 @@ class TestAdminFunctionality:
         admin_user = User(username='admin'); admin_user.set_password('pw')
         mom = Parent(name='Test Mom', role=ParentRole.MOM)
         dad = Parent(name='Test Dad', role=ParentRole.DAD)
-        db.session.add_all([admin_user, mom, dad, SiteMeta(email='c@t.com')])
+        db.session.add_all([admin_user, mom, dad, SiteDetails(email='c@t.com')])
         db.session.commit()
         self._login(client, 'admin', 'pw')
         fake_image = (io.BytesIO(b"a fake image"), 'puppy.jpg')
@@ -70,7 +70,7 @@ class TestAdminFunctionality:
     def test_edit_parent_record_saves_s3_keys(self, mock_upload, client, db):
         admin_user = User(username='admin'); admin_user.set_password('pw')
         parent = Parent(name='Old Name', role=ParentRole.DAD)
-        db.session.add_all([admin_user, parent, SiteMeta(email='c@t.com')])
+        db.session.add_all([admin_user, parent, SiteDetails(email='c@t.com')])
         db.session.commit()
         self._login(client, 'admin', 'pw')
 
