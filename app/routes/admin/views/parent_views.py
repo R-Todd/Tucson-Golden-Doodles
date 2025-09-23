@@ -14,7 +14,13 @@ class ParentAdminView(AdminModelView):
     edit_template = 'admin/parent/edit_bs5.html'
     form = ParentForm
     
+    # The 'breed' column in the list view will now correctly display the breed name.
     column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
+
+    # We need to tell the view how to format the breed column for display.
+    column_formatters = {
+        'breed': lambda v, c, m, p: m.breed.name if m.breed else ''
+    }
 
     form_widget_args = {
         'name': { 'id': 'name' },
@@ -29,6 +35,10 @@ class ParentAdminView(AdminModelView):
     }
 
     def on_model_change(self, form, model, is_created):
+        # --- THIS IS THE CHANGE ---
+        # The form now passes a Breed object directly, so we can just assign it.
+        # No extra logic is needed here for the breed.
+        
         # Image upload logic remains the same
         main_file = request.files.get('image_upload')
         if main_file and main_file.filename:

@@ -6,7 +6,12 @@ from wtforms import (
 )
 from wtforms.fields import FileField
 from wtforms.validators import DataRequired, Optional
-from app.models import ParentRole
+from wtforms_sqlalchemy.fields import QuerySelectField
+from app.models import ParentRole, Breed
+
+def breed_query():
+  """A callable function to provide the query for the breed dropdown."""
+  return Breed.query.order_by(Breed.name)
 
 class ParentForm(FlaskForm):
     """Custom form for creating and editing Parent records."""
@@ -17,7 +22,18 @@ class ParentForm(FlaskForm):
         coerce=lambda x: ParentRole[x] if isinstance(x, str) else x,
         validators=[DataRequired()]
     )
-    breed = StringField('Breed')
+    
+    # --- THIS IS THE CHANGE ---
+    # The 'breed' field is now a QuerySelectField, which creates a dropdown
+    # populated with all the breeds from the database.
+    breed = QuerySelectField(
+        'Breed',
+        query_factory=breed_query,
+        get_label='name',
+        allow_blank=True,
+        blank_text='-- Select a Breed --'
+    )
+    
     birth_date = DateField('Birth Date', validators=[Optional()])
     weight_kg = FloatField('Weight (kg)', validators=[Optional()])
     height_cm = FloatField('Height (cm)', validators=[Optional()])

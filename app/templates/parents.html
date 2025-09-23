@@ -1,3 +1,4 @@
+{# app/templates/parents.html #}
 {% extends "base.html" %}
 
 {% block title %}Our Parents - Tucson Golden Doodles{% endblock %}
@@ -26,8 +27,6 @@
                         <div class="carousel-inner">
                             {% for s3_key in all_carousel_keys %}
                             <div class="carousel-item {{ 'active' if loop.first }}">
-                                {# --- THIS IS THE FIX --- #}
-                                {# Add a fallback to a placeholder image if the s3_url is None #}
                                 <img src="{{ s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="d-block w-100 carousel-image" alt="Parent image {{ loop.index }}">
                             </div>
                             {% endfor %}
@@ -44,7 +43,8 @@
 
                 <div class="col-md-6 parent-info-column">
                     <div class="text-center mt-md-0 mt-4">
-                        <h3 class="breed-header">{{ parent.breed }}</h3>
+                        {# --- THIS IS THE CHANGE --- #}
+                        <h3 class="breed-header">{{ parent.breed.name if parent.breed else 'Breed Not Available' }}</h3>
                         <p class="weight-header">
                             {% if parent.weight_kg is not none %}
                                 {{ parent.weight_kg }} kg / {{ (parent.weight_kg * 2.20462)|round(1) }} lbs
@@ -80,7 +80,6 @@
                         {% for puppy in puppies %}
                         <div class="p-2 flex-shrink-0 puppy-thumbnail-wrapper">
                             <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" title="{{ puppy.name }} ({{ puppy.status.value }})">
-                                {# --- THIS IS THE FIX --- #}
                                 <img src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}" class="puppy-thumbnail" alt="Photo of {{ puppy.name }}">
                             </a>
                         </div>
