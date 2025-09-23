@@ -19,7 +19,7 @@ from .parent_models import Parent, ParentImage
 from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User
-from .breed_model import Breed
+from .breed_models import Breed
 from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User

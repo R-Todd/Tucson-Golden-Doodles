@@ -19,6 +19,12 @@ class Puppy(db.Model):
     birth_date = db.Column(db.Date, nullable=False)
     status = db.Column(db.Enum(PuppyStatus), nullable=False, default=PuppyStatus.AVAILABLE)
 
+    # --- BREED RELATIONSHIP ---
+    # This is the foreign key that links a puppy to a specific breed.
+    breed_id = db.Column(db.Integer, db.ForeignKey('breed.id'), nullable=True)
+    # This creates the relationship, allowing you to access the Breed object.
+    breed = db.relationship('Breed', backref='puppies')
+
     # Foreign keys linking the puppy to its parents in the 'parent' table.
     dad_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
     mom_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
