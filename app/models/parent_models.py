@@ -18,7 +18,12 @@ class Parent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.Enum(ParentRole), nullable=False)
-    breed = db.Column(db.String(100))
+
+    # --- BREED RELATIONSHIP ---
+    # The 'breed' column is now a relationship to the Breed model.
+    breed_id = db.Column(db.Integer, db.ForeignKey('breed.id'), nullable=True)
+    breed = db.relationship('Breed', backref='parents')
+
     birth_date = db.Column(db.Date)
     weight_kg = db.Column(db.Float)
     height_cm = db.Column(db.Float)
