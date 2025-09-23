@@ -59,6 +59,17 @@ def seed_database():
 
         print("Seeding new data and uploading all images to S3...")
 
+        # --- Admin User Setup ---
+        # This block reads your .env file and creates the admin user
+        # so you can log in after seeding the database.
+        admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'defaultpassword')
+        if not User.query.filter_by(username=admin_username).first():
+            admin_user = User(username=admin_username)
+            admin_user.set_password(admin_password)
+            db.session.add(admin_user)
+            print(f"Admin user '{admin_username}' created successfully.")
+
         # --- Basic Site and Admin Setup ---
         db.session.add(SiteDetails(phone_number='520-555-1234', email='contact@tucsondoodles.com'))
 
@@ -102,26 +113,28 @@ def seed_database():
         print("Creating parents from seed images...")
         parent_data = {}
         for filename in os.listdir(BASE_IMAGE_PATH):
-            match = re.match(r'([a-zA-Z]+)-([a-zA-Z\s]+)-(MOM|DAD)(_?[\d]*)\.jpg', filename)
+            match = re.match(r'([a-zA-Z]+)-([a-zA-Z\s_]+)-(MOM|DAD)(_?[\d]*)\.jpg', filename, re.IGNORECASE)
             if match:
                 name, breed_name, role_str, _ = match.groups()
-                breed_name = breed_name.replace('_', ' ').title()
-                
-                if name not in parent_data:
-                    parent_data[name] = {
-                        'role': ParentRole[role_str],
-                        'breed': breed_objects.get(breed_name),
+                # Sanitize breed name: replace underscores, fix casing
+                breed_name_sanitized = ' '.join(word.capitalize() for word in breed_name.replace('_', ' ').split())
+
+                if name.lower() not in parent_data:
+                    parent_data[name.lower()] = {
+                        'name': name.capitalize(),
+                        'role': ParentRole[role_str.upper()],
+                        'breed': breed_objects.get(breed_name_sanitized),
                         'images': []
                     }
-                parent_data[name]['images'].append(filename)
+                parent_data[name.lower()]['images'].append(filename)
 
         parent_objects = {}
-        for name, data in parent_data.items():
+        for name_key, data in parent_data.items():
             main_image_file = data['images'][0]
             main_image_keys = upload_seed_image(main_image_file, 'parents', create_responsive=True)
             
             parent = Parent(
-                name=name.title(),
+                name=data['name'],
                 role=data['role'],
                 breed=data['breed'],
                 main_image_s3_key=main_image_keys.get('original') if main_image_keys else None,
@@ -134,7 +147,7 @@ def seed_database():
                 setattr(parent, f'alternate_image_s3_key_{i+1}', alt_key)
             
             db.session.add(parent)
-            parent_objects[name] = parent
+            parent_objects[name_key] = parent
         db.session.commit()
         print("Parents created successfully.")
 
@@ -157,7 +170,7 @@ def seed_database():
             announcement = AnnouncementBanner(
                 is_active=True,
                 main_text=" Our Newest Litter Has Arrived! ",
-                sub_text="A beautiful new Cavapoo litter from {mom_name} & {dad_name}, born on {birth_date}.",
+                sub_text="A beautiful new litter from {mom_name} & {dad_name}, born on {birth_date}.",
                 button_text="Meet the Puppies",
                 featured_puppy_id=puppy_river.id
             )

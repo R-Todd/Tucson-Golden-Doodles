@@ -1,3 +1,4 @@
+{# app/templates/puppies.html #}
 {% extends "base.html" %}
 
 {% block content %}
@@ -12,7 +13,9 @@
         <div class="card shadow-sm mb-5 litter-card" id="litter-{{ birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}">
             <div class="card-header bg-light">
                 <h2 class="h4 mb-0">
-                    Litter from <strong>{{ mom.name }}</strong> &amp; <strong>{{ dad.name }}</strong>
+                    {# --- THIS IS THE CHANGE --- #}
+                    {% set first_puppy = puppies_in_litter[0] %}
+                    {{ first_puppy.breed.name if first_puppy.breed else 'Mixed Breed' }} Litter from <strong>{{ mom.name }}</strong> &amp; <strong>{{ dad.name }}</strong>
                 </h2>
                 <p class="text-muted mb-0">Born on: {{ birth_date.strftime('%B %d, %Y') }}</p>
             </div>

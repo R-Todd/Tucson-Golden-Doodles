@@ -6,7 +6,7 @@ from flask_admin.menu import MenuLink
 
 from app import db
 from app.models import (
-    User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+    User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner, Breed
 )
 from . import bp, admin
 from .views import (
@@ -18,6 +18,8 @@ from .views import (
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 
+admin.add_view(AdminModelView(Breed, db.session))
+
 # Register admin views for site content using Bootstrap 5 templates
 admin.add_view(ReviewAdminView(Review, db.session))
 # Custom name for HeroSection view in the admin interface
@@ -28,6 +30,7 @@ admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Secti
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
 # Custom name for GalleryImage view in the admin interface
 admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery Images"))
+
 
 # Add a logout link to the admin menu
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))
