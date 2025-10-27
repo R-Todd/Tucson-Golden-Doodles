@@ -3,6 +3,47 @@
 {% block title %}Our Parents - Tucson Golden Doodles{% endblock %}
 
 {% block content %}
+{#--- NEW HEADER SECTION ---#}
+<div class="container my-5 parent-page-header"> 
+    <div class="row align-items-center"> 
+        {# Column for Text Content #}
+        <div class="col-lg-7 col-md-6 mb-4 mb-md-0"> 
+            <h1 class="display-5 mb-4">Our Doodle Parents</h1>
+            <p class="lead">Healthy Puppies Start with Exceptional Parents</p>
+            
+            {# Descriptive points #}
+            <div>
+                <h5 class="mt-3">Health Tested</h5>
+                <p><small>DNA, OFA, and PennHIP screenings for hips, elbows, heart, and eyes.</small></p>
+
+                <h5>Great Temperament</h5>
+                <p><small>Parents chosen for friendliness, intelligence, and adaptability.</small></p>
+
+                <h5>Strong Structure</h5>
+                <p><small>Balanced build for lifelong health and mobility.</small></p>
+
+                <h5>Ethical Breeding</h5>
+                <p><small>Planned pairings, early socialization, and loving care.</small></p>
+
+                <h5>Family & Therapy Ready</h5>
+                <p><small>Confident, happy puppies prepared for their forever homes.</small></p>
+            </div>
+
+            {# Available Puppies Button #}
+            <a href="{{ url_for('puppies.list_puppies') }}" class="btn btn-secondary mt-3">Available Puppies</a>
+        </div>
+        
+        {# Optional Column for an Image #}
+        {# 
+        <div class="col-lg-5 col-md-6 text-center">
+            <img src="{{ url_for('static', filename='img/your-parent-header-image.jpg') }}" class="img-fluid rounded shadow-sm" alt="Our Parent Dogs">
+        </div> 
+        #}
+    </div>
+</div>
+{#--- END OF NEW HEADER SECTION ---#}
+
+{#--- ORIGINAL CONTENT STARTS HERE ---#}
 <div class="container-fluid p-0">
     {% if parents %}
         {% for parent in parents %}

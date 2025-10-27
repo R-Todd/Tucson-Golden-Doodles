@@ -7,11 +7,6 @@ on various pages of the public-facing website, such as the homepage hero,
 about section, gallery, and contact information.
 """
 
-# app/models/site_models.py
-"""
-Defines various models for managing site-wide content and configuration.
-"""
-
 from . import db
 from .puppy_models import Puppy  # Import Puppy to define relationship
 
@@ -127,3 +122,48 @@ class AnnouncementBanner(db.Model):
     def __repr__(self):
         """Provides a developer-friendly representation of the AnnouncementBanner object."""
         return f'<AnnouncementBanner {self.id}>'
+
+# --- NEW MODEL ADDED HERE ---
+class ParentsPageHeader(db.Model):
+    """
+    Manages the content for the header section on the 'Our Parents' page.
+    Intended for a single row of data.
+    """
+    __tablename__ = 'parents_page_header' # Explicit table name
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), default="Our Doodle Parents")
+    tagline = db.Column(db.String(300), default="Healthy Puppies Start with Exceptional Parents")
+    
+    # Store the list points as a single text block, separated by newlines.
+    # Each point will have a title and description, separated by a pipe '|'.
+    # Example: "Health Tested|DNA, OFA screenings..."
+    description_points = db.Column(db.Text, default=(
+        "Health Tested|DNA, OFA, and PennHIP screenings for hips, elbows, heart, and eyes.\n"
+        "Great Temperament|Parents chosen for friendliness, intelligence, and adaptability.\n"
+        "Strong Structure|Balanced build for lifelong health and mobility.\n"
+        "Ethical Breeding|Planned pairings, early socialization, and loving care.\n"
+        "Family & Therapy Ready|Confident, happy puppies prepared for their forever homes."
+    ))
+    
+    # S3 key for the header image.
+    image_s3_key = db.Column(db.String(255))
+
+    def __repr__(self):
+        """Provides a developer-friendly representation."""
+        return f'<ParentsPageHeader {self.id}>'
+
+    # Helper property to easily parse the description points in the template
+    @property
+    def points_list(self):
+        """ Parses the description_points text into a list of (title, description) tuples. """
+        points = []
+        if self.description_points:
+            lines = self.description_points.strip().split('\n')
+            for line in lines:
+                parts = line.split('|', 1)
+                if len(parts) == 2:
+                    points.append((parts[0].strip(), parts[1].strip()))
+                elif len(parts) == 1: # Handle lines with only a title (no pipe)
+                    points.append((parts[0].strip(), "")) 
+        return points

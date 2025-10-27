@@ -4,7 +4,7 @@ from botocore.exceptions import NoCredentialsError
 from datetime import date
 from app import create_app, db
 from app.models import (
-    User, SiteMeta, Parent, Puppy, Review, HeroSection,
+    User, SiteDetails, Parent, Puppy, Review, HeroSection,
     AboutSection, GalleryImage, ParentRole, PuppyStatus, AnnouncementBanner
 )
 from app.utils.image_uploader import upload_image
@@ -68,7 +68,7 @@ def seed_database():
         # - Admin creation logic is now removed.
 
 
-        db.session.add(SiteMeta(phone_number='520-555-1234', email='contact@tucsondoodles.com'))
+        db.session.add(SiteDetails(phone_number='520-555-1234', email='contact@tucsondoodles.com'))
 
         hero_keys = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
         db.session.add(HeroSection(

@@ -13,12 +13,10 @@ from flask_sqlalchemy import SQLAlchemy
 # Initialize the database instance.
 db = SQLAlchemy()
 
+# Import enums and all model classes
 from .enums import ParentRole, PuppyStatus
-from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner 
 from .parent_models import Parent, ParentImage
-from .puppy_models import Puppy
-from .review_models import Review
-from .user_models import User
 from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User

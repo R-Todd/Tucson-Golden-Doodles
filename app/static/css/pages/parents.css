@@ -1,5 +1,52 @@
 /* app/static/css/pages/parents.css */
 
+/* --- NEW: Parent Page Header Section --- */
+.parent-page-header {
+    background-color: #fdf8f0; /* Light beige background like the image */
+    padding: 3rem 1.5rem; /* Generous padding */
+    border-radius: 8px; /* Slightly rounded corners */
+    margin-bottom: 3rem; /* Space below the header */
+}
+
+.parent-page-header h1 {
+    font-family: 'Times New Roman', Times, serif; /* Serif font like the image */
+    color: #5a4e40; /* Muted brown color */
+    font-weight: normal;
+}
+
+.parent-page-header .lead {
+    color: #5a4e40;
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.parent-page-header h5 {
+    font-family: 'Open Sans', sans-serif; /* Use sans-serif for subheadings */
+    font-weight: bold;
+    color: #333; /* Darker color for emphasis */
+    margin-bottom: 0.25rem;
+}
+
+.parent-page-header p small {
+    color: #555; /* Slightly lighter text for details */
+    line-height: 1.5;
+}
+
+.parent-page-header .btn-secondary {
+    background-color: #796a5b; /* Darker brown button */
+    border-color: #796a5b;
+    border-radius: 20px; /* Rounded button */
+    padding: 0.5rem 1.5rem; /* Button padding */
+    font-weight: bold;
+}
+
+.parent-page-header .btn-secondary:hover {
+    background-color: #5a4e40; /* Darker on hover */
+    border-color: #5a4e40;
+}
+/* --- END: Parent Page Header Section --- */
+
+/* --- ORIGINAL CSS RULES START HERE --- */
 /* Parent Name Banner */
 .parent-name-banner {
     background-color: #6c757d; /* Muted background bar */

@@ -1,0 +1,75 @@
+{# app/templates/admin/parent/parents_header_edit.html #}
+{% extends 'admin/base_bs5.html' %} {# Use the BS5 base template #}
+{% from 'bootstrap5/form.html' import render_form %} {# Optional: Use Flask-Bootstrap5 if installed #}
+
+{% block head_css %}
+    {{ super() }}
+    {# Add any specific CSS if needed #}
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Parents Page Header</h2>
+
+    {# --- Display Flashed Messages --- #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {# --- End Flashed Messages --- #}
+
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} {# Include CSRF token #}
+
+        <div class="mb-3">
+            <label for="{{ form.title.id }}" class="form-label">{{ form.title.label }}</label>
+            {{ form.title(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.tagline.id }}" class="form-label">{{ form.tagline.label }}</label>
+            {{ form.tagline(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.description_points.id }}" class="form-label">{{ form.description_points.label }}</label>
+            {{ form.description_points(class="form-control") }}
+            <div class="form-text">Enter each point on a new line: Title|Description</div>
+        </div>
+
+        <hr>
+        <h4 class="mt-4 mb-3">Header Image</h4>
+
+        {% if model and model.image_s3_key %}
+        <div class="mb-3">
+            <p><strong>Current Image:</strong></p>
+            <img src="{{ model.image_s3_key | s3_url }}" alt="Current Header Image" style="max-width: 300px; height: auto; border: 1px solid #ccc; padding: 5px;">
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label for="{{ form.image_upload.id }}" class="form-label">{{ form.image_upload.label }}</label>
+            {{ form.image_upload(class="form-control") }}
+             <div class="form-text">Upload a new image to replace the current one (if any).</div>
+        </div>
+
+        <hr>
+        <div class="d-flex justify-content-between mt-4">
+             <a href="{{ url_for('parent.index_view') }}" class="btn btn-secondary">Cancel</a>
+             <button type="submit" class="btn btn-primary">Save Header Content</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    {# Add any specific JS if needed #}
+{% endblock %}
