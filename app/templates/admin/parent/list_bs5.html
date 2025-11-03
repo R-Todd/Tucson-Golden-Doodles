@@ -36,7 +36,17 @@
 {% endblock %}
 
 {% block body %}
-    {{ super() }}
+    {# --- ADD BUTTON HERE --- #}
+    <div class="container mt-3 mb-3 text-end"> {# Use Bootstrap container and text alignment #}
+        <a href="{{ url_for('admin_auth.edit_parents_header') }}" class="btn btn-info">
+             Edit Page Header Content
+        </a>
+    </div>
+    {# --- END BUTTON --- #}
+
+    {{ super() }} {# Render the default list table #}
+    
+    {# --- Modal Code --- #}
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -63,4 +73,5 @@
         });
       });
     </script>
+    {# --- End Modal Code --- #}
 {% endblock %}

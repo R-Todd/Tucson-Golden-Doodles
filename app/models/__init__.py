@@ -15,7 +15,9 @@ db = SQLAlchemy()
 
 # Import enums and all model classes
 from .enums import ParentRole, PuppyStatus
-from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner 
+# --- CORRECTED IMPORT LINE ---
+from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner, ParentsPageHeader 
+# --- END CORRECTION ---
 from .parent_models import Parent, ParentImage
 from .puppy_models import Puppy
 from .review_models import Review
