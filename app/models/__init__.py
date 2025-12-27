@@ -16,6 +16,7 @@ db = SQLAlchemy()
 from .enums import ParentRole, PuppyStatus
 from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 from .parent_models import Parent, ParentImage
+from .litter_models import Litter
 from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User
