@@ -5,8 +5,6 @@ Defines the models for parent dogs (Sires and Dams) and their associated images.
 
 from . import db
 from .enums import ParentRole
-from collections import OrderedDict
-from itertools import groupby
 
 class Parent(db.Model):
     """
@@ -23,6 +21,7 @@ class Parent(db.Model):
     weight_kg = db.Column(db.Float)
     height_cm = db.Column(db.Float)
     description = db.Column(db.Text)
+    
     # Flags for managing parent visibility and status
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     is_guardian = db.Column(db.Boolean, default=False, nullable=False)
@@ -39,26 +38,24 @@ class Parent(db.Model):
     alternate_image_s3_key_3 = db.Column(db.String(255))
     alternate_image_s3_key_4 = db.Column(db.String(255))
 
-    # DEPRECATED: Replaced by ParentImage model for a more flexible gallery.
+    # Relationships to the ParentImage model for a flexible gallery.
     images = db.relationship('ParentImage', backref='parent', lazy=True, cascade="all, delete-orphan")
 
-    # Relationships to the Puppy model, distinguishing litters by parental role.
-    litters_as_dad = db.relationship('Puppy', foreign_keys='Puppy.dad_id', back_populates='dad', lazy='dynamic')
-    litters_as_mom = db.relationship('Puppy', foreign_keys='Puppy.mom_id', back_populates='mom', lazy='dynamic')
-
+    # UPDATED: Relationships now point to the Litter model instead of Puppy.
+    # This matches the new architecture where parents are defined at the Litter level.
+    litters_as_dad = db.relationship('Litter', foreign_keys='Litter.dad_id', back_populates='dad', lazy='dynamic')
+    litters_as_mom = db.relationship('Litter', foreign_keys='Litter.mom_id', back_populates='mom', lazy='dynamic')
 
     def __init__(self, **kwargs):
         """
-        Explicit constructor to ensure stable object creation, especially in tests.
-        Allows for initializing a Parent instance with keyword arguments.
+        Explicit constructor to ensure stable object creation.
         """
         super(Parent, self).__init__(**kwargs)
 
     @property
     def litters(self):
         """
-        A convenience property to access the parent's litters, regardless of role.
-        Returns `litters_as_dad` or `litters_as_mom` based on the parent's role.
+        A convenience property to access the parent's litters based on their role.
         """
         if self.role == ParentRole.DAD:
             return self.litters_as_dad
@@ -68,16 +65,10 @@ class Parent(db.Model):
     @property
     def grouped_litters(self):
         """
-        Groups a parent's puppies into litters.
-
-        A litter is defined by a unique combination of birth date, mom, and dad.
-        Returns an OrderedDict with the litter key (birth_date, dad, mom) and
-        a list of puppies in that litter as the value.
+        Returns the parent's litters ordered by birth date (newest first).
+        Since we now have a dedicated Litter model, we return the Litter objects directly.
         """
-        from .puppy_models import Puppy
-        puppies = self.litters.order_by(Puppy.birth_date.desc(), Puppy.name).all()
-        keyfunc = lambda p: (p.birth_date, p.dad, p.mom)
-        return OrderedDict((k, list(g)) for k, g in groupby(puppies, keyfunc))
+        return self.litters.order_by(db.desc('birth_date')).all()
 
     def __repr__(self):
         """Provides a developer-friendly representation of the Parent object."""
@@ -90,7 +81,6 @@ class Parent(db.Model):
 class ParentImage(db.Model):
     """
     Represents an individual gallery image associated with a Parent.
-    This provides a more flexible one-to-many relationship for parent photos.
     """
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)

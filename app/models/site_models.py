@@ -34,5 +34,7 @@ class AnnouncementBanner(db.Model):
     main_text = db.Column(db.String(200), default=" Check out our newest litter! ")
     sub_text = db.Column(db.String(300), default="A beautiful new litter from {mom_name} & {dad_name}.")
     button_text = db.Column(db.String(50), default="Meet the Puppies")
+    
+    # Ensure this is exactly as follows:
     featured_puppy_id = db.Column(db.Integer, db.ForeignKey('puppy.id'), nullable=True)
     featured_puppy = db.relationship('Puppy', foreign_keys=[featured_puppy_id])
