@@ -19,19 +19,32 @@
 {% endif %}
 
 {#--- ANNOUNCEMENT BANNER BLOCK ---#}
-{% if announcement_banner and announcement_banner.is_active and announcement_banner.featured_puppy %}
-    {% set puppy = announcement_banner.featured_puppy %}
-    {% set mom = puppy.mom %}
-    {% set dad = puppy.dad %}
-    
+{% if announcement_banner and announcement_banner.is_active %}
     <div class="litter-announcement-banner">
         <h4 class="h4">{{ announcement_banner.main_text }}</h4>
-        <p>{{ announcement_banner.sub_text.format(mom_name=mom.name, dad_name=dad.name, birth_date=puppy.birth_date.strftime('%B %d, %Y')) }}</p>
-        <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" class="btn btn-outline-light">
-            {{ announcement_banner.button_text }}
-        </a>
+        
+        {% if announcement_banner.featured_puppy %}
+            {% set puppy = announcement_banner.featured_puppy %}
+            {% set mom = puppy.mom %}
+            {% set dad = puppy.dad %}
+            
+            <p>{{ announcement_banner.sub_text.format(
+                mom_name=mom.name, 
+                dad_name=dad.name, 
+                birth_date=puppy.birth_date.strftime('%B %d, %Y')
+            ) }}</p>
+            
+            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" class="btn btn-outline-light">
+                {{ announcement_banner.button_text }}
+            </a>
+        {% else %}
+            {# Fallback if no puppy is featured #}
+            <p>{{ announcement_banner.sub_text }}</p>
+        {% endif %}
     </div>
 {% endif %}
+
+{#--- MAIN CONTENT SECTIONS ---#}
 
 <div class="container" id="about">
     {% if about %}
