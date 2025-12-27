@@ -1,30 +1,37 @@
+# app/routes/puppies/routes.py
+
 from flask import render_template
 from itertools import groupby
 from collections import OrderedDict
 from sqlalchemy.orm import joinedload
 from app.routes.puppies import bp
-from app.models import Puppy, PuppyStatus
+from app.models import Puppy, PuppyStatus, Litter
 
 @bp.route('/puppies')
 def list_puppies():
     """
     Renders the page with all puppies, grouped by litter.
-    A litter is defined by its birth date and parents.
+    With the new architecture, we group by the Litter relationship 
+    instead of individual puppy attributes.
     """
-    # Eagerly load parent data to avoid N+1 queries in the template
-    # Order by birth date descending to show newest litters first.
+    # Eagerly load the Litter and its associated parents (mom and dad)
+    # This ensures that calling puppy.litter.mom.name doesn't trigger extra DB hits
     puppies_query = Puppy.query.options(
-        joinedload(Puppy.mom),
-        joinedload(Puppy.dad)
-    ).order_by(Puppy.birth_date.desc(), Puppy.name).all()
+        joinedload(Puppy.litter).joinedload(Litter.mom),
+        joinedload(Puppy.litter).joinedload(Litter.dad)
+    ).join(Litter).order_by(Litter.birth_date.desc(), Puppy.name).all()
 
-    # Group puppies by litter in Python using an OrderedDict to maintain sort order
-    keyfunc = lambda p: (p.birth_date, p.mom, p.dad)
-    litters = OrderedDict((key, list(group)) for key, group in groupby(puppies_query, key=keyfunc))
+    # Group puppies by their Litter object
+    # We use an OrderedDict to maintain the 'newest birth date first' sorting
+    litters = OrderedDict()
+    
+    # groupby expects the list to be sorted by the key, which our query handles
+    for litter, group in groupby(puppies_query, key=lambda p: p.litter):
+        litters[litter] = list(group)
 
     return render_template(
         'puppies.html',
         title='Our Puppies',
         litters=litters,
-        PuppyStatus=PuppyStatus  # Pass the enum to the template for styling
+        PuppyStatus=PuppyStatus  # Pass the enum for status badge styling
     )
