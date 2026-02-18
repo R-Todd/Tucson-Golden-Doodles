@@ -1,0 +1,30 @@
+{# app/templates/admin/litter/create_bs5.html #}
+{% extends 'admin/model/create.html' %}
+
+{% block body %}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-lg-8">
+      {{ super() }}
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm mt-3 mt-lg-0">
+        <div class="card-header">
+          <h5 class="mb-0">Notes</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-2">
+            Litters store shared information for a group of puppies (parents, born-on date, breed, expected weight, description).
+          </p>
+          <p class="mb-0 text-muted small">
+            After creating a litter, you can assign puppies to it from the Puppy admin page.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

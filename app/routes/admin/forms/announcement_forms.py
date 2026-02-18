@@ -47,7 +47,7 @@ class AnnouncementBannerForm(FlaskForm):
 
     button_text = StringField('Button Text', validators=[DataRequired()])
 
-    # NOTE: Field name kept as 'featured_puppy' for compatibility with existing model/view.
+    # NOTE: Field name kept as 'featured_puppy' for compatibility with existing templates/JS.
     # It will now return a Litter object.
     featured_puppy = QuerySelectField(
         'Featured Litter',

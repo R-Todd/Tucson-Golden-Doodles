@@ -23,9 +23,9 @@
     <div class="litter-announcement-banner">
         <h4 class="h4">{{ announcement_banner.main_text }}</h4>
 
-        {% if announcement_banner.featured_puppy %}
-            {# NOTE: featured_puppy now represents a Litter object after the Litter refactor #}
-            {% set litter = announcement_banner.featured_puppy %}
+        {% if announcement_banner.featured_litter %}
+            {# Featured Litter (new Litter architecture) #}
+            {% set litter = announcement_banner.featured_litter %}
             {% set mom = litter.mother %}
             {% set dad = litter.father %}
 
@@ -35,9 +35,12 @@
                 birth_date=litter.birth_date.strftime('%B %d, %Y') if litter and litter.birth_date else ""
             ) }}</p>
 
-            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ litter.id }}" class="btn btn-outline-light">
-                {{ announcement_banner.button_text }}
-            </a>
+            {# Show CTA only if we have a featured litter id + button text #}
+            {% if announcement_banner.button_text and announcement_banner.featured_litter_id %}
+                <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ announcement_banner.featured_litter_id }}" class="btn btn-outline-light">
+                    {{ announcement_banner.button_text }}
+                </a>
+            {% endif %}
         {% else %}
             {# Fallback if no litter is featured #}
             <p>{{ announcement_banner.sub_text }}</p>

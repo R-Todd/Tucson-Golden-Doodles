@@ -1,0 +1,56 @@
+{# app/templates/admin/litter/edit_bs5.html #}
+{% extends 'admin/model/edit.html' %}
+
+{% block body %}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-lg-8">
+      {{ super() }}
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm mt-3 mt-lg-0">
+        <div class="card-header">
+          <h5 class="mb-0">Current Litter</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <div class="text-muted small">Parents</div>
+            <div class="fw-semibold">
+              {% if model.mother and model.father %}
+                {{ model.mother.name }} &amp; {{ model.father.name }}
+              {% else %}
+                —
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <div class="text-muted small">Born On</div>
+            <div class="fw-semibold">
+              {{ model.birth_date.strftime('%B %d, %Y') if model.birth_date else "—" }}
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <div class="text-muted small">Breed</div>
+            <div class="fw-semibold">{{ model.breed_name or "—" }}</div>
+          </div>
+
+          <div class="mb-2">
+            <div class="text-muted small">Expected Weight</div>
+            <div class="fw-semibold">{{ model.expected_weight or "—" }}</div>
+          </div>
+
+          <div>
+            <div class="text-muted small">Description</div>
+            <div>{{ model.description or "—" }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

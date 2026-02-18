@@ -9,7 +9,7 @@ from app.models import Litter
 class AnnouncementBannerAdminView(AdminModelView):
     """
     Custom Admin View for the Announcement Banner.
-    Now fully Litter-based (no more Puppy grouping).
+    Fully Litter-based.
     """
 
     can_create = True
@@ -21,7 +21,11 @@ class AnnouncementBannerAdminView(AdminModelView):
     edit_template = 'admin/announcement_banner/edit_bs5.html'
 
     form = AnnouncementBannerForm
-    column_list = ('is_active', 'main_text', 'featured_puppy')
+
+    # Column name remains 'featured_puppy' only if your template expects it;
+    # but model now has featured_litter. Flask-Admin can still display it if the
+    # attribute exists on the model.
+    column_list = ('is_active', 'main_text', 'featured_litter')
 
     form_widget_args = {
         'main_text': {'id': 'main_text'},
@@ -53,12 +57,12 @@ class AnnouncementBannerAdminView(AdminModelView):
 
     def on_model_change(self, form, model, is_created):
         """
-        Store the selected Litter ID in the featured_puppy field.
-        (Field name remains for backward compatibility.)
+        Store the selected Litter ID into AnnouncementBanner.featured_litter_id.
+        (Form field name remains 'featured_puppy' for compatibility.)
         """
         selected_litter = form.featured_puppy.data
 
         if selected_litter:
-            model.featured_puppy_id = selected_litter.id
+            model.featured_litter_id = selected_litter.id
         else:
-            model.featured_puppy_id = None
+            model.featured_litter_id = None
