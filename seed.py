@@ -1,203 +1,306 @@
 import os
-import boto3
-from botocore.exceptions import NoCredentialsError
 from datetime import date
+from werkzeug.datastructures import FileStorage
+
 from app import create_app, db
 from app.models import (
-    User, SiteDetails, Parent, Puppy, Review, HeroSection,
-    AboutSection, GalleryImage, ParentRole, PuppyStatus, AnnouncementBanner
+    User,
+    SiteDetails,
+    Parent,
+    ParentImage,
+    Puppy,
+    Review,
+    HeroSection,
+    AboutSection,
+    GalleryImage,
+    AnnouncementBanner,
+    ParentRole,
+    PuppyStatus,
+    Litter
 )
+
 from app.utils.image_uploader import upload_image
-from werkzeug.datastructures import FileStorage
-import mimetypes
 
-# --- AWS S3 Configuration ---
-S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
-S3_REGION = os.environ.get('S3_BUCKET_REGION')
 
-# Local image directory
-BASE_IMAGE_PATH = os.path.join(os.path.dirname(__file__), 'seed_images')
+# ======================================================
+# REAL S3 SEED IMAGE HELPER
+# ======================================================
 
-def upload_seed_image(filename, folder='general', create_responsive=False):
-    """
-    Uploads a local image file from the seed_images directory to S3
-    and returns the S3 key or a dictionary of keys.
-    """
-    if not S3_BUCKET or not S3_REGION:
-        print(f"Warning: S3 not configured. Cannot upload {filename}.")
+def upload_seed_image(filename, folder, responsive=False):
+    image_path = os.path.join("seed_images", filename)
+
+    if not os.path.exists(image_path):
+        print(f"Seed image not found: {image_path}")
         return None
 
-    local_file_path = os.path.join(BASE_IMAGE_PATH, filename)
-    if not os.path.exists(local_file_path):
-        print(f"Warning: Local image file not found: {local_file_path}.")
-        return None
+    with open(image_path, "rb") as f:
+        file_storage = FileStorage(
+            stream=f,
+            filename=filename,
+            content_type="image/jpeg"
+        )
 
-    print(f"Uploading {filename} to S3 in folder '{folder}'...")
-    try:
-        with open(local_file_path, 'rb') as f:
-            mime_type, _ = mimetypes.guess_type(local_file_path)
-            mime_type = mime_type or "application/octet-stream"
-            
-            file_storage = FileStorage(f, filename=filename, content_type=mime_type)
-            
-            return upload_image(file_storage, folder=folder, create_responsive_versions=create_responsive)
-    except Exception as e:
-        print(f"Error during S3 upload for {filename}: {e}")
-        return None
+        return upload_image(
+            file_storage,
+            folder=folder,
+            create_responsive_versions=responsive
+        )
 
 
-# Create a Flask app context to work with the database
 app = create_app()
 
-def seed_database():
-    """Seeds the database with fully detailed parent and puppy data."""
-    with app.app_context():
-        print("Clearing existing data...")
-        db.drop_all()
-        db.create_all()
+with app.app_context():
+    print("Dropping all tables...")
+    db.drop_all()
 
-        print("Seeding new data and uploading all images to S3...")
+    print("Creating tables...")
+    db.create_all()
 
-        # --- Basic Site and Admin Setup ---
-        # admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
-        # admin_password = os.environ.get('ADMIN_PASSWORD', 'password')
-        # admin_user = User(username=admin_username)
-        # admin_user.set_password(admin_password)
-        # db.session.add(admin_user)
-        # print(f"Admin user '{admin_username}' created.")
-        # - Admin creation logic is now removed.
+    # ======================================================
+    # ADMIN (FROM .env)
+    # ======================================================
+
+    admin_username = os.environ.get("ADMIN_USERNAME", "admin")
+    admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+
+    admin = User(username=admin_username)
+    admin.set_password(admin_password)
+    db.session.add(admin)
+
+    
 
 
-        db.session.add(SiteDetails(phone_number='520-555-1234', email='contact@tucsondoodles.com'))
+    # ======================================================
+    # SITE DETAILS
+    # ======================================================
 
-        hero_keys = upload_seed_image('hero-image.jpg', 'hero', create_responsive=True)
-        db.session.add(HeroSection(
-            main_title='Tucson Golden Doodles',
-            subtitle='Established 2013',
-            description='Arizona Goldendoodles, Bernedoodles',
-            scroll_text_main=f'Website Updated {date.today().strftime("%B %d, %Y")}',
-            scroll_text_secondary='See Available Puppies Below',
-            image_s3_key=hero_keys.get('original') if hero_keys else None,
-            image_s3_key_large=hero_keys.get('large') if hero_keys else None
-        ))
+    site_details = SiteDetails(
+    phone_number="520-123-4567",
+    email="info@tucsongoldendoodles.com"
+    )
+    db.session.add(site_details)
 
-        # --- About Section Setup ---
-        # Upload about image and create AboutSection entry
-        about_keys = upload_seed_image('about-us.jpg', 'about', create_responsive=True)
-        db.session.add(AboutSection(
-            title='About Our Family',
-            content_html='<p>We are a family-based breeder located in the heart of Tucson, Arizona. Our passion for doodles started over a decade ago, and since then, we have been dedicated to raising healthy, happy, and well-socialized puppies. <b>All our dogs are part of our family</b>, living in our home and receiving constant love and attention. We believe this makes all the difference in their temperament and development.</p>',
-            image_s3_key=about_keys.get('original') if about_keys else None
-        ))
+    print("Created admin + site details")
 
-        # --- Create Fully Detailed Parent Dogs ---
-        # Define and add multiple parent dogs with detailed descriptions and images
-        # Archie
-        archie_main_keys = upload_seed_image('archie.jpg', 'parents', create_responsive=True)
-        parent_archie = Parent(
-            name='Archie',
-            role=ParentRole.DAD,
-            breed='F1 Mini Poodle',
-            birth_date=date(2021, 5, 12),
-            weight_kg=8.5,
-            height_cm=38,
-            description="Archie is the heart of our program. He is a gentle and intelligent sire with a stunning apricot coat and a calm, loving demeanor. He passes on his wonderful temperament and sharp intellect to his puppies, making them perfect family companions. He loves playing fetch and getting belly rubs.",
-            main_image_s3_key=archie_main_keys.get('original') if archie_main_keys else None,
-            main_image_s3_key_large=archie_main_keys.get('large') if archie_main_keys else None,
-            alternate_image_s3_key_1=upload_seed_image('archie-2.jpg', 'parents_alternates'),
-            alternate_image_s3_key_2=upload_seed_image('archie-3.jpg', 'parents_alternates')
+    # ======================================================
+    # PARENTS
+    # ======================================================
+
+    parent_archie = Parent(
+        name="Archie",
+        role=ParentRole.DAD,
+        breed="Cavapoo",
+        birth_date=date(2021, 5, 1),
+        weight_kg=8,
+        height_cm=35,
+        description="Friendly and intelligent sire."
+    )
+
+    parent_penelope = Parent(
+        name="Penelope",
+        role=ParentRole.MOM,
+        breed="Cavapoo",
+        birth_date=date(2020, 3, 10),
+        weight_kg=7,
+        height_cm=32,
+        description="Gentle and affectionate dam."
+    )
+
+    parent_buckeye = Parent(
+        name="Buckeye",
+        role=ParentRole.DAD,
+        breed="Mini Goldendoodle",
+        birth_date=date(2021, 8, 15),
+        weight_kg=12,
+        height_cm=40,
+        description="Energetic and playful sire."
+    )
+
+    parent_minnie = Parent(
+        name="Minnie",
+        role=ParentRole.MOM,
+        breed="Mini Goldendoodle",
+        birth_date=date(2020, 6, 5),
+        weight_kg=10,
+        height_cm=38,
+        description="Sweet and nurturing dam."
+    )
+
+    db.session.add_all([
+        parent_archie,
+        parent_penelope,
+        parent_buckeye,
+        parent_minnie
+    ])
+    db.session.commit()
+
+    
+
+
+    # Upload responsive parent main images
+    for parent, filename in [
+        (parent_archie, "archie.jpg"),
+        (parent_penelope, "penelope.jpg"),
+        (parent_buckeye, "buckeye.jpg"),
+        (parent_minnie, "minnie.jpg"),
+    ]:
+        keys = upload_seed_image(filename, "parents", responsive=True)
+        if keys:
+            parent.main_image_s3_key_small = keys.get("small")
+            parent.main_image_s3_key_medium = keys.get("medium")
+            parent.main_image_s3_key_large = keys.get("large")
+            parent.main_image_s3_key = keys.get("original")
+
+    db.session.commit()
+
+    
+
+
+    # Alternate parent images
+    alternate_images = [
+        ("archie-2.jpg", parent_archie.id),
+        ("archie-3.jpg", parent_archie.id),
+        ("penelope-2.jpg", parent_penelope.id),
+        ("penelope-3.jpg", parent_penelope.id),
+        ("buckeye-2.jpg", parent_buckeye.id),
+        ("minnie-2.jpg", parent_minnie.id),
+        ("minnie-3.jpg", parent_minnie.id),
+    ]
+
+    for filename, parent_id in alternate_images:
+        key = upload_seed_image(filename, "parents")
+        if key:
+            db.session.add(
+                ParentImage(parent_id=parent_id, image_s3_key=key)
+            )
+
+    db.session.commit()
+
+    print("Uploaded parent images")
+
+    # ======================================================
+    # LITTERS
+    # ======================================================
+
+    litter_ap = Litter(
+        mom_id=parent_penelope.id,
+        dad_id=parent_archie.id,
+        birth_date=date(2024, 1, 15),
+        breed_name="Cavapoo",
+        description="Affectionate and calm Cavapoo litter.",
+        expected_weight="15–25 lbs"
+    )
+
+    litter_bm = Litter(
+        mom_id=parent_minnie.id,
+        dad_id=parent_buckeye.id,
+        birth_date=date(2024, 2, 20),
+        breed_name="Mini Goldendoodle",
+        description="Playful and intelligent Mini Goldendoodles.",
+        expected_weight="20–30 lbs"
+    )
+
+    db.session.add_all([litter_ap, litter_bm])
+    db.session.commit()
+
+    print("Created litters")
+
+    # ======================================================
+    # PUPPIES
+    # ======================================================
+
+    puppies = [
+        ("River", "Apricot", PuppyStatus.AVAILABLE, litter_ap.id, "river.jpg"),
+        ("Benson", "Cream", PuppyStatus.RESERVED, litter_ap.id, "benson.jpg"),
+        ("Oreo", "Merle", PuppyStatus.AVAILABLE, litter_bm.id, "minnie-buckeye-pup-1.jpg"),
+    ]
+
+    for name, coat, status, litter_id, image_file in puppies:
+        key = upload_seed_image(image_file, "puppies")
+        db.session.add(
+            Puppy(
+                name=name,
+                coat=coat,
+                status=status,
+                litter_id=litter_id,
+                main_image_s3_key=key
+            )
         )
 
-        # Penelope
-        penelope_main_keys = upload_seed_image('penelope.jpg', 'parents', create_responsive=True)
-        parent_penelope = Parent(
-            name='Penelope',
-            role=ParentRole.MOM,
-            breed='Cavalier King Charles Spaniel',
-            birth_date=date(2020, 11, 2),
-            weight_kg=7.2,
-            height_cm=33,
-            description="Penelope is our sweet and nurturing matriarch. As a purebred Cavalier, she has a beautifully soft, tri-color coat and the most expressive eyes. She is incredibly affectionate and patient, making her an exceptional mother. Her puppies inherit her gentle nature and loving spirit.",
-            main_image_s3_key=penelope_main_keys.get('original') if penelope_main_keys else None,
-            main_image_s3_key_large=penelope_main_keys.get('large') if penelope_main_keys else None,
-            alternate_image_s3_key_1=upload_seed_image('penelope-2.jpg', 'parents_alternates'),
-            alternate_image_s3_key_2=upload_seed_image('penelope-3.jpg', 'parents_alternates')
+    db.session.commit()
+
+    print("Created puppies")
+
+
+    # ======================================================
+    # GALLERY
+    # ======================================================
+
+    gallery_files = ["hero-image.jpg", "about-us.jpg"]
+
+    for filename in gallery_files:
+        key = upload_seed_image(filename, "gallery")
+        if key:
+            db.session.add(GalleryImage(image_s3_key=key))
+
+    # ======================================================
+    # REVIEWS
+    # ======================================================
+
+    db.session.add_all([
+        Review(
+            author_name="Sarah T.",
+            testimonial_text="Wonderful experience from start to finish.",
+            is_featured=True
+        ),
+        Review(
+            author_name="Michael R.",
+            testimonial_text="Healthy, happy puppies raised with love.",
+            is_featured=False
         )
+    ])
 
-        # Buckeye
-        buckeye_main_keys = upload_seed_image('buckeye.jpg', 'parents', create_responsive=True)
-        parent_buckeye = Parent(
-            name='Buckeye',
-            role=ParentRole.DAD,
-            breed='Merle Poodle',
-            birth_date=date(2022, 1, 30),
-            weight_kg=9.0,
-            height_cm=40,
-            description="Buckeye is our handsome and playful Merle Poodle. His unique coat turns heads everywhere he goes. He has a goofy, fun-loving personality but is also incredibly smart and eager to please. He brings beautiful color patterns and a joyful energy to his litters.",
-            main_image_s3_key=buckeye_main_keys.get('original') if buckeye_main_keys else None,
-            main_image_s3_key_large=buckeye_main_keys.get('large') if buckeye_main_keys else None,
-            alternate_image_s3_key_1=upload_seed_image('buckeye-2.jpg', 'parents_alternates'),
-            alternate_image_s3_key_2=upload_seed_image('IMG_8845.heic', 'parents_alternates')
+    # ======================================================
+    # HERO / ABOUT / BANNER
+    # ======================================================
+
+    hero_keys = upload_seed_image("hero-image.jpg", "hero", responsive=True)
+
+    hero = HeroSection(
+        main_title="Premium Goldendoodles in Tucson",
+        subtitle="Healthy, happy, home-raised puppies.",
+        description="Ethically bred, family-raised companions in Arizona.",
+        scroll_text_main="Now Accepting Deposits",
+        scroll_text_secondary="See Available Puppies Below",
+        image_s3_key=hero_keys.get("original") if hero_keys else None,
+        image_s3_key_small=hero_keys.get("small") if hero_keys else None,
+        image_s3_key_medium=hero_keys.get("medium") if hero_keys else None,
+        image_s3_key_large=hero_keys.get("large") if hero_keys else None,
+    )
+
+
+    about_keys = upload_seed_image("about-us.jpg", "about", responsive=True)
+
+    about = AboutSection(
+        title="About Tucson Golden Doodles",
+        content_html="<p>We raise well-socialized, healthy puppies in a loving environment.</p>",
+        image_s3_key=about_keys.get("original") if about_keys else None,
+        image_s3_key_small=about_keys.get("small") if about_keys else None,
+        image_s3_key_medium=about_keys.get("medium") if about_keys else None,
+        image_s3_key_large=about_keys.get("large") if about_keys else None,
         )
+    
+    banner = AnnouncementBanner(
+        is_active=True,
+        main_text="Now accepting deposits for upcoming litters!",
+        sub_text="A beautiful new litter is now available.",
+        button_text="Meet the Puppies"
+    )
 
-        # Minnie
-        minnie_main_keys = upload_seed_image('minnie.jpg', 'parents', create_responsive=True)
-        parent_minnie = Parent(
-            name='Minnie',
-            role=ParentRole.MOM,
-            breed='Cavalier King Charles Spaniel',
-            birth_date=date(2021, 8, 22),
-            weight_kg=6.8,
-            height_cm=31,
-            description="Minnie is a delightful and spirited Cavalier with classic Blenheim markings. She is incredibly social and loves everyone she meets. As a mother, she is attentive and playful, raising confident and happy puppies. Her charming personality is simply irresistible.",
-            main_image_s3_key=minnie_main_keys.get('original') if minnie_main_keys else None,
-            main_image_s3_key_large=minnie_main_keys.get('large') if minnie_main_keys else None,
-            alternate_image_s3_key_1=upload_seed_image('minnie-2.jpg', 'parents_alternates'),
-            alternate_image_s3_key_2=upload_seed_image('minnie-3.jpg', 'parents_alternates')
-        )
+    db.session.add_all([hero, about, banner])
 
-        db.session.add_all([parent_archie, parent_penelope, parent_buckeye, parent_minnie])
-        db.session.commit()
-        print("Parents created with full details and alternate images.") # Commit parents to get their IDs
 
-        # --- Create Puppies and Assign to Parents ---
-        # Define and add puppies, linking them to their parents by ID
-        # Litter 1: Archie & Penelope
-        # Available puppy
-        puppy_river = Puppy(name='River', birth_date=date(2024, 1, 15), status=PuppyStatus.AVAILABLE, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('river.jpg', 'puppies'))
-        # Reserved puppy
-        puppy_benson = Puppy(name='Benson', birth_date=date(2024, 1, 15), status=PuppyStatus.RESERVED, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('benson.jpg', 'puppies'))
-        # Sold puppies
-        pup_ap_1 = Puppy(name='Coca', birth_date=date(2024, 1, 15), status=PuppyStatus.SOLD, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-archie-pup-1.jpg', 'puppies'))
-        pup_ap_2 = Puppy(name='Spot', birth_date=date(2024, 1, 15), status=PuppyStatus.SOLD, dad_id=parent_archie.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-archie-pup-2.jpg', 'puppies'))
-        
-        # Litter 2: Buckeye & Minnie
-        # Available puppy
-        pup_bm_1 = Puppy(name='Oreo', birth_date=date(2024, 2, 20), status=PuppyStatus.AVAILABLE, dad_id=parent_buckeye.id, mom_id=parent_minnie.id, main_image_s3_key=upload_seed_image('minnie-buckeye-pup-1.jpg', 'puppies'))
-        
-        # Litter 3: Buckeye & Penelope
-        # Available puppy
-        pup_bp_1 = Puppy(name='Patches', birth_date=date(2024, 3, 1), status=PuppyStatus.AVAILABLE, dad_id=parent_buckeye.id, mom_id=parent_penelope.id, main_image_s3_key=upload_seed_image('penelope-buckey-pup-1.jpg', 'puppies'))
-        
-        db.session.add_all([puppy_river, puppy_benson, pup_ap_1, pup_ap_2, pup_bm_1, pup_bp_1])
-        print("Puppies created and assigned to parents.")
+    db.session.commit()
+    print("Created hero/about/banner")
 
-        # --- Final Touches: Reviews and Banners ---
-        # Add a featured review
-        db.session.add(Review(author_name='The Smith Family', testimonial_text='We had an amazing experience from start to finish. Our puppy is healthy, well-socialized, and the perfect addition to our family. We couldn''t be happier!', is_featured=True))
-        
-        # Add an announcement banner, linking to a specific puppy
-        announcement = AnnouncementBanner(
-            is_active=True,
-            main_text=" Our Newest Litter Has Arrived! ",
-            sub_text="A beautiful new Cavapoo litter from {mom_name} & {dad_name}, born on {birth_date}.",
-            button_text="Meet the Puppies",
-            featured_puppy_id=puppy_river.id
-        )
-        db.session.add(announcement)
-        
-        db.session.commit()
-        print("\n✅ Database seeded successfully with full details!")
-
-if __name__ == '__main__':
-    seed_database()
+    print("Full production database seeded successfully.")
