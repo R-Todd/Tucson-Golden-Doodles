@@ -22,23 +22,24 @@
 {% if announcement_banner and announcement_banner.is_active %}
     <div class="litter-announcement-banner">
         <h4 class="h4">{{ announcement_banner.main_text }}</h4>
-        
+
         {% if announcement_banner.featured_puppy %}
-            {% set puppy = announcement_banner.featured_puppy %}
-            {% set mom = puppy.mom %}
-            {% set dad = puppy.dad %}
-            
+            {# NOTE: featured_puppy now represents a Litter object after the Litter refactor #}
+            {% set litter = announcement_banner.featured_puppy %}
+            {% set mom = litter.mother %}
+            {% set dad = litter.father %}
+
             <p>{{ announcement_banner.sub_text.format(
-                mom_name=mom.name, 
-                dad_name=dad.name, 
-                birth_date=puppy.birth_date.strftime('%B %d, %Y')
+                mom_name=mom.name if mom else "",
+                dad_name=dad.name if dad else "",
+                birth_date=litter.birth_date.strftime('%B %d, %Y') if litter and litter.birth_date else ""
             ) }}</p>
-            
-            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ puppy.birth_date.strftime('%Y%m%d') }}-{{ dad.id }}-{{ mom.id }}" class="btn btn-outline-light">
+
+            <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ litter.id }}" class="btn btn-outline-light">
                 {{ announcement_banner.button_text }}
             </a>
         {% else %}
-            {# Fallback if no puppy is featured #}
+            {# Fallback if no litter is featured #}
             <p>{{ announcement_banner.sub_text }}</p>
         {% endif %}
     </div>
@@ -73,11 +74,15 @@
                     <img src="{{ puppy.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ puppy.name }}</h5>
+
+                        {% if puppy.litter and puppy.litter.mother and puppy.litter.father %}
                         <p class="card-text">
-                            <strong>Parents:</strong> 
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.mom.id }}">{{ puppy.mom.name }}</a> & 
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.dad.id }}">{{ puppy.dad.name }}</a>
+                            <strong>Parents:</strong>
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.mother.id }}">{{ puppy.litter.mother.name }}</a> &
+                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.father.id }}">{{ puppy.litter.father.name }}</a>
                         </p>
+                        {% endif %}
+
                         {% if puppy.status == PuppyStatus.AVAILABLE %}
                             <span class="badge bg-success">{{ puppy.status.value }}</span>
                         {% elif puppy.status == PuppyStatus.RESERVED %}
@@ -103,7 +108,6 @@
             {% for parent in guardian_parents %}
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    {# --- THIS IS THE CHANGE --- #}
                     <a href="{{ url_for('parents.list_parents') }}#parent-{{ parent.id }}">
                         <img src="{{ parent.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ parent.name }}">
                     </a>

@@ -1,30 +1,35 @@
 from flask import render_template
-from itertools import groupby
-from collections import OrderedDict
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
+
 from app.routes.puppies import bp
-from app.models import Puppy, PuppyStatus
+from app.models import Litter, PuppyStatus
+
 
 @bp.route('/puppies')
 def list_puppies():
     """
-    Renders the page with all puppies, grouped by litter.
-    A litter is defined by its birth date and parents.
+    Renders the page with all puppies, grouped by Litter model.
+    Newest litters appear first.
     """
-    # Eagerly load parent data to avoid N+1 queries in the template
-    # Order by birth date descending to show newest litters first.
-    puppies_query = Puppy.query.options(
-        joinedload(Puppy.mom),
-        joinedload(Puppy.dad)
-    ).order_by(Puppy.birth_date.desc(), Puppy.name).all()
 
-    # Group puppies by litter in Python using an OrderedDict to maintain sort order
-    keyfunc = lambda p: (p.birth_date, p.mom, p.dad)
-    litters = OrderedDict((key, list(group)) for key, group in groupby(puppies_query, key=keyfunc))
+    litters = (
+        Litter.query
+        .options(
+            selectinload(Litter.puppies),
+            selectinload(Litter.mother),
+            selectinload(Litter.father)
+        )
+        .order_by(Litter.birth_date.desc())
+        .all()
+    )
+
+    # Sort puppies inside each litter by name for consistent display
+    for litter in litters:
+        litter.puppies.sort(key=lambda p: p.name or "")
 
     return render_template(
         'puppies.html',
         title='Our Puppies',
         litters=litters,
-        PuppyStatus=PuppyStatus  # Pass the enum to the template for styling
+        PuppyStatus=PuppyStatus
     )
