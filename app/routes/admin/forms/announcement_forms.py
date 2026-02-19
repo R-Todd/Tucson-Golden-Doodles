@@ -20,18 +20,8 @@ def get_litters():
 
 
 def get_litter_label(litter):
-    """
-    Creates the display label for each Litter in the dropdown.
-    Example: "Litter from Penelope & Archie (Born: January 2024)"
-    """
-    if not litter:
-        return "Invalid Litter"
-
-    mom_name = litter.mother.name if litter.mother else "Unknown Mom"
-    dad_name = litter.father.name if litter.father else "Unknown Dad"
-    born = litter.birth_date.strftime('%B %Y') if litter.birth_date else "Unknown Date"
-
-    return f"Litter from {mom_name} & {dad_name} (Born: {born})"
+    """Returns the standardized label used everywhere."""
+    return litter.display_label if litter else "Invalid Litter"
 
 
 class AnnouncementBannerForm(FlaskForm):
@@ -54,5 +44,5 @@ class AnnouncementBannerForm(FlaskForm):
         query_factory=get_litters,
         get_label=get_litter_label,
         allow_blank=True,
-        blank_text='-- Select a Litter --'
+        blank_text='-- None --'
     )

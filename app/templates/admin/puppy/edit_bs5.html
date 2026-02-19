@@ -32,11 +32,8 @@
           <div class="text-center mb-2">
             <span class="text-muted small">Litter:</span>
             <div id="preview-litter-label" class="fw-semibold">
-              {% if model.litter and model.litter.mother and model.litter.father %}
-                Litter from {{ model.litter.mother.name }} &amp; {{ model.litter.father.name }}
-                {% if model.litter.birth_date %}
-                  (Born: {{ model.litter.birth_date.strftime('%B %Y') }})
-                {% endif %}
+              {% if model.litter %}
+                {{ model.litter.display_label }}
               {% else %}
                 —
               {% endif %}

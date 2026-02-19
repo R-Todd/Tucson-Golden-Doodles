@@ -30,5 +30,22 @@ class Litter(db.Model):
         cascade="all, delete-orphan"
     )
 
+    @property
+    def display_label(self):
+        """
+        Standardized one-line label for this litter, used across admin + UI.
+
+        Example:
+        "Litter from Penelope & Archie (Born: January 15, 2024)"
+        """
+        mom_name = self.mother.name if getattr(self, "mother", None) else "Unknown Mom"
+        dad_name = self.father.name if getattr(self, "father", None) else "Unknown Dad"
+        # born = self.birth_date.strftime("%B %d, %Y") if self.birth_date else "Unknown Date"
+        return f"Litter from {mom_name} & {dad_name}"
+
+    def __str__(self):
+        # Helps Flask-Admin / WTForms render this object consistently.
+        return self.display_label
+
     def __repr__(self):
         return f"<Litter {self.id} - {self.breed_name or 'Unnamed'}>"

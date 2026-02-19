@@ -11,26 +11,12 @@ from app.utils.image_uploader import upload_image
 
 
 class PuppyForm(FlaskForm):
-    """Defines the fields and validation for the puppy creation and edit forms."""
-
-    name = StringField('Name', validators=[DataRequired()])
-
-    litter_id = SelectField(
-        'Litter',
-        coerce=int,
-        validators=[InputRequired(message="Please select a litter.")]
-    )
-
-    coat = StringField('Coat')
-
-    status = SelectField(
-        'Status',
-        choices=[(s.name, s.value) for s in PuppyStatus],
-        coerce=lambda x: PuppyStatus[x] if isinstance(x, str) else x,
-        validators=[DataRequired()]
-    )
-
-    image_upload = FileField('Upload New Main Image')
+    """Defines the custom form used for creating/editing Puppy records."""
+    name = StringField("Name", validators=[DataRequired()])
+    litter_id = SelectField("Litter", coerce=int, validators=[InputRequired()])
+    status = SelectField("Status", choices=[(s.name, s.value) for s in PuppyStatus], validators=[DataRequired()])
+    coat = StringField("Coat", validators=[])
+    image_upload = FileField("Upload New Main Image")
 
 
 class PuppyAdminView(AdminModelView):
@@ -55,43 +41,47 @@ class PuppyAdminView(AdminModelView):
     def _get_litter_choices(self):
         """Builds dropdown choices for litters."""
         litters = Litter.query.order_by(Litter.birth_date.desc()).all()
-        choices = []
-        for litter in litters:
-            mom_name = litter.mother.name if litter.mother else "Unknown Mom"
-            dad_name = litter.father.name if litter.father else "Unknown Dad"
-            born = litter.birth_date.strftime('%B %Y') if litter.birth_date else "Unknown Date"
-            label = f"Litter from {mom_name} & {dad_name} (Born: {born})"
-            choices.append((litter.id, label))
-        return choices
+        return [(litter.id, litter.display_label) for litter in litters]
 
     def _populate_form_choices(self, form_instance, obj=None):
         """
         Populates the Litter dropdown.
-        IMPORTANT: only pre-select the current litter on initial GET.
-        Do NOT overwrite on POST, or the user's selection will be lost.
+        Ensures the dropdown choices are available in both create and edit views.
         """
         form_instance.litter_id.choices = self._get_litter_choices()
 
-        # Only set default selection when the form is NOT submitted (GET render)
-        if (not form_instance.is_submitted()) and obj and obj.litter_id:
-            form_instance.litter_id.data = obj.litter_id
+        # If editing and current puppy has a litter id not present (shouldn't happen),
+        # keep it safe by injecting that value.
+        if obj and obj.litter_id:
+            existing_ids = {choice_id for (choice_id, _) in form_instance.litter_id.choices}
+            if obj.litter_id not in existing_ids:
+                litter = Litter.query.get(obj.litter_id)
+                if litter:
+                    form_instance.litter_id.choices.insert(0, (litter.id, litter.display_label))
 
-        return form_instance
-
-    def create_form(self):
-        form_instance = super().create_form()
-        return self._populate_form_choices(form_instance)
+    def create_form(self, obj=None):
+        form = super().create_form(obj)
+        self._populate_form_choices(form, obj=None)
+        return form
 
     def edit_form(self, obj=None):
-        form_instance = super().edit_form(obj)
-        return self._populate_form_choices(form_instance, obj)
+        form = super().edit_form(obj)
+        self._populate_form_choices(form, obj=obj)
+        return form
 
     def on_model_change(self, form, model, is_created):
-        """Handles saving relationships and processing image uploads."""
+        """
+        Saves form data into the Puppy model.
+        Handles image upload if a new image is provided.
+        """
+        model.name = form.name.data
         model.litter_id = form.litter_id.data
+        model.status = PuppyStatus[form.status.data]
+        model.coat = form.coat.data
 
-        file = request.files.get('image_upload')
-        if file and file.filename:
-            s3_key = upload_image(file, folder='puppies')
-            if s3_key:
-                model.main_image_s3_key = s3_key
+        if form.image_upload.data:
+            upload = form.image_upload.data
+            model.main_image_s3_key = upload_image(upload, folder="puppies")
+
+        db.session.add(model)
+        db.session.commit()
