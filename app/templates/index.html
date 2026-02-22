@@ -4,15 +4,38 @@
 
 {% if hero %}
 {#--- HERO CONTENT BLOCK ---#}
-<section class="hero-section" style="background-image: url('{{ (hero.image_s3_key_large or hero.image_s3_key) | s3_url }}');">
-    <div class="hero-content">
-        <h1 class="hero-title">{{ hero.main_title }}</h1>
-        <h2 class="hero-subtitle">{{ hero.subtitle }}</h2>
-        <p class="hero-description">{{ hero.description }}</p>
-        <div class="hero-scroll-down">
-            <p>{{ hero.scroll_text_main }}</p>
-            <p>{{ hero.scroll_text_secondary }}</p>
-            <a href="#about" class="scroll-arrow">&darr;</a>
+<section class="hero-split">
+    <div class="hero-split__text">
+        <div class="hero-content">
+            <h1 class="hero-title">{{ hero.main_title }}</h1>
+
+            <div class="hero-kicker">{{ hero.subtitle }}</div>
+
+            <p class="hero-description">{{ hero.description }}</p>
+
+            <ul class="hero-bullets">
+                {% if hero.scroll_text_main %}<li>{{ hero.scroll_text_main }}</li>{% endif %}
+                {% if hero.scroll_text_secondary %}<li>{{ hero.scroll_text_secondary }}</li>{% endif %}
+            </ul>
+
+            <div class="hero-cta-row">
+                <a class="btn hero-cta" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a>
+            </div>
+
+            <a href="#about" class="hero-down" aria-label="Scroll to About section">
+                <span class="hero-down-arrow">&darr;</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-split__image" aria-hidden="true">
+        <div class="hero-image-frame">
+            <img
+                src="{{ (hero.image_s3_key_large or hero.image_s3_key) | s3_url }}"
+                alt="{{ hero.main_title }}"
+                class="hero-image"
+                loading="eager"
+                decoding="async">
         </div>
     </div>
 </section>
@@ -52,7 +75,7 @@
 
 <div class="container" id="about">
     {% if about %}
-    <section class="my-5">
+    <section class="section-pad">
         <div class="row align-items-center">
             <div class="col-md-6">
                 <img src="{{ about.image_s3_key | s3_url }}" class="img-fluid rounded shadow" alt="About us">
@@ -67,8 +90,10 @@
     {% endif %}
 
     {#--- AVAILABLE PUPPIES SECTION ---#}
-    <section id="available-puppies" class="my-5 text-center">
-        <h2 class="display-5 mb-4">Available Puppies</h2>
+    <section id="available-puppies" class="section-pad text-center">
+        <h2 class="section-title">Available Puppies</h2>
+        <p class="section-subtitle">Browse puppies currently marked as available. Click a pup to learn more.</p>
+
         {% if puppies %}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for puppy in puppies %}
@@ -104,33 +129,12 @@
     </section>
     <hr class="my-5">
 
-    {% if guardian_parents %}
-    <section id="guardian-parents" class="my-5 text-center">
-        <h2 class="display-5 mb-4">Our Guardian Parents</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
-            {% for parent in guardian_parents %}
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <a href="{{ url_for('parents.list_parents') }}#parent-{{ parent.id }}">
-                        <img src="{{ parent.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ parent.name }}">
-                    </a>
-                    <div class="card-footer">
-                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ parent.id }}" class="text-decoration-none text-dark">
-                            <h5 class="card-title mb-0">{{ parent.name }}</h5>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-    <hr class="my-5">
-    {% endif %}
-
     {#--- REVIEWS/TESTIMONIALS SECTION ---#}
     {% if reviews %}
-    <section id="testimonials" class="my-5">
-        <h2 class="display-5 text-center mb-4">What Our Families Are Saying</h2>
+    <section id="testimonials" class="section-pad">
+        <h2 class="section-title text-center">What Our Families Are Saying</h2>
+        <p class="section-subtitle text-center">Real stories from families who welcomed one of our pups.</p>
+
         <div class="row">
             {% for review in reviews %}
             <div class="col-md-6 mx-auto mb-4">
@@ -150,19 +154,55 @@
     {% endif %}
 
     {% if gallery_images %}
-    <section id="gallery" class="my-5">
-        <h2 class="display-5 text-center mb-4">Gallery</h2>
+    <section id="gallery" class="section-pad">
+        <h2 class="section-title text-center">Gallery</h2>
+        <p class="section-subtitle text-center">A peek into life with our dogs and puppies.</p>
+
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
             {% for image in gallery_images %}
             <div class="col">
-                <a href="{{ image.image_s3_key | s3_url }}" data-toggle="lightbox" data-gallery="site-gallery" data-title="{{ image.caption or 'Gallery Image' }}">
+                {# Keep href for fallback; JS will intercept and open modal #}
+                <a href="{{ image.image_s3_key | s3_url }}"
+                   data-gallery="site-gallery"
+                   data-title="{{ image.caption or 'Gallery Image' }}">
                     <img src="{{ image.image_s3_key | s3_url }}" class="img-fluid img-thumbnail" alt="{{ image.caption or 'Gallery Image' }}">
                 </a>
             </div>
             {% endfor %}
         </div>
     </section>
+
+    {# --- GALLERY LIGHTBOX MODAL (Bootstrap 5) --- #}
+    <div class="modal fade" id="galleryLightbox" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-dark">
+          <div class="modal-header border-0">
+            <h5 class="modal-title text-white" id="galleryLightboxTitle">Gallery</h5>
+
+            {# X close button #}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-0 position-relative d-flex align-items-center justify-content-center">
+            {# Prev / Next controls #}
+            <button type="button" class="gallery-nav-btn gallery-prev" aria-label="Previous image">
+              &#10094;
+            </button>
+
+            <img id="galleryLightboxImg" class="gallery-lightbox-img" src="" alt="">
+
+            <button type="button" class="gallery-nav-btn gallery-next" aria-label="Next image">
+              &#10095;
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{{ url_for('static', filename='js/gallery_lightbox.js') }}"></script>
 {% endblock %}

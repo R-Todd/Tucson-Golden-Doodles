@@ -19,11 +19,67 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: #f8f9fa; /* Lighter background */
-    color: #554b4bec;
+    background: #ffffff; /* Clean white background */
+    color: #2b2422;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #4fa1ff; /* Darker text for headings */
+    color: #2b2422; /* Highland-style ink */
+}
+
+/* ===== Global design tokens + rhythm (Highland-inspired) ===== */
+:root {
+    --cream: #fbf5ef;
+    --ink: #2b2422;
+    --muted: rgba(43, 36, 34, 0.75);
+    --line: rgba(0, 0, 0, 0.12);
+    --card: #ffffff;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    --radius: 16px;
+}
+
+main {
+    background: #ffffff;
+}
+
+/* Section spacing helper (apply per-section in templates) */
+.section-pad {
+    padding-top: 64px;
+    padding-bottom: 64px;
+}
+
+@media (max-width: 768px) {
+    .section-pad {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+}
+
+/* Consistent section headings */
+.section-title {
+    font-size: clamp(2rem, 3vw, 3rem);
+    margin-bottom: 18px;
+    color: var(--ink);
+}
+
+.section-subtitle {
+    color: var(--muted);
+    max-width: 52ch;
+    margin: 0 auto 28px;
+}
+
+/* Button style used in hero */
+.btn.hero-cta {
+    border-radius: 999px;
+    padding: 12px 22px;
+    background: #3b2f2f;
+    color: #ffffff;
+    border: 1px solid #3b2f2f;
+}
+
+.btn.hero-cta:hover {
+    background: #2f2525;
+    border-color: #2f2525;
+    color: #ffffff;
 }

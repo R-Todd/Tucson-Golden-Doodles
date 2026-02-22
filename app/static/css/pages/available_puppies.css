@@ -9,3 +9,35 @@
   background: #f4f4f4;
   display: block;
 }
+
+/* ===== Home page Available Puppies cards  ===== */
+
+#available-puppies .card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: var(--shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+#available-puppies .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.08);
+}
+
+#available-puppies .card-img-top {
+  width: 100%;
+  aspect-ratio: 4 / 3; /* iPhone horizontal-friendly */
+  object-fit: cover;
+  display: block;
+}
+
+#available-puppies .card-title {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+#available-puppies .card-text {
+  color: var(--muted);
+}
