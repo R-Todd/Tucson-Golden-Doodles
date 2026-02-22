@@ -22,6 +22,9 @@ class Litter(db.Model):
     description = db.Column(db.Text, nullable=True)
     expected_weight = db.Column(db.String(120), nullable=True)
 
+    # Litter cover image (used on Current Litters page)
+    main_image_s3_key = db.Column(db.String(255))
+
     # Relationship to puppies
     puppies = db.relationship(
         "Puppy",

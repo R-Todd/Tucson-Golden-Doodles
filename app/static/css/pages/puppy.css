@@ -24,6 +24,40 @@
     border-radius: 12px;
 }
 
+
+/* ============================
+   LITTER DETAIL (PORTRAIT, NO CROP)
+============================ */
+
+.parent-portrait {
+    width: 160px;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
+    border-radius: 14px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.puppy-portrait {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .parent-portrait {
+        width: 120px;
+    }
+}
+
 /* ============================
    PUPPY CARDS
 ============================ */
@@ -40,8 +74,13 @@
 }
 
 .puppy-card img {
-    height: 220px;
-    object-fit: cover;
+    width: 100%;
+    aspect-ratio: 3 / 4;     /* portrait */
+    height: auto;
+    object-fit: contain;     /* never crop */
+    object-position: center;
+    background: #f4f4f4;     /* clean letterbox if needed */
+    display: block;
 }
 
 .puppy-card .card-body {
@@ -54,8 +93,19 @@
 
 .parent-image {
     width: 160px;
-    height: 160px;
-    object-fit: cover;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
+    border-radius: 14px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .parent-image { width: 120px; }
 }
 
 /* ============================
@@ -63,8 +113,7 @@
 ============================ */
 
 @media (max-width: 768px) {
-    .parent-image {
-        width: 120px;
-        height: 120px;
-    }
+  .parent-portrait {
+    width: 110px;
+  }
 }

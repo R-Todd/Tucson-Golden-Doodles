@@ -78,7 +78,7 @@
                         {% if litter.mother %}
                         <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">
                             <img src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
-                                 class="img-fluid rounded-circle parent-image"
+                                 class="img-fluid parent-image"
                                  alt="Photo of {{ litter.mother.name }}">
                             <h4 class="h5 mt-2">Mother: {{ litter.mother.name }}</h4>
                         </a>

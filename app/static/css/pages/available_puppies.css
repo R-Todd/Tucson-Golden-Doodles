@@ -1,0 +1,11 @@
+/* app/static/css/pages/available_puppies.css */
+
+.available-puppy-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;     /* portrait */
+  height: auto;
+  object-fit: contain;     /* never crop */
+  object-position: center;
+  background: #f4f4f4;
+  display: block;
+}

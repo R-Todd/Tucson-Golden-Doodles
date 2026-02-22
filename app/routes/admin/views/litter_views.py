@@ -1,11 +1,14 @@
 # app/routes/admin/views/litter_views.py
 
+from flask import request
 from flask_wtf import FlaskForm
 from wtforms import DateField, SelectField, StringField, TextAreaField
+from wtforms.fields import FileField
 from wtforms.validators import DataRequired, Optional, InputRequired
 
 from .base import AdminModelView
 from app.models import Parent, ParentRole
+from app.utils.image_uploader import upload_image
 
 
 class LitterForm(FlaskForm):
@@ -31,6 +34,9 @@ class LitterForm(FlaskForm):
 
     description = TextAreaField("Description", validators=[Optional()])
 
+    # NEW: Litter cover image upload
+    image_upload = FileField("Upload Main Litter Image")
+
 
 class LitterAdminView(AdminModelView):
     """Admin interface for managing Litters (shared litter info + parents)."""
@@ -39,7 +45,6 @@ class LitterAdminView(AdminModelView):
     create_template = "admin/litter/create_bs5.html"
     edit_template = "admin/litter/edit_bs5.html"
 
-    # NOTE: "mother" and "father" come from Parent backrefs on Litter (as used elsewhere in your templates)
     column_list = ("birth_date", "mother", "father", "breed_name", "expected_weight")
 
     form = LitterForm
@@ -51,19 +56,14 @@ class LitterAdminView(AdminModelView):
         "breed_name": {"id": "breed_name"},
         "expected_weight": {"id": "expected_weight"},
         "description": {"id": "description", "rows": 8},
+        "image_upload": {"id": "image_upload"},  # NEW
     }
 
     def _get_parent_choices(self, role: ParentRole):
-        """Builds dropdown choices for parents filtered by role."""
         parents = Parent.query.filter_by(role=role).order_by(Parent.name.asc()).all()
         return [(p.id, p.name) for p in parents]
 
     def _populate_form_choices(self, form_instance, obj=None):
-        """
-        Populate mom/dad dropdowns.
-        Only pre-select the current values on GET (not on POST),
-        so edits don't get overwritten.
-        """
         form_instance.mom_id.choices = self._get_parent_choices(ParentRole.MOM)
         form_instance.dad_id.choices = self._get_parent_choices(ParentRole.DAD)
 
@@ -84,10 +84,15 @@ class LitterAdminView(AdminModelView):
         return self._populate_form_choices(form_instance, obj)
 
     def on_model_change(self, form, model, is_created):
-        """Persist relationships and shared litter fields."""
+        """Persist relationships and shared litter fields + handle cover image upload."""
         model.mom_id = form.mom_id.data
         model.dad_id = form.dad_id.data
         model.birth_date = form.birth_date.data
         model.breed_name = (form.breed_name.data or None)
         model.expected_weight = (form.expected_weight.data or None)
         model.description = (form.description.data or None)
+
+        # NEW: Litter cover image upload (similar to Puppy)
+        upload = request.files.get("image_upload")
+        if upload and upload.filename:
+            model.main_image_s3_key = upload_image(upload, folder="litters")

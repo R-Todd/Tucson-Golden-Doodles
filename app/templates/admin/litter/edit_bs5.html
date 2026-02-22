@@ -1,56 +1,58 @@
-{# app/templates/admin/litter/edit_bs5.html #}
 {% extends 'admin/model/edit.html' %}
+
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/previews/litter_preview.css') }}">
+{% endblock %}
 
 {% block body %}
 <div class="container-fluid">
-
-  <div class="row">
-    <div class="col-lg-8">
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
       {{ super() }}
     </div>
 
-    <div class="col-lg-4">
-      <div class="card shadow-sm mt-3 mt-lg-0">
-        <div class="card-header">
-          <h5 class="mb-0">Current Litter</h5>
-        </div>
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Live Preview</h2>
+
+      {% set cover_img =
+        (model.main_image_s3_key | s3_url)
+        if model and model.main_image_s3_key
+        else url_for('static', filename='img/placeholder.jpg')
+      %}
+
+      <div class="card shadow-sm litter-preview-card">
+        <img id="preview-image"
+             class="card-img-top litter-preview-img"
+             src="{{ cover_img }}"
+             alt="Litter preview">
+
         <div class="card-body">
-          <div class="mb-2">
-            <div class="text-muted small">Parents</div>
-            <div class="fw-semibold">
-              {% if model.mother and model.father %}
-                {{ model.mother.name }} &amp; {{ model.father.name }}
-              {% else %}
-                —
-              {% endif %}
-            </div>
+          <h3 class="h5 mb-1" id="preview-breed">{{ model.breed_name or "Litter" }}</h3>
+          <div class="text-muted litter-preview-subtitle mb-3" id="preview-subtitle">Parents: —</div>
+
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-light text-dark border">
+              Expected Weight: <span id="preview-weight">{{ model.expected_weight or "—" }}</span>
+            </span>
           </div>
 
-          <div class="mb-2">
-            <div class="text-muted small">Born On</div>
-            <div class="fw-semibold">
-              {{ model.birth_date.strftime('%B %d, %Y') if model.birth_date else "—" }}
-            </div>
-          </div>
+          <p class="text-muted litter-preview-desc" id="preview-desc">{{ model.description or "Description will appear here." }}</p>
+        </div>
 
-          <div class="mb-2">
-            <div class="text-muted small">Breed</div>
-            <div class="fw-semibold">{{ model.breed_name or "—" }}</div>
-          </div>
-
-          <div class="mb-2">
-            <div class="text-muted small">Expected Weight</div>
-            <div class="fw-semibold">{{ model.expected_weight or "—" }}</div>
-          </div>
-
-          <div>
-            <div class="text-muted small">Description</div>
-            <div>{{ model.description or "—" }}</div>
+        <div class="card-footer bg-white border-0 pt-0 pb-3">
+          <div class="d-grid">
+            <button class="btn btn-outline-primary" type="button" disabled>See full litter</button>
           </div>
         </div>
       </div>
+
     </div>
   </div>
-
 </div>
+{% endblock %}
+
+{% block tail_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/previews/litter_preview.js') }}"></script>
 {% endblock %}

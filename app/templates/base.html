@@ -22,7 +22,17 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('parents.list_parents') }}">Our Parents</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('puppies.list_puppies') }}">Our Puppies</a></li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="our-puppies-dropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Our Puppies
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="our-puppies-dropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('puppies.list_litters') }}">Current Litters</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a></li>
+                        </ul>
+                    </li>
 
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">

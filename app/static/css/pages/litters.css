@@ -1,0 +1,20 @@
+/* app/static/css/pages/litters.css */
+
+/* Litter tile cover image should be uniform and never crop */
+.litter-tile-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;     /* portrait */
+  height: auto;
+  object-fit: contain;     /* never crop */
+  object-position: center;
+  background: #f4f4f4;     /* letterbox background */
+  display: block;
+}
+
+.litter-tile-title {
+  margin-bottom: 0.25rem;
+}
+
+.litter-tile-subtitle {
+  margin-bottom: 0.5rem;
+}
