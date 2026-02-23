@@ -2,7 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // --- PART 1: Populate Dropdown Data Attributes ---
-    // This logic was formerly in announcement_edit_preview.js
 
     const select = document.getElementById('featured_puppy');
     const litterDataElement = document.getElementById('litter-data-for-js');
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- PART 2: Handle Live Preview Updates ---
-    // This is the core logic from the original announcement_preview.js
 
     const syncInputToPreview = (inputId, previewId) => {
         const inputElement = document.getElementById(inputId);
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const syncSubtextPreview = () => {
         const subtextInput = document.getElementById('sub_text');
-        const litterSelect = document.getElementById('featured_puppy'); // Already defined as 'select'
+        const litterSelect = document.getElementById('featured_puppy');
         const previewElement = document.getElementById('preview-sub-text');
 
         if (!subtextInput || !litterSelect || !previewElement) return;
@@ -53,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const momName = selectedOption.getAttribute('data-mom-name');
                 const dadName = selectedOption.getAttribute('data-dad-name');
                 const birthDate = selectedOption.getAttribute('data-birth-date');
-                
+
                 if (momName && dadName && birthDate) {
                     subtext = subtext.replace('{mom_name}', momName)
                                      .replace('{dad_name}', dadName)
@@ -62,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             previewElement.textContent = subtext;
         };
-        
-        updateSubtext(); // Initial call
+
+        updateSubtext();
         subtextInput.addEventListener('keyup', updateSubtext);
         litterSelect.addEventListener('change', updateSubtext);
     };
@@ -73,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     syncInputToPreview('button_text', 'preview-button-text');
     syncSubtextPreview();
 
-    // Finally, trigger the change event to ensure the preview is populated on page load
+    // Trigger change to populate preview on page load
     if (select) {
         select.dispatchEvent(new Event('change'));
     }

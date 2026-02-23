@@ -12,8 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (inputElement && previewElement) {
             const update = () => previewElement.textContent = inputElement.value;
-            update(); // Set initial value on page load
+            update();
             inputElement.addEventListener('keyup', update);
+            inputElement.addEventListener('change', update);
         }
     };
 
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     };
-    
+
     /**
      * Synchronizes a dropdown select's text with a preview element.
      * @param {string} selectId - The ID of the select dropdown element.
@@ -49,18 +50,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectElement && previewElement) {
             const update = () => {
                 const selectedOption = selectElement.options[selectElement.selectedIndex];
-                // Use the option's display text for the preview.
                 previewElement.textContent = selectedOption ? selectedOption.text : '';
             };
-            update(); // Set initial value
+            update();
             selectElement.addEventListener('change', update);
         }
     };
 
-    // Initialize all live preview listeners.
+    // Live preview listeners
     syncInputToPreview('name', 'preview-puppy-name');
+    syncInputToPreview('coat', 'preview-puppy-coat');
+
     handleImagePreview('image_upload', 'preview-puppy-image');
+
     syncSelectToPreview('status', 'preview-puppy-status');
-    syncSelectToPreview('mom_id', 'preview-mom-name');
-    syncSelectToPreview('dad_id', 'preview-dad-name');
+    syncSelectToPreview('litter_id', 'preview-litter-label');
 });

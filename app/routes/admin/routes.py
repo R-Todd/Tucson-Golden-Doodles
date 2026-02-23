@@ -6,16 +6,17 @@ from flask_admin.menu import MenuLink
 
 from app import db
 from app.models import (
-    User, Parent, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+    User, Parent, Litter, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
 from . import bp, admin
 from .views import (
-    ParentAdminView, PuppyAdminView, HeroSectionAdminView,
+    ParentAdminView, LitterAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
 
 # Register admin views for different models
 admin.add_view(ParentAdminView(Parent, db.session))
+admin.add_view(LitterAdminView(Litter, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 
 # Register admin views for site content using Bootstrap 5 templates

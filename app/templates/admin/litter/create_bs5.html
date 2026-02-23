@@ -1,0 +1,52 @@
+{% extends 'admin/model/create.html' %}
+
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/previews/litter_preview.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      {{ super() }}
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Live Preview</h2>
+
+      <div class="card shadow-sm litter-preview-card">
+        <img id="preview-image"
+             class="card-img-top litter-preview-img"
+             src="{{ url_for('static', filename='img/placeholder.jpg') }}"
+             alt="Litter preview">
+
+        <div class="card-body">
+          <h3 class="h5 mb-1" id="preview-breed">Litter</h3>
+          <div class="text-muted litter-preview-subtitle mb-3" id="preview-subtitle">Parents: —</div>
+
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-light text-dark border">
+              Expected Weight: <span id="preview-weight">—</span>
+            </span>
+          </div>
+
+          <p class="text-muted litter-preview-desc" id="preview-desc">Description will appear here.</p>
+        </div>
+
+        <div class="card-footer bg-white border-0 pt-0 pb-3">
+          <div class="d-grid">
+            <button class="btn btn-outline-primary" type="button" disabled>See full litter</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block tail_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/previews/litter_preview.js') }}"></script>
+{% endblock %}

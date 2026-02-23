@@ -1,0 +1,79 @@
+{# Shared card for a single AVAILABLE puppy.
+   Expects: puppy (Puppy), PuppyStatus (enum) available in context.
+
+   Optional:
+   - is_home: set to true by homepage template to enable homepage-only layout tweaks
+#}
+{% set litter = puppy.litter %}
+<div class="col-12 col-md-6 col-lg-4">
+  <div class="card h-100 shadow-sm available-puppy-card">
+
+    <img
+      src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+      class="card-img-top available-puppy-img"
+      alt="{{ puppy.name }}">
+
+    <div class="card-body">
+      <div class="d-flex align-items-start justify-content-between gap-3">
+        <div>
+          <h2 class="h5 mb-1">{{ puppy.name }}</h2>
+          <div class="text-muted small">
+            Breed: <span class="fw-semibold">{{ litter.breed_name if litter else "—" }}</span>
+          </div>
+          <div class="text-muted small">
+            Born on: <span class="fw-semibold">{{ litter.birth_date.strftime('%B %d, %Y') if litter and litter.birth_date else "—" }}</span>
+          </div>
+
+          {# Home page ONLY: badge under "Born on" so it doesn't affect header layout #}
+          {% if is_home %}
+            <div class="mt-2 text-center">
+              <span class="badge bg-success">Available</span>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Non-home pages: keep badge in header row (original behavior) #}
+        {% if not is_home %}
+          <div>
+            <span class="badge bg-success">Available</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <hr class="my-3">
+
+      <div class="small">
+        <div class="mb-1">
+          Mother:
+          {% if litter and litter.mother %}
+            <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </div>
+        <div class="mb-2">
+          Father:
+          {% if litter and litter.father %}
+            <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </div>
+
+        <div class="text-muted">
+          Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer bg-white border-0 pt-0 pb-3">
+      {% if litter %}
+        <a class="btn btn-outline-primary w-100" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+          See full litter
+        </a>
+      {% else %}
+        <button class="btn btn-outline-secondary w-100" disabled>See full litter</button>
+      {% endif %}
+    </div>
+  </div>
+</div>

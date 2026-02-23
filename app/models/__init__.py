@@ -22,3 +22,5 @@ from .user_models import User
 from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User
+from .litter_models import Litter
+

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Available Puppies{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <h1 class="display-4">Available Puppies</h1>
+    <p class="lead">Browse all puppies currently marked as available.</p>
+  </div>
+
+  {% if puppies %}
+    <div class="row g-4">
+
+      {% for puppy in puppies %}
+        {% include "_available_puppy_card.html" %}
+      {% endfor %}
+
+    </div>
+  {% else %}
+    <div class="text-center p-5">
+      <p class="lead mb-0">No puppies are currently listed as available.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
