@@ -1,34 +1,119 @@
-/* app/static/css/pages/puppies.css */
+/* ============================
+   LITTER SECTIONS
+============================ */
 
-.litter-card .card-header {
-    border-bottom: 2px solid #aecdec;
+.litter-card {
+    border-radius: 14px;
 }
 
-.litter-parents-section .parent-profile a {
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.3s ease;
+.litter-card .card-header {
+    background: #fafafa;
+    padding: 1.5rem 2rem;
+}
+
+.litter-card .card-body {
+    padding: 2rem;
+}
+
+/* ============================
+   LITTER INFO BLOCK
+============================ */
+
+.litter-card .bg-light {
+    background: #f7f7f7 !important;
+    border-radius: 12px;
+}
+
+
+/* ============================
+   LITTER DETAIL (PORTRAIT, NO CROP)
+============================ */
+
+.parent-portrait {
+    width: 160px;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
+    border-radius: 14px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.puppy-portrait {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
     display: block;
 }
 
-.litter-parents-section .parent-profile a:hover {
-    transform: scale(1.05);
+@media (max-width: 768px) {
+    .parent-portrait {
+        width: 120px;
+    }
 }
 
-/* Adjust the width and height here for a smaller profile picture */
-.litter-parents-section .parent-image {
-    width: 120px;  /* Changed from 150px */
-    height: 120px; /* Changed from 150px */
-    object-fit: cover;
-    border: 4px solid #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+/* ============================
+   PUPPY CARDS
+============================ */
 
 .puppy-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .puppy-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.08);
+}
+
+.puppy-card img {
+    width: 100%;
+    aspect-ratio: 3 / 4;     /* portrait */
+    height: auto;
+    object-fit: contain;     /* never crop */
+    object-position: center;
+    background: #f4f4f4;     /* clean letterbox if needed */
+    display: block;
+}
+
+.puppy-card .card-body {
+    padding: 1.25rem;
+}
+
+/* ============================
+   PARENT IMAGES
+============================ */
+
+.parent-image {
+    width: 160px;
+    aspect-ratio: 3 / 4;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    background: #f4f4f4;
+    border-radius: 14px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .parent-image { width: 120px; }
+}
+
+/* ============================
+   MOBILE
+============================ */
+
+@media (max-width: 768px) {
+  .parent-portrait {
+    width: 110px;
+  }
 }

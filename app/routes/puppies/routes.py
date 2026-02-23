@@ -1,30 +1,114 @@
-from flask import render_template
-from itertools import groupby
-from collections import OrderedDict
-from sqlalchemy.orm import joinedload
+from flask import abort, render_template
+from sqlalchemy.orm import selectinload
+
 from app.routes.puppies import bp
-from app.models import Puppy, PuppyStatus
+from app.models import Litter, Puppy, PuppyStatus
+
 
 @bp.route('/puppies')
 def list_puppies():
     """
-    Renders the page with all puppies, grouped by litter.
-    A litter is defined by its birth date and parents.
+    Renders the page with all puppies, grouped by Litter model.
+    Newest litters appear first.
     """
-    # Eagerly load parent data to avoid N+1 queries in the template
-    # Order by birth date descending to show newest litters first.
-    puppies_query = Puppy.query.options(
-        joinedload(Puppy.mom),
-        joinedload(Puppy.dad)
-    ).order_by(Puppy.birth_date.desc(), Puppy.name).all()
 
-    # Group puppies by litter in Python using an OrderedDict to maintain sort order
-    keyfunc = lambda p: (p.birth_date, p.mom, p.dad)
-    litters = OrderedDict((key, list(group)) for key, group in groupby(puppies_query, key=keyfunc))
+    litters = (
+        Litter.query
+        .options(
+            selectinload(Litter.puppies),
+            selectinload(Litter.mother),
+            selectinload(Litter.father)
+        )
+        .order_by(Litter.birth_date.desc())
+        .all()
+    )
+
+    # Sort puppies inside each litter by name for consistent display
+    for litter in litters:
+        litter.puppies.sort(key=lambda p: p.name or "")
 
     return render_template(
         'puppies.html',
         title='Our Puppies',
         litters=litters,
-        PuppyStatus=PuppyStatus  # Pass the enum to the template for styling
+        PuppyStatus=PuppyStatus
+    )
+
+
+@bp.route('/litters')
+def list_litters():
+    """Renders a tile/grid view of litters (newest first)."""
+
+    litters = (
+        Litter.query
+        .options(
+            selectinload(Litter.puppies),
+            selectinload(Litter.mother),
+            selectinload(Litter.father)
+        )
+        .order_by(Litter.birth_date.desc())
+        .all()
+    )
+
+    # Keep puppy ordering deterministic for templates that pick a cover image
+    for litter in litters:
+        litter.puppies.sort(key=lambda p: p.name or "")
+
+    return render_template(
+        'litters.html',
+        title='Current Litters',
+        litters=litters,
+        PuppyStatus=PuppyStatus
+    )
+
+
+@bp.route('/litters/<int:litter_id>')
+def litter_detail(litter_id: int):
+    """Renders a single litter detail view with parents + puppy grid."""
+
+    litter = (
+        Litter.query
+        .options(
+            selectinload(Litter.puppies),
+            selectinload(Litter.mother),
+            selectinload(Litter.father)
+        )
+        .filter(Litter.id == litter_id)
+        .first()
+    )
+
+    if litter is None:
+        abort(404)
+
+    litter.puppies.sort(key=lambda p: p.name or "")
+
+    return render_template(
+        'litter_detail.html',
+        title=litter.display_label,
+        litter=litter,
+        PuppyStatus=PuppyStatus
+    )
+
+
+@bp.route('/available-puppies')
+def available_puppies():
+    """Renders a global list of AVAILABLE puppies, ordered by litter birth date."""
+
+    puppies = (
+        Puppy.query
+        .options(
+            selectinload(Puppy.litter).selectinload(Litter.mother),
+            selectinload(Puppy.litter).selectinload(Litter.father)
+        )
+        .join(Puppy.litter)
+        .filter(Puppy.status == PuppyStatus.AVAILABLE)
+        .order_by(Litter.birth_date.desc(), Puppy.name.asc())
+        .all()
+    )
+
+    return render_template(
+        'available_puppies.html',
+        title='Available Puppies',
+        puppies=puppies,
+        PuppyStatus=PuppyStatus
     )

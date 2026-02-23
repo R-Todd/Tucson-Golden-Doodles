@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}{{ litter.display_label }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <h1 class="display-5">{{ litter.display_label }}</h1>
+    <p class="lead mb-0">Meet the parents and puppies in this litter.</p>
+  </div>
+
+  <!-- =========================
+       LITTER INFO
+  ========================== -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="p-3 rounded bg-light border">
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <div class="text-muted small">Born on</div>
+            <div class="fw-semibold">
+              {{ litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else "—" }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="text-muted small">Breed</div>
+            <div class="fw-semibold">
+              {{ litter.breed_name or "—" }}
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="text-muted small">Expected Weight</div>
+            <div class="fw-semibold">
+              {{ litter.expected_weight or "—" }}
+            </div>
+          </div>
+
+          {% if litter.description %}
+          <div class="col-12">
+            <div class="text-muted small">About This Litter</div>
+            <div>
+              {{ litter.description }}
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       PARENTS (PORTRAIT 3:4, NO CROP)
+  ========================== -->
+  <div class="row mb-4 align-items-start gy-4">
+    <div class="col-6 col-md-6 text-center">
+      {% if litter.mother %}
+        <a class="text-decoration-none" href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">
+          <img
+            src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+            class="img-fluid parent-portrait"
+            alt="Photo of {{ litter.mother.name }}">
+          <div class="mt-2">
+            <div class="text-muted small">Mother</div>
+            <div class="h5 mb-0">{{ litter.mother.name }}</div>
+          </div>
+        </a>
+      {% else %}
+        <div class="text-muted">Mother: —</div>
+      {% endif %}
+    </div>
+
+    <div class="col-6 col-md-6 text-center">
+      {% if litter.father %}
+        <a class="text-decoration-none" href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">
+          <img
+            src="{{ litter.father.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+            class="img-fluid parent-portrait"
+            alt="Photo of {{ litter.father.name }}">
+          <div class="mt-2">
+            <div class="text-muted small">Father</div>
+            <div class="h5 mb-0">{{ litter.father.name }}</div>
+          </div>
+        </a>
+      {% else %}
+        <div class="text-muted">Father: —</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- =========================
+       PUPPIES GRID
+  ========================== -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+    <h2 class="h4 mb-0">Puppies in this litter</h2>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('puppies.list_litters') }}">Back to Current Litters</a>
+  </div>
+
+  {% if litter.puppies %}
+    <div class="row justify-content-center">
+      {% for puppy in litter.puppies %}
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 puppy-card">
+
+            <img
+              src="{{ puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+              class="card-img-top puppy-portrait"
+              alt="{{ puppy.name }}">
+
+            <div class="card-body text-center">
+              <h3 class="h5 mb-1">{{ puppy.name }}</h3>
+
+              <div class="text-muted small mb-2">
+                Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>
+              </div>
+
+              {% if puppy.status == PuppyStatus.AVAILABLE %}
+                <span class="badge bg-success">{{ puppy.status.value }}</span>
+              {% elif puppy.status == PuppyStatus.RESERVED %}
+                <span class="badge bg-warning text-dark">{{ puppy.status.value }}</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ puppy.status.value }}</span>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center p-4">
+      <p class="text-muted mb-0">No puppies are currently listed for this litter.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

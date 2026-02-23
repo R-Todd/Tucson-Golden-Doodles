@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Current Litters{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <h1 class="display-4">Current Litters</h1>
+    <p class="lead">Explore our current litters and meet the parents.</p>
+  </div>
+
+  {% if litters %}
+    <div class="row g-4">
+
+      {% for litter in litters %}
+        {# Cover image priority:
+           1) Litter main image (admin-selected)
+           2) First puppy image
+           3) Placeholder
+        #}
+        {% set cover_img =
+          (litter.main_image_s3_key | s3_url)
+          if litter.main_image_s3_key
+          else
+          (
+            (litter.puppies[0].main_image_s3_key | s3_url)
+            if litter.puppies and litter.puppies[0].main_image_s3_key
+            else url_for('static', filename='img/placeholder.jpg')
+          )
+        %}
+
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm litter-tile">
+
+            <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+              <img
+                src="{{ cover_img }}"
+                class="card-img-top litter-tile-img"
+                alt="{{ litter.display_label }}">
+            </a>
+
+            <div class="card-body">
+              {# Title = Breed #}
+              <h2 class="h5 mb-1 litter-tile-title">
+                <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                  {{ litter.breed_name or "Litter" }}
+                </a>
+              </h2>
+
+              {# Subtitle = Parents (linked) + born date #}
+              <div class="text-muted small mb-3">
+                {% if litter.mother %}
+                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+                {% else %}
+                  <span>Mother: —</span>
+                {% endif %}
+                <span> &amp; </span>
+                {% if litter.father %}
+                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+                {% else %}
+                  <span>Father: —</span>
+                {% endif %}
+
+                {% if litter.birth_date %}
+                  <span class="ms-2">— Born on {{ litter.birth_date.strftime('%B %d, %Y') }}</span>
+                {% endif %}
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="badge bg-light text-dark border">
+                  Expected Weight: {{ litter.expected_weight or "—" }}
+                </span>
+              </div>
+
+              {% if litter.description %}
+                <p class="text-muted mb-0 litter-tile-desc">{{ litter.description }}</p>
+              {% else %}
+                <p class="text-muted mb-0 litter-tile-desc">Click to see puppies and full litter details.</p>
+              {% endif %}
+            </div>
+
+            {# Footer: See full litter button + parent links (again) #}
+            <div class="card-footer bg-white border-0 pt-0 pb-3">
+              <div class="d-grid mb-2">
+                <a class="btn btn-outline-primary" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                  See full litter
+                </a>
+              </div>
+
+              <div class="text-muted small">
+                {% if litter.mother %}
+                  Mother: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+                {% else %}
+                  Mother: —
+                {% endif %}
+
+                <span class="mx-2">|</span>
+
+                {% if litter.father %}
+                  Father: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+                {% else %}
+                  Father: —
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  {% else %}
+    <div class="text-center p-5">
+      <p class="lead mb-0">No litters are currently listed.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
