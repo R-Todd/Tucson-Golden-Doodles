@@ -91,55 +91,15 @@
 <div class="container">
 
     {#--- AVAILABLE PUPPIES SECTION ---#}
-    <section id="available-puppies" class="section-pad text-center">
+    <section id="available-puppies" class="section-pad text-center available-puppies--home">
         <h2 class="section-title">Available Puppies</h2>
         <p class="section-subtitle">Browse puppies currently marked as available. Click a pup to learn more.</p>
 
         {% if puppies %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="row g-4">
             {% for puppy in puppies %}
-            <div class="col">
-                <div class="card h-100 shadow-sm hp-puppy-card">
-
-                    <div class="hp-puppy-media">
-                        <img
-                            src="{{ puppy.main_image_s3_key | s3_url }}"
-                            class="hp-puppy-img"
-                            alt="Photo of {{ puppy.name }}">
-                    </div>
-
-                    <div class="card-body hp-puppy-body">
-                        <h5 class="card-title hp-puppy-name">{{ puppy.name }}</h5>
-
-                        <div class="hp-puppy-meta">
-                            {% if puppy.litter and puppy.litter.mother and puppy.litter.father %}
-                            <div class="hp-puppy-line">
-                                <span class="hp-puppy-label">Parents:</span>
-                                <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.mother.id }}">{{ puppy.litter.mother.name }}</a>
-                                &amp;
-                                <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.father.id }}">{{ puppy.litter.father.name }}</a>
-                            </div>
-                            {% endif %}
-
-                            {% if puppy.litter and puppy.litter.birth_date %}
-                            <div class="hp-puppy-line">
-                                <span class="hp-puppy-label">Born:</span>
-                                {{ puppy.litter.birth_date.strftime('%B %d, %Y') }}
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    {% if puppy.litter %}
-                    <div class="card-footer bg-white border-0 hp-puppy-footer">
-                        <a class="btn btn-outline-primary hp-puppy-btn"
-                           href="{{ url_for('puppies.litter_detail', litter_id=puppy.litter.id) }}">
-                            See full litter
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+                {% set is_home = true %}
+                {% include "_available_puppy_card.html" %}
             {% endfor %}
         </div>
 

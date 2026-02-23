@@ -1,162 +1,132 @@
 /* ======================================================
-   HOMEPAGE — Available Puppies (Premium Compact Style)
+   HOMEPAGE — Available Puppies (uses same cards as /available-puppies)
+   Homepage-only compact overrides are scoped to:
+   #available-puppies.available-puppies--home
    ====================================================== */
 
-#available-puppies {
-  max-width: 1100px;              /* narrower than full container */
+/* Give the homepage section a more curated width */
+#available-puppies.available-puppies--home {
+  max-width: 1100px;
   margin: 0 auto;
 }
 
-#available-puppies .section-title {
+#available-puppies.available-puppies--home .section-title {
   margin-bottom: 0.5rem;
 }
 
-#available-puppies .section-subtitle {
+#available-puppies.available-puppies--home .section-subtitle {
   margin-bottom: 2.2rem;
   font-size: 1.05rem;
   color: var(--muted);
 }
 
-/* --- Card (general hover polish) --- */
+/* ----------------------------
+   Compact card polish (HOME)
+   ---------------------------- */
 
-#available-puppies .card {
+/* Make cards a touch tighter and cleaner on the homepage */
+#available-puppies.available-puppies--home .available-puppy-card {
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 6px 22px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.05);
   transition: transform 160ms ease, box-shadow 160ms ease;
-  height: 100%;
 }
 
-#available-puppies .card:hover {
+#available-puppies.available-puppies--home .available-puppy-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* --- Legacy homepage image rule (kept, but homepage now uses .hp-puppy-img) --- */
-#available-puppies .card-img-top {
+/* Smaller image, never cropped */
+#available-puppies.available-puppies--home .available-puppy-img {
   width: 100%;
-  max-height: 190px;              /* smaller than before */
-  object-fit: contain;            /* NEVER crop */
+  max-height: 240px;        /* shrink overall height */
+  height: auto;
+  object-fit: contain;      /* NEVER crop */
   object-position: center;
-  background: #f4f4f4;
-  padding: 16px 16px 0 16px;      /* subtle framing */
+  background: #f4f4f4;      /* tasteful letterbox */
+  display: block;
+
+  /* Optional framing so “contain” looks intentional */
+  padding: 12px 12px 0 12px;
 }
 
-/* --- Legacy spacing (kept) --- */
-#available-puppies .card-body {
-  padding: 1.1rem 1.25rem 0.75rem 1.25rem;
+/* Tighten content spacing */
+#available-puppies.available-puppies--home .available-puppy-card .card-body {
+  padding: 1rem 1.1rem 0.7rem 1.1rem;
 }
 
-#available-puppies .card-title {
-  font-size: 1.1rem;
-  margin-bottom: 0.65rem;
-  font-weight: 600;
-  color: var(--ink);
+/* Name a bit smaller on homepage */
+#available-puppies.available-puppies--home .available-puppy-card h2,
+#available-puppies.available-puppies--home .available-puppy-card .h5 {
+  font-size: 1.15rem;
+  margin-bottom: 0.35rem;
 }
 
-#available-puppies .card-text {
-  font-size: 0.95rem;
-  margin-bottom: 0.4rem;
-  color: var(--muted);
+/* Reduce “small text” density slightly */
+#available-puppies.available-puppies--home .available-puppy-card .text-muted.small {
+  font-size: 0.92rem;
 }
 
-/* --- Footer Button --- */
+/* Make divider less tall */
+#available-puppies.available-puppies--home .available-puppy-card hr {
+  margin: 0.8rem 0;
+  opacity: 0.15;
+}
 
-#available-puppies .card-footer {
+/* Footer and button: less tall, still full-width */
+#available-puppies.available-puppies--home .available-puppy-card .card-footer {
   background: #fff;
   border: none;
-  padding: 0 1.25rem 1.25rem 1.25rem;
+  padding: 0 1.1rem 1.05rem 1.1rem;
 }
 
-#available-puppies .card-footer .btn {
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+#available-puppies.available-puppies--home .available-puppy-card .btn {
+  font-size: 0.92rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
 }
 
-/* --- View All Button --- */
-
-#available-puppies .btn-outline-primary {
+/* “View all available puppies” button spacing */
+#available-puppies.available-puppies--home .btn-outline-primary {
   margin-top: 1.5rem;
   padding: 0.55rem 1.1rem;
   font-size: 0.95rem;
 }
 
 /* ======================================================
-   HOMEPAGE — Centered Card Layout (Image + Text Stack)
-   This matches the “image on top with centered text below” feel.
+   HOMEPAGE — Available badge + spacing polish
    ====================================================== */
 
-#available-puppies .hp-puppy-card {
-  border-radius: 16px;
+/* Center the Available badge under "Born on" */
+#available-puppies.available-puppies--home .badge.bg-success {
+  display: inline-block;
+  margin: 0.25rem auto 0 auto;   /* center horizontally */
+  font-size: 0.78rem;           /* slightly smaller */
+  padding: 0.25rem 0.55rem;     /* tighter pill */
+  border-radius: 999px;
 }
 
-/* image framing area */
-#available-puppies .hp-puppy-media {
-  background: #f4f4f4;
-  padding: 14px 14px 0 14px;
+/* Remove extra vertical padding around the badge container */
+#available-puppies.available-puppies--home .card-body .mt-2 {
+  margin-top: 0.35rem !important;
 }
 
-/* smaller image, never cropped */
-#available-puppies .hp-puppy-img {
-  width: 100%;
-  max-height: 240px;     /* adjust to taste: 220–260 is a good range */
-  object-fit: contain;   /* no cropping */
-  object-position: center;
-  display: block;
-  border-radius: 12px;
-  background: #f4f4f4;
+/* Tighten spacing above the divider */
+#available-puppies.available-puppies--home .available-puppy-card hr {
+  margin-top: 0.6rem;
 }
 
-/* centered text stack */
-#available-puppies .hp-puppy-body {
+/* Slightly reduce body bottom padding so cards feel tighter */
+#available-puppies.available-puppies--home .available-puppy-card .card-body {
+  padding-bottom: 0.5rem;
+}
+
+/* ======================================================
+   HOMEPAGE — Center top puppy text block
+   ====================================================== */
+
+#available-puppies.available-puppies--home .available-puppy-card .card-body > div:first-child {
   text-align: center;
-  padding: 1.05rem 1.25rem 0.85rem 1.25rem;
-}
-
-#available-puppies .hp-puppy-name {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin: 0.25rem 0 0.9rem 0;
-  color: var(--ink);
-}
-
-#available-puppies .hp-puppy-meta {
-  font-size: 1.02rem;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-#available-puppies .hp-puppy-line {
-  margin-bottom: 0.35rem;
-}
-
-#available-puppies .hp-puppy-label {
-  font-weight: 600;
-  color: var(--ink);
-  margin-right: 0.35rem;
-}
-
-/* keep parent links feeling “premium” */
-#available-puppies .hp-puppy-meta a {
-  font-weight: 600;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-}
-
-/* footer centered button, not full width */
-#available-puppies .hp-puppy-footer {
-  background: #fff;
-  border: none;
-  padding: 0 1.25rem 1.15rem 1.25rem;
-  display: flex;
-  justify-content: center;
-}
-
-#available-puppies .hp-puppy-btn {
-  width: 100%;
-  max-width: 260px;
-  border-radius: 10px;
-  padding: 0.55rem 0.9rem;
 }
