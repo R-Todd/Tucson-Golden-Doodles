@@ -1,7 +1,7 @@
 # app/__init__.py
 
 from datetime import datetime, timezone
-
+import os
 from flask import Flask
 from flask_caching import Cache
 from flask_ckeditor import CKEditor
@@ -27,7 +27,6 @@ def _validate_required_config(app: Flask) -> None:
     - Avoid import-time failures (so CLI tools/migrations can import safely).
     - Fail fast only when running as a real app (not debug, not testing).
     """
-    # In debug or testing, allow missing secrets/DB so local dev is less brittle.
     if app.debug or app.testing:
         return
 
@@ -40,6 +39,14 @@ def _validate_required_config(app: Flask) -> None:
     db_uri = app.config.get("SQLALCHEMY_DATABASE_URI")
     if not db_uri or str(db_uri).strip() == "":
         missing.append("DATABASE_URL")
+
+    # Single-admin credentials (required for production)
+    admin_user = os.environ.get("ADMIN_USERNAME")
+    admin_pass = os.environ.get("ADMIN_PASSWORD")
+    if not admin_user or admin_user.strip() == "":
+        missing.append("ADMIN_USERNAME")
+    if not admin_pass or admin_pass.strip() == "":
+        missing.append("ADMIN_PASSWORD")
 
     if missing:
         raise RuntimeError(
