@@ -1,43 +1,162 @@
-/* app/static/css/pages/available_puppies.css */
+/* ======================================================
+   HOMEPAGE — Available Puppies (Premium Compact Style)
+   ====================================================== */
 
-.available-puppy-img {
-  width: 100%;
-  aspect-ratio: 3 / 4;     /* portrait */
-  height: auto;
-  object-fit: contain;     /* never crop */
-  object-position: center;
-  background: #f4f4f4;
-  display: block;
+#available-puppies {
+  max-width: 1100px;              /* narrower than full container */
+  margin: 0 auto;
 }
 
-/* ===== Home page Available Puppies cards  ===== */
+#available-puppies .section-title {
+  margin-bottom: 0.5rem;
+}
+
+#available-puppies .section-subtitle {
+  margin-bottom: 2.2rem;
+  font-size: 1.05rem;
+  color: var(--muted);
+}
+
+/* --- Card (general hover polish) --- */
 
 #available-puppies .card {
-  border-radius: var(--radius);
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: var(--shadow);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.05);
   transition: transform 160ms ease, box-shadow 160ms ease;
+  height: 100%;
 }
 
 #available-puppies .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 38px rgba(0,0,0,0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
 }
 
+/* --- Legacy homepage image rule (kept, but homepage now uses .hp-puppy-img) --- */
 #available-puppies .card-img-top {
   width: 100%;
-  aspect-ratio: 4 / 3; /* iPhone horizontal-friendly */
-  object-fit: cover;
-  display: block;
+  max-height: 190px;              /* smaller than before */
+  object-fit: contain;            /* NEVER crop */
+  object-position: center;
+  background: #f4f4f4;
+  padding: 16px 16px 0 16px;      /* subtle framing */
+}
+
+/* --- Legacy spacing (kept) --- */
+#available-puppies .card-body {
+  padding: 1.1rem 1.25rem 0.75rem 1.25rem;
 }
 
 #available-puppies .card-title {
-  font-size: 1.15rem;
-  margin-bottom: 10px;
+  font-size: 1.1rem;
+  margin-bottom: 0.65rem;
+  font-weight: 600;
   color: var(--ink);
 }
 
 #available-puppies .card-text {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
   color: var(--muted);
+}
+
+/* --- Footer Button --- */
+
+#available-puppies .card-footer {
+  background: #fff;
+  border: none;
+  padding: 0 1.25rem 1.25rem 1.25rem;
+}
+
+#available-puppies .card-footer .btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+/* --- View All Button --- */
+
+#available-puppies .btn-outline-primary {
+  margin-top: 1.5rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.95rem;
+}
+
+/* ======================================================
+   HOMEPAGE — Centered Card Layout (Image + Text Stack)
+   This matches the “image on top with centered text below” feel.
+   ====================================================== */
+
+#available-puppies .hp-puppy-card {
+  border-radius: 16px;
+}
+
+/* image framing area */
+#available-puppies .hp-puppy-media {
+  background: #f4f4f4;
+  padding: 14px 14px 0 14px;
+}
+
+/* smaller image, never cropped */
+#available-puppies .hp-puppy-img {
+  width: 100%;
+  max-height: 240px;     /* adjust to taste: 220–260 is a good range */
+  object-fit: contain;   /* no cropping */
+  object-position: center;
+  display: block;
+  border-radius: 12px;
+  background: #f4f4f4;
+}
+
+/* centered text stack */
+#available-puppies .hp-puppy-body {
+  text-align: center;
+  padding: 1.05rem 1.25rem 0.85rem 1.25rem;
+}
+
+#available-puppies .hp-puppy-name {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0.25rem 0 0.9rem 0;
+  color: var(--ink);
+}
+
+#available-puppies .hp-puppy-meta {
+  font-size: 1.02rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+#available-puppies .hp-puppy-line {
+  margin-bottom: 0.35rem;
+}
+
+#available-puppies .hp-puppy-label {
+  font-weight: 600;
+  color: var(--ink);
+  margin-right: 0.35rem;
+}
+
+/* keep parent links feeling “premium” */
+#available-puppies .hp-puppy-meta a {
+  font-weight: 600;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* footer centered button, not full width */
+#available-puppies .hp-puppy-footer {
+  background: #fff;
+  border: none;
+  padding: 0 1.25rem 1.15rem 1.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+#available-puppies .hp-puppy-btn {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
 }

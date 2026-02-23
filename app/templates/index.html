@@ -47,7 +47,6 @@
         <h4 class="h4">{{ announcement_banner.main_text }}</h4>
 
         {% if announcement_banner.featured_litter %}
-            {# Featured Litter (new Litter architecture) #}
             {% set litter = announcement_banner.featured_litter %}
             {% set mom = litter.mother %}
             {% set dad = litter.father %}
@@ -55,34 +54,33 @@
             <p>{{ announcement_banner.sub_text.format(
                 mom_name=mom.name if mom else "",
                 dad_name=dad.name if dad else "",
-                birth_date=litter.birth_date.strftime('%B %d, %Y') if litter and litter.birth_date else ""
+                birth_date=litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else ""
             ) }}</p>
 
-            {# Show CTA only if we have a featured litter id + button text #}
-            {% if announcement_banner.button_text and announcement_banner.featured_litter_id %}
-                <a href="{{ url_for('puppies.list_puppies') }}#litter-{{ announcement_banner.featured_litter_id }}" class="btn btn-outline-light">
-                    {{ announcement_banner.button_text }}
-                </a>
-            {% endif %}
-        {% else %}
-            {# Fallback if no litter is featured #}
-            <p>{{ announcement_banner.sub_text }}</p>
+            <a class="btn btn-primary"
+               href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                View Featured Litter
+            </a>
         {% endif %}
     </div>
 {% endif %}
 
-{#--- MAIN CONTENT SECTIONS ---#}
-
+{#--- ABOUT SECTION ---#}
 {% if about %}
-<section id="about" class="about-band">
+<section id="about" class="about-section section-pad">
     <div class="container">
-        <div class="about-grid">
-            <div class="about-media">
-                <img src="{{ about.image_s3_key | s3_url }}" class="about-image" alt="About us">
+        <div class="row align-items-center g-4">
+            <div class="col-md-6">
+                <div class="about-image-wrap">
+                    <img
+                        src="{{ about.image_s3_key | s3_url or url_for('static', filename='img/about_us_family.jpg') }}"
+                        alt="{{ about.image_alt_text or 'About our family' }}"
+                        class="img-fluid rounded shadow-sm">
+                </div>
             </div>
-            <div class="about-body">
-                <div class="about-eyebrow">About</div>
-                <h2 class="about-title">{{ about.title }}</h2>
+            <div class="col-md-6">
+                <h2 class="section-title text-start">{{ about.title }}</h2>
+                <div class="section-subtitle text-start">{{ about.subtitle }}</div>
                 <div class="about-content">{{ about.content_html|safe }}</div>
             </div>
         </div>
@@ -101,31 +99,54 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for puppy in puppies %}
             <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <img src="{{ puppy.main_image_s3_key | s3_url }}" class="card-img-top" alt="Photo of {{ puppy.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ puppy.name }}</h5>
+                <div class="card h-100 shadow-sm hp-puppy-card">
 
-                        {% if puppy.litter and puppy.litter.mother and puppy.litter.father %}
-                        <p class="card-text">
-                            <strong>Parents:</strong>
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.mother.id }}">{{ puppy.litter.mother.name }}</a> &
-                            <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.father.id }}">{{ puppy.litter.father.name }}</a>
-                        </p>
-                        {% endif %}
-
-                        {% if puppy.status == PuppyStatus.AVAILABLE %}
-                            <span class="badge bg-success">{{ puppy.status.value }}</span>
-                        {% elif puppy.status == PuppyStatus.RESERVED %}
-                            <span class="badge bg-warning text-dark">{{ puppy.status.value }}</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ puppy.status.value }}</span>
-                        {% endif %}
+                    <div class="hp-puppy-media">
+                        <img
+                            src="{{ puppy.main_image_s3_key | s3_url }}"
+                            class="hp-puppy-img"
+                            alt="Photo of {{ puppy.name }}">
                     </div>
+
+                    <div class="card-body hp-puppy-body">
+                        <h5 class="card-title hp-puppy-name">{{ puppy.name }}</h5>
+
+                        <div class="hp-puppy-meta">
+                            {% if puppy.litter and puppy.litter.mother and puppy.litter.father %}
+                            <div class="hp-puppy-line">
+                                <span class="hp-puppy-label">Parents:</span>
+                                <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.mother.id }}">{{ puppy.litter.mother.name }}</a>
+                                &amp;
+                                <a href="{{ url_for('parents.list_parents') }}#parent-{{ puppy.litter.father.id }}">{{ puppy.litter.father.name }}</a>
+                            </div>
+                            {% endif %}
+
+                            {% if puppy.litter and puppy.litter.birth_date %}
+                            <div class="hp-puppy-line">
+                                <span class="hp-puppy-label">Born:</span>
+                                {{ puppy.litter.birth_date.strftime('%B %d, %Y') }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if puppy.litter %}
+                    <div class="card-footer bg-white border-0 hp-puppy-footer">
+                        <a class="btn btn-outline-primary hp-puppy-btn"
+                           href="{{ url_for('puppies.litter_detail', litter_id=puppy.litter.id) }}">
+                            See full litter
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
         </div>
+
+        <div class="mt-4">
+            <a class="btn btn-outline-primary" href="{{ url_for('puppies.available_puppies') }}">View all available puppies</a>
+        </div>
+
         {% else %}
             <p>We have no available puppies at this time. Please check back soon!</p>
         {% endif %}
@@ -140,22 +161,26 @@
 
         <div class="row">
             {% for review in reviews %}
-            <div class="col-md-6 mx-auto mb-4">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <blockquote class="blockquote mb-0">
-                            <p>"{{ review.testimonial_text }}"</p>
-                            <footer class="blockquote-footer mt-2">{{ review.author_name }}</footer>
-                        </blockquote>
+                {# Defense-in-depth: skip placeholder/blank reviews #}
+                {% if review.testimonial_text and review.author_name %}
+                <div class="col-md-6 mx-auto mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                                <p>{{ review.testimonial_text }}</p>
+                                <footer class="blockquote-footer mt-2">{{ review.author_name }}</footer>
+                            </blockquote>
+                        </div>
                     </div>
                 </div>
-            </div>
+                {% endif %}
             {% endfor %}
         </div>
     </section>
     <hr class="my-5">
     {% endif %}
 
+    {#--- GALLERY SECTION ---#}
     {% if gallery_images %}
     <section id="gallery" class="section-pad">
         <h2 class="section-title text-center">Gallery</h2>
@@ -164,11 +189,12 @@
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
             {% for image in gallery_images %}
             <div class="col">
-                {# Keep href for fallback; JS will intercept and open modal #}
                 <a href="{{ image.image_s3_key | s3_url }}"
                    data-gallery="site-gallery"
                    data-title="{{ image.caption or 'Gallery Image' }}">
-                    <img src="{{ image.image_s3_key | s3_url }}" class="img-fluid img-thumbnail" alt="{{ image.caption or 'Gallery Image' }}">
+                    <img src="{{ image.image_s3_key | s3_url }}"
+                         class="img-fluid img-thumbnail"
+                         alt="{{ image.caption or 'Gallery Image' }}">
                 </a>
             </div>
             {% endfor %}
@@ -181,13 +207,10 @@
         <div class="modal-content bg-dark">
           <div class="modal-header border-0">
             <h5 class="modal-title text-white" id="galleryLightboxTitle">Gallery</h5>
-
-            {# X close button #}
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
           <div class="modal-body p-0 position-relative d-flex align-items-center justify-content-center">
-            {# Prev / Next controls #}
             <button type="button" class="gallery-nav-btn gallery-prev" aria-label="Previous image">
               &#10094;
             </button>
