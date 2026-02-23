@@ -1,0 +1,107 @@
+/* app/static/css/components/about.css */
+
+/*
+  Premium About band (homepage)
+  - Full-width soft background
+  - Clean editorial grid
+  - Image framed (no stretching)
+*/
+
+.about-band {
+    background: var(--cream);
+    border-bottom: 1px solid var(--line);
+    padding: 72px 0;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: clamp(24px, 3vw, 56px);
+    align-items: center;
+}
+
+.about-media {
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.about-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center;
+}
+
+.about-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.about-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 2.6vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 0 0 16px;
+}
+
+.about-content {
+    color: var(--muted);
+    font-size: 1.08rem;
+    line-height: 1.75;
+    max-width: 62ch;
+}
+
+/* Ensure rich text from admin looks consistent */
+.about-content p {
+    margin: 0 0 14px;
+}
+
+.about-content p:last-child {
+    margin-bottom: 0;
+}
+
+.about-content a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.about-content a:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 992px) {
+    .about-band {
+        padding: 52px 0;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* On mobile, favor iPhone portrait framing */
+    .about-image {
+        aspect-ratio: 9 / 16;
+    }
+
+    .about-content {
+        max-width: 70ch;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-band {
+        padding: 44px 0;
+    }
+}

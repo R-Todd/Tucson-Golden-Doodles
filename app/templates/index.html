@@ -73,21 +73,24 @@
 
 {#--- MAIN CONTENT SECTIONS ---#}
 
-<div class="container" id="about">
-    {% if about %}
-    <section class="section-pad">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <img src="{{ about.image_s3_key | s3_url }}" class="img-fluid rounded shadow" alt="About us">
+{% if about %}
+<section id="about" class="about-band">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-media">
+                <img src="{{ about.image_s3_key | s3_url }}" class="about-image" alt="About us">
             </div>
-            <div class="col-md-6">
-                <h2 class="display-5">{{ about.title }}</h2>
-                <div class="lead">{{ about.content_html|safe }}</div>
+            <div class="about-body">
+                <div class="about-eyebrow">About</div>
+                <h2 class="about-title">{{ about.title }}</h2>
+                <div class="about-content">{{ about.content_html|safe }}</div>
             </div>
         </div>
-    </section>
-    <hr class="my-5">
-    {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<div class="container">
 
     {#--- AVAILABLE PUPPIES SECTION ---#}
     <section id="available-puppies" class="section-pad text-center">
