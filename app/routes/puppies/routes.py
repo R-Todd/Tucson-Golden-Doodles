@@ -5,7 +5,7 @@ from app.routes.puppies import bp
 from app.models import Litter, Puppy, PuppyStatus
 
 
-@bp.route('/puppies')
+@bp.route('/')
 def list_puppies():
     """
     Renders the page with all puppies, grouped by Litter model.
