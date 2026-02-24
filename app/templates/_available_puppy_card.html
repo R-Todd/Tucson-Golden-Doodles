@@ -68,7 +68,7 @@
 
     <div class="card-footer bg-white border-0 pt-0 pb-3">
       {% if litter %}
-        <a class="btn btn-outline-primary w-100" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+        <a class="btn btn-outline-primary w-100" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
           See full litter
         </a>
       {% else %}

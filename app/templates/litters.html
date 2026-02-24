@@ -33,7 +33,7 @@
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card h-100 shadow-sm litter-tile">
 
-            <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+            <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
               <img
                 src="{{ cover_img }}"
                 class="card-img-top litter-tile-img"
@@ -43,7 +43,7 @@
             <div class="card-body">
               {# Title = Breed #}
               <h2 class="h5 mb-1 litter-tile-title">
-                <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
                   {{ litter.breed_name or "Litter" }}
                 </a>
               </h2>
@@ -83,7 +83,7 @@
             {# Footer: See full litter button + parent links (again) #}
             <div class="card-footer bg-white border-0 pt-0 pb-3">
               <div class="d-grid mb-2">
-                <a class="btn btn-outline-primary" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                <a class="btn btn-outline-primary" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
                   See full litter
                 </a>
               </div>
