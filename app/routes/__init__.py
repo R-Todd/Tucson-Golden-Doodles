@@ -11,12 +11,14 @@ from app.routes.parents import bp as parents_bp
 from app.routes.puppies import bp as puppies_bp
 from app.routes.main import bp as main_bp
 from app.routes.litters import bp as litters_bp
+from app.routes.available_puppies import bp as available_puppies_bp
 
 # Keep registration order explicit (matches your existing create_app order)
 ALL_BLUEPRINTS = (
     admin_bp,
     parents_bp,
     puppies_bp,
+    available_puppies_bp,
     litters_bp,
     main_bp,
 )
