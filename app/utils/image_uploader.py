@@ -5,10 +5,33 @@ import uuid
 from PIL import Image, ImageOps
 import io
 
-# --- S3 Configuration ---
-S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
-S3_REGION = os.environ.get('S3_BUCKET_REGION')
-s3_client = boto3.client("s3", region_name=S3_REGION)
+# --- S3 Configuration (lazy init + fail-fast) ---
+def _get_s3_settings():
+    bucket = os.environ.get("S3_BUCKET_NAME")
+    region = os.environ.get("S3_BUCKET_REGION")
+
+    if not bucket:
+        raise RuntimeError("Missing required env var: S3_BUCKET_NAME")
+    if not region:
+        raise RuntimeError("Missing required env var: S3_BUCKET_REGION")
+
+    return bucket, region
+
+
+_s3_client = None
+
+
+def _get_s3_client():
+    """
+    Lazily create and cache the boto3 S3 client.
+    Avoids creating clients at import time (cleaner startup, fewer side effects).
+    """
+    global _s3_client
+    if _s3_client is None:
+        _bucket, region = _get_s3_settings()
+        _s3_client = boto3.client("s3", region_name=region)
+    return _s3_client
+
 
 # Base responsive sizes (used for most uploads)
 RESPONSIVE_SIZES_BASE = {
@@ -104,7 +127,6 @@ def _save_image_to_bytes(img: Image.Image, fmt: str) -> io.BytesIO:
         )
     else:
         # PNG/WEBP/GIF: keep defaults; PNG can be optimized as well
-        # (optimize works for PNG but can be slower; enable if you want)
         if fmt == "PNG":
             img.save(buf, format="PNG", optimize=True)
         else:
@@ -114,20 +136,21 @@ def _save_image_to_bytes(img: Image.Image, fmt: str) -> io.BytesIO:
     return buf
 
 
-def upload_image(file_storage, folder='general', create_responsive_versions=False):
+def upload_image(file_storage, folder="general", create_responsive_versions=False):
     """
-    Uploads an image to S3 and returns:
-      - a single S3 key (non-responsive), OR
-      - a dict of S3 keys (responsive sizes + original)
+    Uploads an image to S3 and returns a tuple:
 
-    Enhancements:
-      - Hero uploads get an XL (1920) version for crisp desktop hero rendering
-      - LANCZOS resampling for highest resize quality
-      - JPEG quality tuning (quality=88, optimize, progressive)
-      - Minimum resolution guard for hero uploads (rejects too-small images)
-      - PNG alpha flattening when saving JPEG (prevents RGBA -> JPEG crash)
-      - ContentType derived from detected format
+      Success:
+        - (s3_key, None)                         when create_responsive_versions=False
+        - ({"small":..., "medium":..., ...}, None) when create_responsive_versions=True
+
+      Failure:
+        - (None, "human readable error message")
     """
+    # Validate env and init client only when this function is actually used
+    bucket, _region = _get_s3_settings()
+    s3 = _get_s3_client()
+
     original_filename = secure_filename(file_storage.filename)
     unique_prefix = f"{uuid.uuid4().hex[:8]}"
 
@@ -135,13 +158,11 @@ def upload_image(file_storage, folder='general', create_responsive_versions=Fals
         file_storage.seek(0)
         img = Image.open(file_storage)
         img = ImageOps.exif_transpose(img)
-        img_format = (img.format or 'JPEG').upper()
+        img_format = (img.format or "JPEG").upper()
     except Exception as e:
         print(f"Error processing image orientation: {e}")
-        return None
+        return None, "Invalid image file (could not read image)."
 
-    # Optional: choose a background that matches your theme (cream)
-    # background_rgb = (251, 245, 239)  # #fbf5ef
     background_rgb = (255, 255, 255)
 
     # Minimum resolution guard (hero only)
@@ -149,15 +170,15 @@ def upload_image(file_storage, folder='general', create_responsive_versions=Fals
         w, h = img.size
         long_edge = max(w, h)
         if long_edge < HERO_MIN_LONG_EDGE_PX:
-            print(
-                f"Hero image rejected: resolution too small ({w}x{h}). "
-                f"Please upload at least {HERO_MIN_LONG_EDGE_PX}px on the long edge for a crisp hero."
+            msg = (
+                f"Hero image rejected: {w}x{h}. "
+                f"Please upload at least {HERO_MIN_LONG_EDGE_PX}px on the long edge."
             )
-            return None
+            print(msg)
+            return None, msg
 
     content_type = _content_type_for_format(img_format)
 
-    # Select responsive sizes (hero gets XL)
     responsive_sizes = RESPONSIVE_SIZES_HERO if folder == "hero" else RESPONSIVE_SIZES_BASE
 
     # --- Simple Upload (Non-responsive) ---
@@ -167,56 +188,52 @@ def upload_image(file_storage, folder='general', create_responsive_versions=Fals
             img_to_save = _normalize_for_save(img, img_format, background_rgb=background_rgb)
             in_mem_file = _save_image_to_bytes(img_to_save, img_format)
 
-            s3_client.upload_fileobj(
+            s3.upload_fileobj(
                 in_mem_file,
-                S3_BUCKET,
+                bucket,
                 s3_key,
                 ExtraArgs={"ContentType": content_type}
             )
-            return s3_key
+            return s3_key, None
         except Exception as e:
             print(f"Error during single S3 upload: {e}")
-            return None
+            return None, "Upload failed while sending image to S3."
 
     # --- Responsive Images Logic ---
     keys = {}
     try:
-        # Upload responsive versions
         for name, size in responsive_sizes.items():
             img_copy = img.copy()
-
-            # High-quality resize (LANCZOS)
             img_copy.thumbnail(size, resample=LANCZOS)
 
             img_to_save = _normalize_for_save(img_copy, img_format, background_rgb=background_rgb)
             in_mem_file = _save_image_to_bytes(img_to_save, img_format)
 
             s3_key = f"{folder}/{unique_prefix}-{name}-{original_filename}"
-            s3_client.upload_fileobj(
+            s3.upload_fileobj(
                 in_mem_file,
-                S3_BUCKET,
+                bucket,
                 s3_key,
                 ExtraArgs={"ContentType": content_type}
             )
             keys[name] = s3_key
 
-        # Upload the original, full-size image
         img_to_save_original = _normalize_for_save(img, img_format, background_rgb=background_rgb)
         in_mem_original = _save_image_to_bytes(img_to_save_original, img_format)
 
         s3_key_original = f"{folder}/{unique_prefix}-original-{original_filename}"
-        s3_client.upload_fileobj(
+        s3.upload_fileobj(
             in_mem_original,
-            S3_BUCKET,
+            bucket,
             s3_key_original,
             ExtraArgs={"ContentType": content_type}
         )
-        keys['original'] = s3_key_original
+        keys["original"] = s3_key_original
 
-        return keys
+        return keys, None
     except Exception as e:
         print(f"Error during responsive S3 upload: {e}")
-        return None
+        return None, "Upload failed while creating responsive images."
 
 
 def generate_presigned_url(s3_key, expiration=3600):
@@ -225,10 +242,14 @@ def generate_presigned_url(s3_key, expiration=3600):
     """
     if not s3_key:
         return None
+
     try:
-        response = s3_client.generate_presigned_url(
-            'get_object',
-            Params={'Bucket': S3_BUCKET, 'Key': s3_key},
+        bucket, _region = _get_s3_settings()
+        s3 = _get_s3_client()
+
+        response = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": s3_key},
             ExpiresIn=expiration
         )
         return response

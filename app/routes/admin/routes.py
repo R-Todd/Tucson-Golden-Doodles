@@ -4,7 +4,7 @@ from flask import redirect, url_for, request, render_template
 from flask_login import current_user, login_user, logout_user
 from flask_admin.menu import MenuLink
 
-from app import db
+from app.models import db
 from app.models import (
     User, Parent, Litter, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
