@@ -1,6 +1,6 @@
 # app/routes/admin/views/home/hero_view.py
 
-from flask import request, flash
+from flask import request, flash, current_app
 from wtforms.fields import FileField
 from wtforms.validators import ValidationError
 
@@ -44,6 +44,14 @@ class HeroSectionAdminView(AdminModelView):
         """Handle the S3 image upload when the model is saved."""
         file = request.files.get("image_upload")
         if file and file.filename:
+            # Capture old keys so we can bust cached presigned URLs (avoid "silent stale" hero)
+            old_keys = [
+                model.image_s3_key,
+                model.image_s3_key_small,
+                model.image_s3_key_medium,
+                model.image_s3_key_large,
+            ]
+
             s3_keys, err = upload_image(file, folder="hero", create_responsive_versions=True)
 
             if err or not s3_keys:
@@ -56,5 +64,18 @@ class HeroSectionAdminView(AdminModelView):
             model.image_s3_key_small = s3_keys.get("small")
             model.image_s3_key_medium = s3_keys.get("medium")
             model.image_s3_key_large = s3_keys.get("large")
+
+            # Bust cached presigned URLs for old keys so the new hero shows immediately
+            s3_url_filter = current_app.jinja_env.filters.get("s3_url")
+            if s3_url_filter:
+                for k in old_keys:
+                    if k:
+                        try:
+                            from app import cache
+                             # lazy import prevents circular import during app startup
+                            cache.delete_memoized(s3_url_filter, k)
+                        except Exception:
+                            # Never block admin save due to cache eviction issues
+                            pass
 
         return super().on_model_change(form, model, is_created)

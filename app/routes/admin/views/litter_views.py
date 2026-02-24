@@ -1,10 +1,10 @@
 # app/routes/admin/views/litter_views.py
 
-from flask import request
+from flask import request, flash, current_app
 from flask_wtf import FlaskForm
 from wtforms import DateField, SelectField, StringField, TextAreaField
 from wtforms.fields import FileField
-from wtforms.validators import DataRequired, Optional, InputRequired
+from wtforms.validators import DataRequired, Optional, InputRequired, ValidationError
 
 from .base import AdminModelView
 from app.models import Parent, ParentRole
@@ -95,4 +95,27 @@ class LitterAdminView(AdminModelView):
         # NEW: Litter cover image upload (similar to Puppy)
         upload = request.files.get("image_upload")
         if upload and upload.filename:
-            model.main_image_s3_key = upload_image(upload, folder="litters")
+            # Phase 4 hardening:
+            # - upload_image returns (result, err). We must unpack it.
+            # - If rejected (.heic / invalid ext), show flash + abort save cleanly.
+            # - Evict memoized s3_url(old_key) when keys change so new image shows immediately.
+            # - Use lazy import for cache to avoid circular imports at startup.
+            old_key = getattr(model, "main_image_s3_key", None)
+
+            new_key, err = upload_image(upload, folder="litters")
+            if err or not new_key:
+                msg = err or "Litter image upload failed. Please upload a JPG/PNG."
+                flash(msg, category="danger")
+                raise ValidationError(msg)
+
+            model.main_image_s3_key = new_key
+
+            s3_url_filter = current_app.jinja_env.filters.get("s3_url")
+            if s3_url_filter and old_key:
+                try:
+                    from app import cache  # lazy import avoids circular import
+                    cache.delete_memoized(s3_url_filter, old_key)
+                except Exception:
+                    pass
+
+        return super().on_model_change(form, model, is_created)
