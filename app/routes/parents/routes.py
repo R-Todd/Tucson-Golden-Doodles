@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 from app.routes.parents import bp
 from app.models import Parent
 
-@bp.route('/parents')
+@bp.route('/')
 def list_parents():
     """Renders the page with all parent dogs, ordered by role then name."""
     # Eagerly load the 'images' relationship to avoid N+1 queries in the template.
