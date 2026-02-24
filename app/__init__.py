@@ -86,17 +86,9 @@ def create_app(config_class=Config):
 
         return dict(site_meta=SiteDetails.query.first(), now=datetime.now(timezone.utc))
 
-    # --- Register Blueprints ---
-    from app.routes.admin import bp as admin_bp
-    app.register_blueprint(admin_bp)
-
-    from app.routes.parents import bp as parents_bp
-    app.register_blueprint(parents_bp)
-
-    from app.routes.puppies import bp as puppies_bp
-    app.register_blueprint(puppies_bp)
-
-    from app.routes.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    # --- Register Blueprints (central registry) ---
+    from app.routes import ALL_BLUEPRINTS
+    for bp in ALL_BLUEPRINTS:
+        app.register_blueprint(bp)
 
     return app
