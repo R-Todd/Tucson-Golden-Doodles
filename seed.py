@@ -56,43 +56,31 @@ def validate_seed_requirements() -> None:
 # REAL S3 SEED IMAGE HELPER
 # ======================================================
 
-def upload_seed_image(filename: str, folder: str, responsive: bool = False):
-    """
-    Upload a file from ./seed_images to S3 using the app's upload_image utility.
-    Returns:
-      - dict of keys if responsive=True
-      - single key (str) if responsive=False
-      - None if local file missing
-    """
+def upload_seed_image(filename, folder, responsive=False):
     image_path = os.path.join("seed_images", filename)
 
     if not os.path.exists(image_path):
-        print(f"Warning: Seed image not found (skipping upload): {image_path}")
-        return None
-
-    # Try to guess content type from extension
-    ext = os.path.splitext(filename)[1].lower()
-    content_type = "image/jpeg"
-    if ext == ".png":
-        content_type = "image/png"
-    elif ext in [".heic", ".heif"]:
-        # uploader may not accept this; treat as missing unless you handle conversion elsewhere
-        print(f"Warning: Unsupported seed image format (skipping upload): {image_path}")
+        print(f"Seed image not found: {image_path}")
         return None
 
     with open(image_path, "rb") as f:
         file_storage = FileStorage(
             stream=f,
             filename=filename,
-            content_type=content_type
+            content_type="image/jpeg"
         )
 
-        return upload_image(
+        result, err = upload_image(
             file_storage,
             folder=folder,
             create_responsive_versions=responsive
         )
 
+        if err:
+            print(f"Warning: Upload rejected (skipping): {filename} — {err}")
+            return None
+
+        return result
 
 # ======================================================
 # SEED SCRIPT
@@ -113,6 +101,8 @@ with app.app_context():
     # Here we only clear rows to reseed deterministically.
     #
     # Delete order matters due to foreign keys.
+    # Delete order matters due to foreign keys.
+    db.session.query(AnnouncementBanner).delete()
     db.session.query(ParentImage).delete()
     db.session.query(Puppy).delete()
     db.session.query(Litter).delete()
@@ -121,7 +111,6 @@ with app.app_context():
     db.session.query(GalleryImage).delete()
     db.session.query(HeroSection).delete()
     db.session.query(AboutSection).delete()
-    db.session.query(AnnouncementBanner).delete()
     db.session.query(SiteDetails).delete()
     db.session.query(User).delete()
     db.session.commit()

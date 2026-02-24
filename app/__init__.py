@@ -73,7 +73,7 @@ def create_app(config_class=Config):
     ckeditor.init_app(app)
 
     # Register the custom template filter
-    setup_template_filters(app)
+    setup_template_filters(app, cache)
 
     @login.user_loader
     def load_user(id):

@@ -5,6 +5,9 @@ import uuid
 from PIL import Image, ImageOps
 import io
 
+ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp'}
+HEIC_EXTENSIONS = {'.heic', '.heif'}
+
 # --- S3 Configuration (lazy init + fail-fast) ---
 def _get_s3_settings():
     bucket = os.environ.get("S3_BUCKET_NAME")
@@ -141,11 +144,21 @@ def upload_image(file_storage, folder="general", create_responsive_versions=Fals
     Uploads an image to S3 and returns a tuple:
 
       Success:
-        - (s3_key, None)                         when create_responsive_versions=False
+        - (s3_key, None)                          when create_responsive_versions=False
         - ({"small":..., "medium":..., ...}, None) when create_responsive_versions=True
 
       Failure:
         - (None, "human readable error message")
+
+    Enhancements:
+      - Hero uploads get an XL (1920) version for crisp desktop hero rendering
+      - LANCZOS resampling for highest resize quality
+      - JPEG quality tuning (quality=88, optimize, progressive)
+      - Minimum resolution guard for hero uploads (rejects too-small images)
+      - PNG alpha flattening when saving JPEG (prevents RGBA -> JPEG crash)
+      - ContentType derived from detected format
+      - Lazy S3 client init + fail-fast env validation
+      - Explicitly rejects HEIC/HEIF and non-image uploads (never silent)
     """
     # Validate env and init client only when this function is actually used
     bucket, _region = _get_s3_settings()
@@ -153,6 +166,13 @@ def upload_image(file_storage, folder="general", create_responsive_versions=Fals
 
     original_filename = secure_filename(file_storage.filename)
     unique_prefix = f"{uuid.uuid4().hex[:8]}"
+
+    # Reject unsupported file types early (avoid Pillow errors / silent failures)
+    ext = os.path.splitext(original_filename)[1].lower()
+    if ext in HEIC_EXTENSIONS:
+        return None, "HEIC/HEIF photos are not supported. Please export as JPG/PNG (or WebP)."
+    if ext and ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return None, "Unsupported file type. Please upload a JPG, PNG, or WebP image."
 
     try:
         file_storage.seek(0)
@@ -179,6 +199,7 @@ def upload_image(file_storage, folder="general", create_responsive_versions=Fals
 
     content_type = _content_type_for_format(img_format)
 
+    # Select responsive sizes (hero gets XL)
     responsive_sizes = RESPONSIVE_SIZES_HERO if folder == "hero" else RESPONSIVE_SIZES_BASE
 
     # --- Simple Upload (Non-responsive) ---
@@ -202,8 +223,11 @@ def upload_image(file_storage, folder="general", create_responsive_versions=Fals
     # --- Responsive Images Logic ---
     keys = {}
     try:
+        # Upload responsive versions
         for name, size in responsive_sizes.items():
             img_copy = img.copy()
+
+            # High-quality resize (LANCZOS)
             img_copy.thumbnail(size, resample=LANCZOS)
 
             img_to_save = _normalize_for_save(img_copy, img_format, background_rgb=background_rgb)
@@ -218,6 +242,7 @@ def upload_image(file_storage, folder="general", create_responsive_versions=Fals
             )
             keys[name] = s3_key
 
+        # Upload the original, full-size image
         img_to_save_original = _normalize_for_save(img, img_format, background_rgb=background_rgb)
         in_mem_original = _save_image_to_bytes(img_to_save_original, img_format)
 
