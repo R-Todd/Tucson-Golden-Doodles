@@ -1,30 +1,98 @@
-/* app/static/css/components/reviews.css */
+/* app/static/css/components/gallery.css */
 
-/* --- Testimonials/Reviews Section --- */
-#testimonials .card {
-    border: none;
-    border-radius: 12px;
-    background-color: #ffffff;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+/* ======================================================
+   COMPONENT — Gallery (home/_gallery.html)
+   Notes:
+   - Keep existing IDs/classes because gallery_lightbox.js depends on them.
+   - Styles are scoped to #gallery (current) and .gallery-section (future-safe).
+   ====================================================== */
+
+/* Thumbnail grid images */
+#gallery .img-thumbnail,
+.gallery-section .img-thumbnail {
+    border: 1px solid #dee2e6;
+    padding: 0.25rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0,0,0,.075);
+    cursor: pointer;
 }
 
-#testimonials .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+/* Hover + keyboard focus */
+#gallery .img-thumbnail:hover,
+.gallery-section .img-thumbnail:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+    border-color: #aecdec;
 }
 
-#testimonials .blockquote {
-    font-size: 1.1rem;
-    color: #555;
-    font-style: normal;
-    font-weight: 400;
-    font-family: 'Open Sans', sans-serif;
-    border-left: 4px solid #aecdec; /* Accent color */
-    padding-left: 1.5rem;
+/* When the <a> gets keyboard focus, give a visible ring on the image */
+#gallery a:focus-visible .img-thumbnail,
+.gallery-section a:focus-visible .img-thumbnail {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 2px;
 }
 
-#testimonials .blockquote-footer {
-    font-weight: 600;
-    color: #333;
-    font-style: normal;
+/* Fullscreen gallery lightbox image */
+.gallery-lightbox-img {
+    max-width: 100%;
+    max-height: calc(100vh - 72px); /* header space */
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Next / Prev arrow buttons */
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: rgba(0,0,0,0.35);
+    color: #fff;
+    font-size: 2.5rem;
+    line-height: 1;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease-in-out;
+}
+
+.gallery-prev { left: 16px; }
+.gallery-next { right: 16px; }
+
+.gallery-nav-btn:hover {
+    background: rgba(0,0,0,0.55);
+}
+
+/* Keyboard accessibility for lightbox controls */
+.gallery-nav-btn:focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #gallery .img-thumbnail,
+    .gallery-section .img-thumbnail {
+        transition: none;
+    }
+    #gallery .img-thumbnail:hover,
+    .gallery-section .img-thumbnail:hover {
+        transform: none;
+    }
+    .gallery-nav-btn {
+        transition: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-nav-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 2rem;
+    }
 }

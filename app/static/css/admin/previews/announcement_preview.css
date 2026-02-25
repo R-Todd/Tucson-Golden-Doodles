@@ -1,4 +1,14 @@
-/* app/static/css/admin/announcement_preview.css */
+/* app/static/css/admin/previews/announcement_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. */
+@import url("../../components/announcement_banner.css");
+
+/* Admin-only framing for the live preview container */
+#announcementPreview .litter-announcement-banner {
+    border-radius: 5px;
+    overflow: hidden;
+}
 
 /* Styles the wrapper for the live preview to mimic the real banner. */
 #banner-preview-wrapper {
@@ -16,7 +26,8 @@
     color: #ffffff;
 }
 
-#banner-preview-wrapper .btn {
+#banner-preview-wrapper .btn,
+#announcementPreview .litter-announcement-banner .btn {
     font-weight: bold;
     text-transform: uppercase;
     padding: 0.8rem 2rem;

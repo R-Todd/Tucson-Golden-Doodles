@@ -1,5 +1,8 @@
 /* app/static/css/admin/admin_custom.css */
 
+/* Imports must be at the top. Keep preview styling modular. */
+@import url("./previews/hero_preview.css");
+
 /* --- Live Preview Styling --- */
 .live-preview-container {
     margin-top: 40px;
@@ -17,24 +20,4 @@
     border-bottom: 1px solid #ccc;
     font-size: 1.5rem;
     color: #333;
-}
-
-/* --- Hero Section Preview Specifics --- */
-
-/* Wrapper to constrain the hero preview */
-.hero-preview-wrapper {
-    height: 350px; /* Reduced height for a compact preview */
-    overflow: hidden; /* Hide parts of the background that don't fit */
-    position: relative;
-    border-radius: 5px;
-}
-
-/* Apply the real hero section styles, but scoped to the preview */
-.hero-preview-wrapper .hero-section {
-    height: 100%;
-    width: 100%;
-    transform: scale(1); /* Ensure it's not scaled down */
-    position: absolute;
-    top: 0;
-    left: 0;
 }

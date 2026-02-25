@@ -1,4 +1,8 @@
-/* app/static/css/admin/reviews.css */
+/* app/static/css/admin/previews/review_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. */
+@import url("../../components/reviews.css");
 
 /* Styles for the review preview card in the admin edit view */
 #review-preview-wrapper {

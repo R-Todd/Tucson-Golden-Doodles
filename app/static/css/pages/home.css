@@ -1,0 +1,90 @@
+/* ======================================================
+   PAGE — Home
+   Purpose:
+   - Home-only layout + overrides for components
+   - Keep component “base” styles in css/components/*.css
+   ====================================================== */
+
+/* ======================================================
+   HOME — Available Puppies section
+   Scopes to: <section id="available-puppies" class="available-puppies--home">
+   ====================================================== */
+
+#available-puppies.available-puppies--home {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+#available-puppies.available-puppies--home .section-title {
+  margin-bottom: 0.5rem;
+}
+
+#available-puppies.available-puppies--home .section-subtitle {
+  margin-bottom: 2.2rem;
+  font-size: 1.05rem;
+  color: var(--muted);
+}
+
+/* Smaller image on home (never cropped) */
+#available-puppies.available-puppies--home .available-puppy-img {
+  max-height: 240px;
+}
+
+/* Tighten content spacing on home */
+#available-puppies.available-puppies--home .available-puppy-card .card-body {
+  padding: 1rem 1.1rem 0.5rem 1.1rem;
+}
+
+/* Slightly smaller name on home */
+#available-puppies.available-puppies--home .available-puppy-card h2,
+#available-puppies.available-puppies--home .available-puppy-card .h5 {
+  font-size: 1.15rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Reduce small text density */
+#available-puppies.available-puppies--home .available-puppy-card .text-muted.small {
+  font-size: 0.92rem;
+}
+
+/* Divider spacing */
+#available-puppies.available-puppies--home .available-puppy-card hr {
+  margin: 0.6rem 0;
+}
+
+/* Footer spacing */
+#available-puppies.available-puppies--home .available-puppy-card .card-footer {
+  padding: 0 1.1rem 1.05rem 1.1rem;
+}
+
+#available-puppies.available-puppies--home .available-puppy-card .btn {
+  font-size: 0.92rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+}
+
+/* “View all available puppies” button */
+#available-puppies.available-puppies--home .btn-outline-primary {
+  margin-top: 1.5rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.95rem;
+}
+
+/* Center the top text block (name / born-on line) */
+#available-puppies.available-puppies--home .available-puppy-card .card-body > div:first-child {
+  text-align: center;
+}
+
+/* Available badge centered + slightly smaller */
+#available-puppies.available-puppies--home .badge.bg-success {
+  display: inline-block;
+  margin: 0.25rem auto 0 auto;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+}
+
+/* Remove extra vertical spacing around badge container */
+#available-puppies.available-puppies--home .card-body .mt-2 {
+  margin-top: 0.35rem !important;
+}

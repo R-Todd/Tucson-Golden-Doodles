@@ -1,4 +1,10 @@
-/* app/static/css/admin/gallery_preview.css */
+/* app/static/css/admin/previews/gallery_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. This does NOT change any preview IDs. */
+@import url("../../components/gallery.css");
+
+/* Preview-only framing (safe: only targets admin preview IDs) */
 
 #gallery-preview-wrapper {
     text-align: center;

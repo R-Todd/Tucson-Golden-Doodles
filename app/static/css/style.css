@@ -5,11 +5,14 @@
 @import url("pages/parents.css");
 @import url("pages/puppy.css");
 @import url("pages/litters.css");
-@import url("pages/available_puppies.css");
+@import url("pages/available_puppy.css");
 @import url("components/hero.css");
 @import url("components/about.css");
-@import url("components/banner.css"); 
+/* @import url("components/banner.css"); */
+@import url("pages/home.css");
+@import url("components/announcement_banner.css");
 @import url("components/reviews.css");
+@import url("components/available_puppy_card.css");
 
 @import url("components/gallery.css");
 

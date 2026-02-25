@@ -1,4 +1,8 @@
-/* app/static/css/admin/hero_preview.css */
+/* app/static/css/admin/previews/hero_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. */
+@import url("../../components/hero.css");
 
 /* Wrapper to constrain the hero preview */
 .hero-preview-wrapper {

@@ -1,4 +1,8 @@
-/* app/static/css/admin/puppy_preview.css */
+/* app/static/css/admin/previews/puppy_preview.css */
+
+/* Pull in the real public-facing Puppy page styles so the admin preview
+   stays in sync with production. */
+@import url("../../pages/puppy.css");
 
 /* Styles the wrapper for the puppy preview card. */
 #puppy-preview-wrapper {
@@ -8,35 +12,42 @@
 
 /* Styles the main card element for the puppy preview. */
 #puppy-preview-wrapper .card {
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* Ensures the image respects the card's rounded corners */
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* Styles the preview image. */
-#preview-puppy-image {
-    width: 100%;
+/* Styles the image in the puppy preview card. */
+#puppy-preview-wrapper .card-img-top {
     height: 250px;
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    background-color: #f8f9fa;
+    object-fit: cover;
 }
 
-/* Styles the body of the card, containing the puppy's details. */
+/* Styles the card body content. */
 #puppy-preview-wrapper .card-body {
+    padding: 1.5rem;
     text-align: center;
 }
 
-/* Styles the main title (puppy's name) in the preview. */
-#preview-puppy-name {
+/* Styles the puppy name/title. */
+#puppy-preview-wrapper .card-title {
     font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #343a40;
+    margin-bottom: 0.5rem;
 }
 
-/* Provides consistent spacing for the details section. */
-.puppy-details p {
-    margin-bottom: 0.5rem;
-    color: #6c757d;
+/* Styles the puppy details text. */
+#puppy-preview-wrapper .card-text {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.25rem;
+}
+
+/* Styles the button in the puppy preview card. */
+#puppy-preview-wrapper .btn {
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 0.6rem 1.4rem;
 }

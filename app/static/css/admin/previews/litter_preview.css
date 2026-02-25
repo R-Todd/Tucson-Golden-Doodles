@@ -1,5 +1,9 @@
 /* app/static/css/admin/previews/litter_preview.css */
 
+/* Pull in the real public-facing Litters page styles so the admin preview
+   stays in sync with production. */
+@import url("../../pages/litters.css");
+
 .litter-preview-card {
   max-width: 420px;
 }

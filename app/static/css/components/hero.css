@@ -1,5 +1,12 @@
 /* app/static/css/components/hero.css */
 
+/* ======================================================
+   COMPONENT — Hero (home/_hero.html)
+   Safe polish:
+   - Add visible keyboard focus styling inside the hero
+   - Respect prefers-reduced-motion
+   ====================================================== */
+
 /*
   Split hero (text + image) matching reference:
   - Desktop: side-by-side
@@ -155,9 +162,26 @@
     opacity: 0.85;
 }
 
+/* Keyboard accessibility: make focus obvious without changing layout */
+.hero-split :focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+    border-radius: 10px;
+}
+
 /* Animation for the scroll arrow (kept from earlier hero) */
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-20px); }
     60% { transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* If any hero element uses bounce, disable it for reduced motion users */
+    .hero-split * {
+        scroll-behavior: auto;
+    }
+    .hero-down-arrow {
+        animation: none !important;
+    }
 }
