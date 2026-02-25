@@ -51,13 +51,13 @@
               {# Subtitle = Parents (linked) + born date #}
               <div class="text-muted small mb-3">
                 {% if litter.mother %}
-                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+                  <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
                 {% else %}
                   <span>Mother: —</span>
                 {% endif %}
                 <span> &amp; </span>
                 {% if litter.father %}
-                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+                  <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
                 {% else %}
                   <span>Father: —</span>
                 {% endif %}
@@ -90,7 +90,7 @@
 
               <div class="text-muted small">
                 {% if litter.mother %}
-                  Mother: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+                  Mother: <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
                 {% else %}
                   Mother: —
                 {% endif %}
@@ -98,7 +98,7 @@
                 <span class="mx-2">|</span>
 
                 {% if litter.father %}
-                  Father: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+                  Father: <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
                 {% else %}
                   Father: —
                 {% endif %}

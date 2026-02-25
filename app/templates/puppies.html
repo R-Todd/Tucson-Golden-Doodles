@@ -76,7 +76,7 @@
 
                     <div class="col-md-6 text-center parent-profile">
                         {% if litter.mother %}
-                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">
+                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">
                             <img src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
                                  class="img-fluid parent-image"
                                  alt="Photo of {{ litter.mother.name }}">
@@ -89,7 +89,7 @@
 
                     <div class="col-md-6 text-center parent-profile">
                         {% if litter.father %}
-                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">
+                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">
                             <img src="{{ litter.father.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
                                  class="img-fluid rounded-circle parent-image"
                                  alt="Photo of {{ litter.father.name }}">

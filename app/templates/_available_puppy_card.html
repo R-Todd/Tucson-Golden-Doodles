@@ -46,7 +46,7 @@
         <div class="mb-1">
           Mother:
           {% if litter and litter.mother %}
-            <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+            <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
           {% else %}
             <span class="text-muted">—</span>
           {% endif %}
@@ -54,7 +54,7 @@
         <div class="mb-2">
           Father:
           {% if litter and litter.father %}
-            <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+            <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
           {% else %}
             <span class="text-muted">—</span>
           {% endif %}

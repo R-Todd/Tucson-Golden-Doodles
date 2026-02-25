@@ -13,6 +13,22 @@
 #available-puppies.available-puppies--home {
   max-width: 1100px;
   margin: 0 auto;
+  /* No “boxed panel” — use a full-width band instead */
+  position: relative;
+  padding: 56px 0;
+}
+
+/* Full-width premium band (not a box) */
+#available-puppies.available-puppies--home::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background: linear-gradient(180deg, rgba(248, 246, 242, 0.85) 0%, rgba(255, 255, 255, 1) 100%);
+  z-index: -1;
 }
 
 #available-puppies.available-puppies--home .section-title {
@@ -25,9 +41,22 @@
   color: var(--muted);
 }
 
-/* Smaller image on home (never cropped) */
+/* Premium card feel on home */
+#available-puppies.available-puppies--home .available-puppy-card {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+}
+
+/* Larger image on home (never cropped) */
 #available-puppies.available-puppies--home .available-puppy-img {
-  max-height: 240px;
+  max-height: 320px;
+  padding: 8px 8px 0 8px; /* reduce frame padding so the photo feels larger */
+}
+
+/* Keep the overall card feeling balanced when images get larger */
+#available-puppies.available-puppies--home .available-puppy-card .card-body {
+  padding-top: 0.9rem;
 }
 
 /* Tighten content spacing on home */
@@ -35,11 +64,29 @@
   padding: 1rem 1.1rem 0.5rem 1.1rem;
 }
 
+/* Center the header area (name/breed/born/badge) on HOME
+   The markup uses: .d-flex.align-items-start.justify-content-between */
+#available-puppies.available-puppies--home .available-puppy-card .card-body > .d-flex {
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center;
+  gap: 8px;
+}
+
+/* The inner left column in the header row */
+#available-puppies.available-puppies--home .available-puppy-card .card-body > .d-flex > div:first-child {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 /* Slightly smaller name on home */
 #available-puppies.available-puppies--home .available-puppy-card h2,
 #available-puppies.available-puppies--home .available-puppy-card .h5 {
   font-size: 1.15rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 /* Reduce small text density */
@@ -49,7 +96,7 @@
 
 /* Divider spacing */
 #available-puppies.available-puppies--home .available-puppy-card hr {
-  margin: 0.6rem 0;
+  margin: 0.75rem 0;
 }
 
 /* Footer spacing */
@@ -70,11 +117,6 @@
   font-size: 0.95rem;
 }
 
-/* Center the top text block (name / born-on line) */
-#available-puppies.available-puppies--home .available-puppy-card .card-body > div:first-child {
-  text-align: center;
-}
-
 /* Available badge centered + slightly smaller */
 #available-puppies.available-puppies--home .badge.bg-success {
   display: inline-block;
@@ -87,4 +129,27 @@
 /* Remove extra vertical spacing around badge container */
 #available-puppies.available-puppies--home .card-body .mt-2 {
   margin-top: 0.35rem !important;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  #available-puppies.available-puppies--home {
+    padding: 44px 0;
+  }
+}
+
+/* Layout: 3 cards max per row on desktop */
+@media (min-width: 992px) {
+  #available-puppies.available-puppies--home .row > [class*="col"] {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
+}
+
+/* Layout: 2 per row on medium screens (keeps cards readable) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  #available-puppies.available-puppies--home .row > [class*="col"] {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
 }
