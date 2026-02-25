@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">Tucson Golden Doodles</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="main-nav">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('parents.list_parents') }}">Our Parents</a></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="our-puppies-dropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Our Puppies
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="our-puppies-dropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('litters.list_litters') }}">Current Litters</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a></li>
+                    </ul>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_auth.logout') }}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_auth.login') }}">Admin Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

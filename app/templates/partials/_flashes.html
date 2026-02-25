@@ -1,0 +1,23 @@
+{# app/templates/partials/_flashes.html #}
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      {# Map common flask flash categories to bootstrap alert classes #}
+      {% set bs = category %}
+      {% if category in ["error", "danger"] %}
+        {% set bs = "danger" %}
+      {% elif category in ["warning"] %}
+        {% set bs = "warning" %}
+      {% elif category in ["success"] %}
+        {% set bs = "success" %}
+      {% elif category in ["info", "message"] %}
+        {% set bs = "info" %}
+      {% endif %}
+
+      <div class="alert alert-{{ bs }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}

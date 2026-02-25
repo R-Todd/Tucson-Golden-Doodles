@@ -5,10 +5,11 @@
 {% block content %}
 <div class="container py-5">
 
-  <div class="text-center mb-5">
-    <h1 class="display-4">Available Puppies</h1>
-    <p class="lead">Browse all puppies currently marked as available.</p>
-  </div>
+  {% set title = "Available Puppies" %}
+  {% set subtitle = "Browse all puppies currently marked as available." %}
+  {% set align = "center" %}
+  {% include "components/_section_header.html" %}
+
 
   {% if puppies %}
     <div class="row g-4">

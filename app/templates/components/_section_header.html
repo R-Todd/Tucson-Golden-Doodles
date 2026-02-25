@@ -1,0 +1,16 @@
+{# app/templates/components/_section_header.html #}
+{# Usage:
+   {% include "components/_section_header.html" with context %}
+   Expect variables:
+     title (required)
+     subtitle (optional)
+     align (optional: "start" | "center"; default "start")
+#}
+
+{% set _align = align if align is defined else "start" %}
+<header class="mb-4 text-{{ _align }}">
+  <h1 class="mb-2">{{ title }}</h1>
+  {% if subtitle is defined and subtitle %}
+    <p class="lead mb-0">{{ subtitle }}</p>
+  {% endif %}
+</header>

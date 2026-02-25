@@ -5,10 +5,10 @@
 {% block content %}
 <div class="container py-5">
 
-  <div class="text-center mb-5">
-    <h1 class="display-4">Current Litters</h1>
-    <p class="lead">Explore our current litters and meet the parents.</p>
-  </div>
+  {% set title = "Current Litters" %}
+  {% set subtitle = "Explore our current litters and meet the parents." %}
+  {% set align = "center" %}
+  {% include "components/_section_header.html" %}
 
   {% if litters %}
     <div class="row g-4">

@@ -5,10 +5,10 @@
 {% block content %}
 <div class="container py-5">
 
-  <div class="text-center mb-5">
-    <h1 class="display-5">{{ litter.display_label }}</h1>
-    <p class="lead mb-0">Meet the parents and puppies in this litter.</p>
-  </div>
+  {% set title = litter.display_label %}
+  {% set subtitle = "Meet the parents and puppies in this litter." %}
+  {% set align = "center" %}
+  {% include "components/_section_header.html" %}
 
   <!-- =========================
        LITTER INFO
