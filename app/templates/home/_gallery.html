@@ -1,0 +1,51 @@
+{# templates/home/_gallery.html #}
+{# Home-only: Gallery section + lightbox modal (IDs/classes preserved for gallery_lightbox.js) #}
+
+{% if gallery_images %}
+<section id="gallery" class="section-pad">
+    {# Standardized section header (Phase 5D): centralizes typography/styling #}
+    {% set title = "Gallery" %}
+    {% set subtitle = "A peek into life with our dogs and puppies." %}
+    {% set align = "center" %}
+    {% set level = 2 %}
+    {% include "components/_section_header.html" %}
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+        {% for image in gallery_images %}
+        <div class="col">
+            <a href="{{ image.image_s3_key | s3_url }}"
+               data-gallery="site-gallery"
+               data-title="{{ image.caption or 'Gallery Image' }}">
+                <img src="{{ image.image_s3_key | s3_url }}"
+                     class="img-fluid img-thumbnail"
+                     alt="{{ image.caption or 'Gallery Image' }}">
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{# --- GALLERY LIGHTBOX MODAL (Bootstrap 5) --- #}
+<div class="modal fade" id="galleryLightbox" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-dark">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-white" id="galleryLightboxTitle">Gallery</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-0 position-relative d-flex align-items-center justify-content-center">
+        <button type="button" class="gallery-nav-btn gallery-prev" aria-label="Previous image">
+          &#10094;
+        </button>
+
+        <img id="galleryLightboxImg" class="gallery-lightbox-img" src="" alt="">
+
+        <button type="button" class="gallery-nav-btn gallery-next" aria-label="Next image">
+          &#10095;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

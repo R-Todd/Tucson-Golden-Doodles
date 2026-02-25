@@ -1,0 +1,38 @@
+{% if hero %}
+{#--- HERO CONTENT BLOCK ---#}
+<section class="hero-split">
+    <div class="hero-split__text">
+        <div class="hero-content">
+            <h1 class="hero-title">{{ hero.main_title }}</h1>
+
+            <div class="hero-kicker">{{ hero.subtitle }}</div>
+
+            <p class="hero-description">{{ hero.description }}</p>
+
+            <ul class="hero-bullets">
+                {% if hero.scroll_text_main %}<li>{{ hero.scroll_text_main }}</li>{% endif %}
+                {% if hero.scroll_text_secondary %}<li>{{ hero.scroll_text_secondary }}</li>{% endif %}
+            </ul>
+
+            <div class="hero-cta-row">
+                <a class="btn hero-cta" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a>
+            </div>
+
+            <a href="#about" class="hero-down" aria-label="Scroll to About section">
+                <span class="hero-down-arrow">&darr;</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-split__image" aria-hidden="true">
+        <div class="hero-image-frame">
+            <img
+                src="{{ (hero.image_s3_key_large or hero.image_s3_key) | s3_url }}"
+                alt="{{ hero.main_title }}"
+                class="hero-image"
+                loading="eager"
+                decoding="async">
+        </div>
+    </div>
+</section>
+{% endif %}

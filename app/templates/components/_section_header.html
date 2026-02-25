@@ -5,12 +5,23 @@
      title (required)
      subtitle (optional)
      align (optional: "start" | "center"; default "start")
+     level (optional: 1-6; default 2)
+     title_class (optional; default "section-title")
+     subtitle_class (optional; default "section-subtitle")
 #}
 
 {% set _align = align if align is defined else "start" %}
+{% set _level = level if level is defined else 2 %}
+{% set _title_class = title_class if title_class is defined else "section-title" %}
+{% set _subtitle_class = subtitle_class if subtitle_class is defined else "section-subtitle" %}
+
 <header class="mb-4 text-{{ _align }}">
-  <h1 class="mb-2">{{ title }}</h1>
+  <h{{ _level }} class="{{ _title_class }} {% if _align == 'center' %}text-center{% else %}text-start{% endif %}">
+    {{ title }}
+  </h{{ _level }}>
   {% if subtitle is defined and subtitle %}
-    <p class="lead mb-0">{{ subtitle }}</p>
+    <p class="{{ _subtitle_class }} {% if _align == 'center' %}text-center{% else %}text-start{% endif %} mb-0">
+      {{ subtitle }}
+    </p>
   {% endif %}
 </header>

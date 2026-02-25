@@ -1,0 +1,28 @@
+{# templates/home/_available_puppies.html #}
+{# Home-only: Available puppies section (kept equivalent to prior inline markup) #}
+
+<section id="available-puppies" class="section-pad text-center available-puppies--home">
+    {# Standardized section header (Phase 5D): centralizes typography/styling #}
+    {% set title = "Available Puppies" %}
+    {% set subtitle = "Browse puppies currently marked as available. Click a pup to learn more." %}
+    {% set align = "center" %}
+    {% set level = 2 %}
+    {% include "components/_section_header.html" %}
+
+    {% if puppies %}
+    <div class="row g-4">
+        {% for puppy in puppies %}
+            {% set is_home = true %}
+            {% include "_available_puppy_card.html" %}
+        {% endfor %}
+    </div>
+
+    <div class="mt-4">
+        <a class="btn btn-outline-primary" href="{{ url_for('puppies.available_puppies') }}">View all available puppies</a>
+    </div>
+
+    {% else %}
+        <p>We have no available puppies at this time. Please check back soon!</p>
+    {% endif %}
+</section>
+<hr class="my-5">

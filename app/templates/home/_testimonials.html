@@ -1,0 +1,32 @@
+{# templates/home/_testimonials.html #}
+{# Home-only: Reviews/Testimonials section (kept equivalent to prior inline markup) #}
+
+{% if reviews %}
+<section id="testimonials" class="section-pad">
+    {# Standardized section header (Phase 5D): centralizes typography/styling #}
+    {% set title = "What Our Families Are Saying" %}
+    {% set subtitle = "Real stories from families who welcomed one of our pups." %}
+    {% set align = "center" %}
+    {% set level = 2 %}
+    {% include "components/_section_header.html" %}
+
+    <div class="row">
+        {% for review in reviews %}
+            {# Defense-in-depth: skip placeholder/blank reviews #}
+            {% if review.testimonial_text and review.author_name %}
+            <div class="col-md-6 mx-auto mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <blockquote class="blockquote mb-0">
+                            <p>{{ review.testimonial_text }}</p>
+                            <footer class="blockquote-footer mt-2">{{ review.author_name }}</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+<hr class="my-5">
+{% endif %}

@@ -1,0 +1,25 @@
+{# templates/home/_announcement_banner.html #}
+{# Home-only: litter announcement banner (kept equivalent to prior inline markup) #}
+
+{% if announcement_banner and announcement_banner.is_active %}
+    <div class="litter-announcement-banner">
+        <h4 class="h4">{{ announcement_banner.main_text }}</h4>
+
+        {% if announcement_banner.featured_litter %}
+            {% set litter = announcement_banner.featured_litter %}
+            {% set mom = litter.mother %}
+            {% set dad = litter.father %}
+
+            <p>{{ announcement_banner.sub_text.format(
+                mom_name=mom.name if mom else "",
+                dad_name=dad.name if dad else "",
+                birth_date=litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else ""
+            ) }}</p>
+
+            <a class="btn btn-primary"
+               href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                View Featured Litter
+            </a>
+        {% endif %}
+    </div>
+{% endif %}

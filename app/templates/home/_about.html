@@ -1,0 +1,29 @@
+{# templates/home/_about.html #}
+{# Home-only: About section (kept equivalent to prior inline markup) #}
+
+{% if about %}
+<section id="about" class="about-section section-pad">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-md-6">
+                <div class="about-image-wrap">
+                    <img
+                        src="{{ about.image_s3_key | s3_url or url_for('static', filename='img/about_us_family.jpg') }}"
+                        alt="{{ about.image_alt_text or 'About our family' }}"
+                        class="img-fluid rounded shadow-sm">
+                </div>
+            </div>
+            <div class="col-md-6">
+                {# Standardized section header (Phase 5D): centralizes typography/styling #}
+                {% set title = about.title %}
+                {% set subtitle = about.subtitle %}
+                {% set align = "start" %}
+                {% set level = 2 %}
+                {% include "components/_section_header.html" %}
+
+                <div class="about-content">{{ about.content_html|safe }}</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
