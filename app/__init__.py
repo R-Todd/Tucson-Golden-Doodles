@@ -7,6 +7,7 @@ from flask_caching import Cache
 from flask_ckeditor import CKEditor
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from getpass import getpass
 
 from config import Config
 from app.models import db, User
@@ -90,5 +91,41 @@ def create_app(config_class=Config):
     from app.routes import ALL_BLUEPRINTS
     for bp in ALL_BLUEPRINTS:
         app.register_blueprint(bp)
+
+    # --- CLI Commands (Phase 1: single authoritative entrypoint) ---
+    # Register admin utility on the app factory so it's available via:
+    #   flask --app wsgi create-admin
+    @app.cli.command("create-admin")
+    def create_admin():
+        """
+        Creates or replaces the single admin user.
+
+        Optional utility for local/dev or emergency recovery.
+        """
+        username = input("Enter admin username: ").strip()
+        if not username:
+            print("Error: username cannot be empty.")
+            return
+
+        password = getpass("Enter admin password: ")
+        password_confirm = getpass("Confirm admin password: ")
+
+        if password != password_confirm:
+            print("Error: Passwords do not match.")
+            return
+
+        existing = User.query.filter_by(username=username).first()
+        if existing:
+            print(f"User '{username}' already exists; updating password.")
+            existing.set_password(password)
+            db.session.commit()
+            return
+
+        admin_user = User(username=username)
+        admin_user.set_password(password)
+        db.session.add(admin_user)
+        db.session.commit()
+
+        print(f"Admin user '{username}' created successfully.")
 
     return app

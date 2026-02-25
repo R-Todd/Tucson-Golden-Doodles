@@ -1,6 +1,7 @@
 import os
 from datetime import date
 from werkzeug.datastructures import FileStorage
+from sqlalchemy import text
 
 from app import create_app
 from app.models import (
@@ -100,20 +101,35 @@ with app.app_context():
     #
     # Here we only clear rows to reseed deterministically.
     #
-    # Delete order matters due to foreign keys.
-    # Delete order matters due to foreign keys.
-    db.session.query(AnnouncementBanner).delete()
-    db.session.query(ParentImage).delete()
-    db.session.query(Puppy).delete()
-    db.session.query(Litter).delete()
-    db.session.query(Parent).delete()
-    db.session.query(Review).delete()
-    db.session.query(GalleryImage).delete()
-    db.session.query(HeroSection).delete()
-    db.session.query(AboutSection).delete()
-    db.session.query(SiteDetails).delete()
-    db.session.query(User).delete()
-    db.session.commit()
+    # Delete order matters due to foreign keys (MySQL).
+    # To make reseeding deterministic even as FK relationships evolve, we temporarily
+    # disable FK checks during the wipe, then restore them even if something fails.
+    try:
+        db.session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+
+        db.session.query(AnnouncementBanner).delete(synchronize_session=False)
+        db.session.query(ParentImage).delete(synchronize_session=False)
+        db.session.query(Puppy).delete(synchronize_session=False)
+        db.session.query(Litter).delete(synchronize_session=False)
+        db.session.query(Parent).delete(synchronize_session=False)
+        db.session.query(Review).delete(synchronize_session=False)
+        db.session.query(GalleryImage).delete(synchronize_session=False)
+        db.session.query(HeroSection).delete(synchronize_session=False)
+        db.session.query(AboutSection).delete(synchronize_session=False)
+        db.session.query(SiteDetails).delete(synchronize_session=False)
+        db.session.query(User).delete(synchronize_session=False)
+
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    finally:
+        # Always restore FK checks so the app runs normally after seeding.
+        try:
+            db.session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     # ======================================================
     # ADMIN (FROM .env) — REQUIRED
