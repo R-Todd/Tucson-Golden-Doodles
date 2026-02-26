@@ -14,7 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 from .enums import ParentRole, PuppyStatus
-from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+from .site_models import SiteDetails, HeroSection, AboutSection, GalleryImage, AnnouncementBanner, ParentsPageIntro
 from .parent_models import Parent, ParentImage
 from .puppy_models import Puppy
 from .review_models import Review
@@ -23,4 +23,3 @@ from .puppy_models import Puppy
 from .review_models import Review
 from .user_models import User
 from .litter_models import Litter
-

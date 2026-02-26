@@ -2,7 +2,7 @@ from flask import abort, render_template
 from sqlalchemy.orm import selectinload
 
 from app.routes.parents import bp
-from app.models import Litter, Parent, PuppyStatus
+from app.models import Litter, Parent, PuppyStatus, ParentsPageIntro
 from app.models.enums import ParentRole
 
 
@@ -23,7 +23,13 @@ def list_parents():
         .all()
     )
 
-    return render_template('parents.html', moms=moms, dads=dads)
+    parents_intro = (
+        ParentsPageIntro.query
+        .order_by(ParentsPageIntro.id.desc())
+        .first()
+    )
+
+    return render_template('parents.html', moms=moms, dads=dads, parents_intro=parents_intro)
 
 
 @bp.route('/<int:parent_id>')

@@ -5,6 +5,7 @@ from flask_login import current_user, login_user, logout_user
 from flask_admin.menu import MenuLink
 
 from app.models import db
+from app.models.site_models import ParentsPageIntro
 from app.models import (
     User, Parent, Litter, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
@@ -13,6 +14,7 @@ from .views import (
     ParentAdminView, LitterAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
+from .views.home.parents_intro_view import ParentsPageIntroAdminView
 
 # Register admin views for different models
 admin.add_view(ParentAdminView(Parent, db.session))
@@ -25,6 +27,8 @@ admin.add_view(ReviewAdminView(Review, db.session))
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 # Custom name for AboutSection view in the admin interface
 admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
+# Custom name for Parents page intro view in the admin interface
+admin.add_view(ParentsPageIntroAdminView(ParentsPageIntro, db.session, name="Parents Page Intro"))
 # Custom name for AnnouncementBanner view in the admin interface
 admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
 # Custom name for GalleryImage view in the admin interface
