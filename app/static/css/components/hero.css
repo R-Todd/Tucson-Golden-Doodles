@@ -15,12 +15,19 @@
 */
 
 .hero-split {
-    /* Premium editorial height: tall, but not always a full-screen billboard */
-    min-height: clamp(640px, 92vh, 980px);
+    /*
+      Layout height
+      - This controls the amount of vertical “air” in the hero.
+      - If the hero feels like it has too much empty space on tall displays,
+        reduce the middle value (vh) or the max value.
+    */
+    min-height: clamp(560px, 78vh, 880px);
     display: grid;
     grid-template-columns: 1fr 1.25fr;
     background: var(--cream);
     border-bottom: 1px solid var(--line);
+    /* Ensure both columns stretch to the same full height (prevents tiny gaps) */
+    align-items: stretch;
 }
 
 .hero-split__text {
@@ -31,13 +38,34 @@
 
 .hero-split__image {
     border-left: 1px solid var(--line);
+    /*
+      Make the image column stretch and clip:
+      - fixes the top "air" area above the image
+      - removes the thin background strip at the bottom from sub-pixel rounding
+    */
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    /* If there’s ever a rounding gap, match the frame background */
+    background: var(--surface);
 }
 
 .hero-image-frame {
+    /* Fill the entire column height */
     height: 100%;
     width: 100%;
     overflow: hidden;
     position: relative;
+    flex: 1 1 auto;
+    line-height: 0; /* defensive: avoids baseline whitespace artifacts */
+
+    /* /*
+      Visual frame (requested)
+      - Adds a clean border so any 1px rounding gap is not visible
+      - Also makes the image area feel more complete/premium
+    */
+    border: 2px solid #000000;
+    box-sizing: border-box; 
 }
 
 /* Subtle photo treatment for a more premium feel */

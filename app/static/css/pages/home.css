@@ -2,15 +2,32 @@
    PAGE — Home
    Home-only visual polish to match palette and make
    Available Puppies cards pop more.
+
+   Why this file looks "complex":
+   - The home template and partials can wrap the same section with different
+     ids/classes depending on how it is included (e.g., #available-puppies,
+     .available-puppies-section, .home-available-puppies, section.available-puppies).
+   - To keep changes HOME-only, selectors are intentionally scoped to those
+     wrappers instead of using generic selectors that could affect other pages.
    ====================================================== */
 
-/* Ensure the home page sections sit on the cream background */
+/*
+  Background (HOME-only)
+  - Ensures the home layout sits on the global cream token.
+  - body.home implies your <body> gets a "home" class on the home route.
+*/
 .home-page,
 body.home {
   background: var(--cream);
 }
 
-/* ---------- Available Puppies section ---------- */
+/* ---------- Available Puppies section (HOME-only) ---------- */
+
+/*
+  Section spacing
+  - Adds vertical breathing room around the HOME "Available Puppies" section.
+  - Uses multiple wrappers so it still applies if you change the template markup.
+*/
 .available-puppies-section,
 #available-puppies,
 .home-available-puppies,
@@ -18,14 +35,22 @@ section.available-puppies {
   padding: 40px 0 64px 0;
 }
 
-/* Subtle surface behind the card grid to create separation */
+/*
+  Container surface
+  - Keeps the grid sitting directly on the cream background.
+  - (If you later want a tinted panel behind the grid, this is the place.)
+*/
 .available-puppies-section .container,
 #available-puppies .container,
 .home-available-puppies .container {
   background: transparent;
 }
 
-/* Card "pop" on HOME only */
+/*
+  Card elevation (HOME-only)
+  - Adds a stronger shadow + slightly larger radius than the listing page,
+    so the three featured cards feel premium.
+*/
 .available-puppies-section .available-puppy-card,
 #available-puppies .available-puppy-card,
 .home-available-puppies .available-puppy-card {
@@ -39,6 +64,7 @@ section.available-puppies {
 .available-puppies-section .available-puppy-card::before,
 #available-puppies .available-puppy-card::before,
 .home-available-puppies .available-puppy-card::before {
+  /* Espresso top accent bar (matches site palette) */
   content: "";
   position: absolute;
   left: 0;
@@ -51,11 +77,16 @@ section.available-puppies {
 .available-puppies-section .available-puppy-card:hover,
 #available-puppies .available-puppy-card:hover,
 .home-available-puppies .available-puppy-card:hover {
+  /* Lift on hover (HOME-only) */
   transform: translateY(-6px);
   box-shadow: 0 28px 70px rgba(0,0,0,0.12);
 }
 
-/* Image framing */
+/*
+  Image framing
+  - Gives the image area a clean white backing and a subtle divider.
+  - Keeps the photo visually separated from the text content.
+*/
 .available-puppies-section .available-puppy-img,
 #available-puppies .available-puppy-img,
 .home-available-puppies .available-puppy-img {
@@ -63,7 +94,11 @@ section.available-puppies {
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
-/* Keep badge sizing tidy on home, but DO NOT override colors */
+/*
+  Badge sizing
+  - Keeps "Available"/status badges compact and pill-shaped on HOME.
+  - Intentionally does not change badge colors (colors are defined elsewhere).
+*/
 .available-puppies-section .badge,
 #available-puppies .badge,
 .home-available-puppies .badge {
@@ -72,13 +107,16 @@ section.available-puppies {
   font-weight: 700;
 }
 
-/* Tighten card typography slightly */
+/* Typography micro-adjustment (HOME-only) */
 .available-puppies-section .available-puppy-card .card-title,
 #available-puppies .available-puppy-card .card-title {
   letter-spacing: 0.01em;
 }
 
-/* Re-center text on HOME cards */
+/*
+  Text alignment (HOME-only)
+  - Centers the body content in the HOME featured cards.
+*/
 .available-puppies-section .available-puppy-card .card-body,
 #available-puppies .available-puppy-card .card-body,
 .home-available-puppies .available-puppy-card .card-body {
@@ -88,6 +126,7 @@ section.available-puppies {
 .available-puppies-section .available-puppy-card .card-body .d-flex,
 #available-puppies .available-puppy-card .card-body .d-flex,
 .home-available-puppies .available-puppy-card .card-body .d-flex {
+  /* Center any flex rows used for meta lines (Born on, etc.) */
   width: 100%;
   justify-content: center !important;
   align-items: center !important;
@@ -96,10 +135,17 @@ section.available-puppies {
 .available-puppies-section .available-puppy-card .card-body .d-flex > div:first-child,
 #available-puppies .available-puppy-card .card-body .d-flex > div:first-child,
 .home-available-puppies .available-puppy-card .card-body .d-flex > div:first-child {
+  /* Ensure the first column spans full width so text can center properly */
   width: 100%;
 }
 
-/* Buttons baseline in home available puppies section */
+/*
+  Buttons baseline (HOME section)
+  - Forces the default button inside the HOME available puppies section
+    to use the espresso brand color.
+  - Uses !important intentionally to override Bootstrap/utilities
+    without needing markup changes.
+*/
 .available-puppies-section a.btn,
 #available-puppies a.btn,
 .home-available-puppies a.btn,
@@ -121,6 +167,7 @@ section.available-puppies {
 .available-puppies-section .available-puppy-card .btn:hover,
 #available-puppies .available-puppy-card .btn:hover,
 .home-available-puppies .available-puppy-card .btn:hover {
+  /* Slight darken on hover */
   filter: brightness(0.92);
 }
 
@@ -146,6 +193,11 @@ section.available-puppies {
 .available-puppies-section a.btn[href*="available"]:not([href*="litters"]),
 .home-available-puppies a.btn[href*="available"]:not([href*="litters"]),
 #available-puppies a.btn[href*="available"]:not([href*="litters"]) {
+  /*
+    Primary CTA styling (HOME-only)
+    - Makes the "View all available puppies" link stand out as a big CTA.
+    - Uses var(--cta-blue) token for consistency with the rest of the site.
+  */
   display: inline-block !important;
   margin-top: 34px !important;   /* move it down more */
   margin-bottom: 8px !important;
@@ -163,11 +215,13 @@ section.available-puppies {
 .available-puppies-section a.btn[href*="available"]:not([href*="litters"]):hover,
 .home-available-puppies a.btn[href*="available"]:not([href*="litters"]):hover,
 #available-puppies a.btn[href*="available"]:not([href*="litters"]):hover {
+  /* CTA hover */
   filter: brightness(0.95);
   box-shadow: 0 22px 40px rgba(0, 0, 0, 0.22);
 }
 
 @media (max-width: 576px) {
+  /* Mobile spacing adjustments for the HOME section */
   .available-puppies-section,
   #available-puppies,
   .home-available-puppies,

@@ -5,11 +5,22 @@
    - templates/home/_available_puppies.html
    - templates/available_puppies.html
 
+   What this controls (what you see on screen):
+   - Card container: border, radius, shadow, hover lift
+   - Image framing: aspect-ratio + object-fit behavior
+   - Footer + divider styling
+   - Focus ring for keyboard navigation
+
+   Customization knobs (kept consistent via tokens in style.css):
+   - --surface, --line, --shadow
+
    Notes:
-   - Keeps images "not cropped" via object-fit: contain.
    - Page/home layout overrides should live in css/pages/*.css (scoped).
    ====================================================== */
 
+/* ======================================================
+   Card container (shape + elevation)
+   ====================================================== */
 .available-puppy-card {
   border-radius: 14px;
   overflow: hidden;
@@ -19,19 +30,27 @@
   background: var(--surface);
 }
 
+/* Hover lift (premium feel) */
 .available-puppy-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Keyboard accessibility */
+/* ======================================================
+   Keyboard accessibility (focus ring)
+   - Applies when tabbing to links/buttons inside the card
+   ====================================================== */
 .available-puppy-card :focus-visible {
   outline: 3px solid rgba(31, 111, 235, 0.45);
   outline-offset: 3px;
   border-radius: 10px;
 }
 
-/* ---- IMAGE AREA RESET (removes red/padding from wrapper elements) ---- */
+/* ======================================================
+   Image area reset
+   - Ensures wrapper elements don’t add padding/background
+   - Keeps the image region visually matched to the card surface
+   ====================================================== */
 .available-puppy-card a {
   display: block;
 }
@@ -49,10 +68,16 @@
   border: 0 !important;
 }
 
-/* Image: show full photo (no crop) */
+/* ======================================================
+   Image presentation (what crops vs what doesn’t)
+   - aspect-ratio controls the “frame” the photo sits in
+   - object-fit controls how the photo fills the frame
+     * cover  = fills frame; may crop edges
+     * contain = shows full photo; may add letterboxing
+   ====================================================== */
 .available-puppy-img {
   width: 100%;
-  aspect-ratio: 4 / 5;        /* portrait look */
+  aspect-ratio: 4 / 5;        /* portrait frame */
   height: auto;
   object-fit: cover;
   object-position: center;
@@ -60,17 +85,24 @@
   background: var(--surface);
 }
 
-/* Subtle divider */
+/* ======================================================
+   Minor elements (divider + footer)
+   ====================================================== */
+
+/* Subtle divider (e.g., between image and details) */
 .available-puppy-card hr {
   opacity: 0.15;
 }
 
-/* Keep footer clean */
+/* Keep footer clean (no extra bands/borders) */
 .available-puppy-card .card-footer {
   background: var(--surface);
   border: none;
 }
 
+/* ======================================================
+   Motion preferences
+   ====================================================== */
 @media (prefers-reduced-motion: reduce) {
   .available-puppy-card {
     transition: none;

@@ -12,6 +12,22 @@
   text-align: center;
   border-top: 5px solid #000000;
   border-bottom: 5px solid #000000;
+
+  /*
+    Seam fix:
+    - Some browsers produce a 1px “gap” between stacked sections due to
+      sub-pixel rounding (especially after borders/min-height calculations).
+    - This nudges the banner up by 1px to cover that hairline without
+      changing layout in a visible way.
+  */
+
+  /* Overlap the hero so it feels like the photo continues behind the banner */
+  --banner-overlap: 62px;          /* adjust this to taste */
+  margin-top: calc(-1px - var(--banner-overlap));
+
+  /* Ensure the banner paints above the hero image */
+  position: relative;
+  z-index: 5;
 }
 
 .litter-announcement-banner h1,
@@ -69,5 +85,6 @@
 @media (max-width: 576px) {
   .litter-announcement-banner {
     padding: 18px 12px;
+    --banner-overlap: 36px; /* smaller overlap on mobile */
   }
 }
