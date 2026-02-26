@@ -13,10 +13,10 @@
 .available-puppy-card {
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
   transition: transform 160ms ease, box-shadow 160ms ease;
-  background: #fff;
+  background: var(--surface);
 }
 
 .available-puppy-card:hover {
@@ -26,23 +26,38 @@
 
 /* Keyboard accessibility */
 .available-puppy-card :focus-visible {
-  outline: 3px solid rgba(174, 205, 236, 0.9);
+  outline: 3px solid rgba(31, 111, 235, 0.45);
   outline-offset: 3px;
   border-radius: 10px;
 }
 
-/* Image: show full photo (no crop) with a subtle framed letterbox */
+/* ---- IMAGE AREA RESET (removes red/padding from wrapper elements) ---- */
+.available-puppy-card a {
+  display: block;
+}
+
+.available-puppy-card a,
+.available-puppy-card .card-img-top,
+.available-puppy-card .available-puppy-img {
+  background: var(--surface) !important; /* match the info box */
+}
+
+.available-puppy-card .card-img-top,
+.available-puppy-card .available-puppy-img {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+/* Image: show full photo (no crop) */
 .available-puppy-img {
   width: 100%;
-  max-height: 320px;
+  aspect-ratio: 4 / 5;        /* portrait look */
   height: auto;
-  object-fit: contain;      /* NEVER crop */
+  object-fit: cover;
   object-position: center;
-  background: #f4f4f4;      /* tasteful letterbox */
   display: block;
-
-  /* Framing so “contain” looks intentional */
-  padding: 12px 12px 0 12px;
+  background: var(--surface);
 }
 
 /* Subtle divider */
@@ -52,7 +67,7 @@
 
 /* Keep footer clean */
 .available-puppy-card .card-footer {
-  background: #fff;
+  background: var(--surface);
   border: none;
 }
 

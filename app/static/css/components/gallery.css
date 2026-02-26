@@ -10,12 +10,12 @@
 /* Thumbnail grid images */
 #gallery .img-thumbnail,
 .gallery-section .img-thumbnail {
-    border: 1px solid #dee2e6;
+    border: 2px solid var(--espresso);
     padding: 0.25rem;
-    background-color: #fff;
+    background-color: #2b2422;
     border-radius: 0.25rem;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,.075);
+    box-shadow: 0 4px 8px rgba(0,0,0,.075);
     cursor: pointer;
 }
 
@@ -24,7 +24,7 @@
 .gallery-section .img-thumbnail:hover {
     transform: scale(1.03);
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    border-color: #aecdec;
+    border-color: var(--cta-blue);
 }
 
 /* When the <a> gets keyboard focus, give a visible ring on the image */

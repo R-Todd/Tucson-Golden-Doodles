@@ -17,34 +17,44 @@
 @import url("components/gallery.css");
 
 
+/* ===== Global design tokens + rhythm (Highland-inspired) ===== */
+:root {
+    /* Core palette */
+    --cream: #fbf5ef;                   /* page background */
+    --surface: #ffffff;                 /* cards/sections */
+    --ink: #2b2422;                     /* primary text */
+    --muted: rgba(43, 36, 34, 0.75);    /* secondary text */
+
+    /* Brand accents (match your screenshot) */
+    --espresso: #3b2f2f;                /* Available Puppies button */
+    --bronze: #9b5b07;                  /* announcement band */
+    --bronze-dark: #6f450a;             /* darker bronze edge */
+    --cta-blue: #1f6feb;                /* featured litter CTA */
+
+    /* UI primitives */
+    --line: rgba(0, 0, 0, 0.12);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    --radius: 16px;
+}
+
+
 /* --- GENERAL STYLING --- */
 body {
     font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: #ffffff; /* Clean white background */
-    color: #2b2422;
+    background: var(--cream); /* warm cream background */
+    color: var(--ink);
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #2b2422; /* Highland-style ink */
-}
-
-/* ===== Global design tokens + rhythm (Highland-inspired) ===== */
-:root {
-    --cream: #fbf5ef;
-    --ink: #2b2422;
-    --muted: rgba(43, 36, 34, 0.75);
-    --line: rgba(0, 0, 0, 0.12);
-    --card: #ffffff;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-    --radius: 16px;
+    color: var(--ink); /* Highland-style ink */
 }
 
 main {
-    background: #ffffff;
+    background: transparent; /* let the cream show through */
 }
 
 /* Section spacing helper (apply per-section in templates) */
@@ -77,13 +87,52 @@ main {
 .btn.hero-cta {
     border-radius: 999px;
     padding: 12px 22px;
-    background: #3b2f2f;
+    background: var(--espresso);
     color: #ffffff;
-    border: 1px solid #3b2f2f;
+    border: 1px solid var(--espresso);
 }
 
 .btn.hero-cta:hover {
-    background: #2f2525;
-    border-color: #2f2525;
+    filter: brightness(0.92);
     color: #ffffff;
 }
+
+/* --- Consistent surfaces --- */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* --- Shared button roles (use these across templates) --- */
+.btn-brand {
+    background: var(--espresso);
+    border: 1px solid var(--espresso);
+    color: #ffffff;
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 10px 18px;
+}
+.btn-brand:hover { filter: brightness(0.92); color: #ffffff; }
+
+.btn-cta {
+    background: var(--cta-blue);
+    border: 1px solid var(--cta-blue);
+    color: #ffffff;
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 10px 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.btn-cta:hover { filter: brightness(0.92); color: #ffffff; }
+
+.btn-outline-brand {
+    background: transparent;
+    border: 1px solid var(--espresso);
+    color: var(--espresso);
+    border-radius: 999px;
+    font-weight: 700;
+}
+.btn-outline-brand:hover { background: var(--espresso); color: #ffffff; }
