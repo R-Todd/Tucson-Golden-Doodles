@@ -2,7 +2,7 @@
 
 /* Parent Name Banner */
 .parent-name-banner {
-    background-color: #6c757d; /* Muted background bar */
+    background-color: var(--bronze); /* Muted background bar */
     height: 70px; /* Approximately 70px tall */
     display: flex; /* Use flexbox for vertical and horizontal centering */
     align-items: center; /* Vertically center */
@@ -191,4 +191,61 @@
 .litter-banner a:hover {
     color: #0056b3; /* A blue on hover for interactivity */
     text-decoration: underline;
+}
+
+/* ======================================================
+   Parents INDEX page styling (Moms/Dads sections)
+   Requirements:
+   - Moms section background: muted pink
+   - Dads section background: muted blue
+   - Names centered + bold
+   - Breed bold
+   - Button matches Available Puppies (espresso pill)
+   NOTE: Requires template hooks:
+     - wrap sections with .parents-section + modifier classes
+     - add .parent-card__name, .parent-card__breed, .parent-card__btn
+   ====================================================== */
+
+.parents-section {
+    padding: 22px 18px;
+    border-radius: 18px;
+    margin-bottom: 24px;
+}
+
+/* Muted section backgrounds */
+.parents-section--moms {
+    background: rgba(210, 120, 140, 0.12); /* muted pink */
+}
+
+.parents-section--dads {
+    background: rgba(90, 140, 200, 0.14);  /* muted blue */
+}
+
+/* Names centered + bold (now in card body) */
+.parent-card__name {
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.6rem;
+}
+
+/* Bold the breed line */
+.parent-card__breed {
+    font-weight: 600;
+    font-size: 1.05rem;
+    
+}
+
+/* Button matches Available Puppies (espresso filled pill) */
+.parent-card__btn {
+    background: var(--espresso);
+    border: 1px solid var(--espresso);
+    color: #ffffff;
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 12px 22px;
+}
+
+.parent-card__btn:hover {
+    filter: brightness(0.92);
+    color: #ffffff;
 }
