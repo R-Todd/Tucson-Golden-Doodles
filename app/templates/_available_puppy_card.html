@@ -5,6 +5,12 @@
    - is_home: set to true by homepage template to enable homepage-only layout tweaks
 #}
 {% set litter = puppy.litter %}
+
+{# Parent line layout:
+   - Home page: keep on ONE line (no wrap) with truncation
+   - Other pages: allow wrapping when space is tight #}
+{% set parent_line_class = "mb-2 d-flex justify-content-between align-items-start gap-3 " ~ ("flex-nowrap" if is_home else "flex-wrap") %}
+
 <div class="col-12 col-md-6 col-lg-4">
   <div class="card h-100 shadow-sm available-puppy-card">
 
@@ -22,6 +28,9 @@
           </div>
           <div class="text-muted small">
             Born on: <span class="fw-semibold">{{ litter.birth_date.strftime('%B %d, %Y') if litter and litter.birth_date else "—" }}</span>
+          </div>
+          <div class="text-muted small">
+            Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>
           </div>
 
           {# Home page ONLY: badge under "Born on" so it doesn't affect header layout #}
@@ -43,25 +52,24 @@
       <hr class="my-3">
 
       <div class="small">
-        <div class="mb-1">
-          Mother:
-          {% if litter and litter.mother %}
-            <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
-          {% else %}
-            <span class="text-muted">—</span>
-          {% endif %}
-        </div>
-        <div class="mb-2">
-          Father:
-          {% if litter and litter.father %}
-            <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
-          {% else %}
-            <span class="text-muted">—</span>
-          {% endif %}
-        </div>
+        <div class="{{ parent_line_class }}">
+          <div class="{{ 'w-50 text-truncate' if is_home else '' }}">
+            Mother:
+            {% if litter and litter.mother %}
+              <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </div>
 
-        <div class="text-muted">
-          Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>
+          <div class="text-end ms-auto {{ 'w-50 text-truncate' if is_home else '' }}">
+            Father:
+            {% if litter and litter.father %}
+              <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

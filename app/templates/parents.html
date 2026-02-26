@@ -6,25 +6,29 @@
 <div class="container-fluid p-0">
 
     <div class="parent-name-banner">
-        <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parents_intro.title if parents_intro and parents_intro.title else "Our Parents" }}</h1>
+        <h1 class="display-5 text-white text-uppercase text-center py-3">Our Parents</h1>
     </div>
 
     <div class="container my-5">
 
         {# ----------------- PARENTS PAGE INTRO ----------------- #}
-        {% if parents_intro %}
+        {% if parents_intro and parents_intro.is_active %}
             <section class="parents-intro mb-5">
                 <div class="row align-items-center g-4">
                     <div class="col-md-6">
                         <div class="parents-intro__image-wrap">
                             <img
                                 src="{{ parents_intro.image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
-                                alt="{{ parents_intro.title or 'Our Parents' }}"
+                                alt="{{ parents_intro.title or 'Parents Page Intro' }}"
                                 class="img-fluid rounded shadow-sm">
                         </div>
                     </div>
                     <div class="col-md-6">
                         {% if parents_intro.content_html %}
+                            <div class="mb-3">
+                                <div class="h5 text-uppercase fw-bold mb-2">{{ parents_intro.title if parents_intro.title else "Meet Our Moms &amp; Dads" }}</div>
+                                <div class="border-top pt-3"></div>
+                            </div>
                             <div class="parents-intro__content">{{ parents_intro.content_html|safe }}</div>
                         {% endif %}
                     </div>

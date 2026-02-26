@@ -1,6 +1,8 @@
 # app/routes/admin/views/home/parents_intro_view.py
 
 from flask import request, flash, current_app
+from flask import redirect
+from flask_admin import expose
 from wtforms.fields import FileField
 from wtforms.validators import ValidationError
 
@@ -16,7 +18,7 @@ class ParentsPageIntroAdminView(AdminModelView):
 
     can_create = True
     can_edit = True
-    can_delete = True
+    can_delete = False
 
     # Bootstrap 5 templates for this model.
     list_template = 'admin/parents_intro/list_bs5.html'
@@ -26,6 +28,7 @@ class ParentsPageIntroAdminView(AdminModelView):
     column_list = ('title',)
 
     form_columns = [
+        'is_active',
         'title',
         'content_html',
         'image_upload'
@@ -35,6 +38,7 @@ class ParentsPageIntroAdminView(AdminModelView):
     }
 
     form_widget_args = {
+        'is_active': {'id': 'parents_intro_is_active'},
         'title': {'id': 'parents_intro_title'},
         'content_html': {
             'id': 'parents_intro_content_html',
@@ -42,6 +46,33 @@ class ParentsPageIntroAdminView(AdminModelView):
             'class': 'form-control'
         }
     }
+
+    def _get_singleton(self):
+        """Return the first existing ParentsPageIntro record, if any."""
+        try:
+            return self.session.query(self.model).order_by(self.model.id.asc()).first()
+        except Exception:
+            return None
+
+    @expose('/new/', methods=('GET', 'POST'))
+    def create_view(self):
+        """
+        Enforce singleton: if a record already exists, redirect Create -> Edit.
+        """
+        existing = self._get_singleton()
+        if existing:
+            return redirect(self.get_url('.edit_view', id=existing.id))
+        return super().create_view()
+
+    @expose('/')
+    def index_view(self):
+        """
+        Enforce singleton: if a record exists, redirect List -> Edit.
+        """
+        existing = self._get_singleton()
+        if existing:
+            return redirect(self.get_url('.edit_view', id=existing.id))
+        return super().index_view()
 
     def on_model_change(self, form, model, is_created):
         """Handle the S3 image upload when the model is saved."""

@@ -121,7 +121,7 @@ class AnnouncementBanner(db.Model):
 
 
 class ParentsPageIntro(db.Model):
-    """\
+    """
     Manages the main image and introductory text for the Parents page.
 
     Intended for a single row of data to control a top-of-page feature image
@@ -129,6 +129,8 @@ class ParentsPageIntro(db.Model):
     """
 
     id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
     title = db.Column(db.String(200), default="Our Parents")
     content_html = db.Column(db.Text)
 

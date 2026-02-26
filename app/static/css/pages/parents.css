@@ -230,7 +230,7 @@
 
 /* Bold the breed line */
 .parent-card__breed {
-    font-weight: 600;
+    font-weight: 300;
     font-size: 1.05rem;
     
 }
