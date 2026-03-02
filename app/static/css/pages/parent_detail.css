@@ -35,7 +35,7 @@
 /* Adjust carousel controls for better visibility if needed */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--espresso);
     border-radius: 50%;
     padding: 15px;
 }

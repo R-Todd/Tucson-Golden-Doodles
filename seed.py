@@ -147,8 +147,8 @@ with app.app_context():
     # ======================================================
 
     site_details = SiteDetails(
-        phone_number="520-123-4567",
-        email="info@tucsongoldendoodles.com"
+        phone_number="520-404-4512",
+        email="tucsongoldendoodlesaz@gmail.com"
     )
     db.session.add(site_details)
 

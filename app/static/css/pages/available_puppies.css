@@ -8,18 +8,80 @@
 @import url("../components/available_puppy_card.css");
 
 /* Container width + spacing for the dedicated page */
-#available-puppies {
+#available-puppies-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 32px 1rem 64px 1rem;
 }
 
 /* Title spacing for the page */
-#available-puppies .section-title {
+#available-puppies-page .section-title {
   margin-bottom: 0.75rem;
 }
 
-#available-puppies .section-subtitle {
+#available-puppies-page .section-subtitle {
   margin-bottom: 2.25rem;
   color: var(--muted);
+}
+
+/* ======================================================
+   Page-only card overrides
+   (keeps home page card unchanged)
+   ====================================================== */
+
+/* Left-align the top info block */
+#available-puppies-page .available-puppy-card .card-body > .d-flex > div:first-child {
+  text-align: left;
+  padding-right: 5.5rem; /* reserve space for badge */
+}
+
+/* Move AVAILABLE badge to the top-right corner (page-only) */
+#available-puppies-page .available-puppy-card .card-body {
+  position: relative;
+}
+
+#available-puppies-page .available-puppy-card .card-body > .d-flex > div:last-child {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Center the "See full litter" button (Bootstrap .w-100 uses !important) */
+#available-puppies-page .available-puppy-card .card-footer {
+  text-align: center;
+}
+
+#available-puppies-page .available-puppy-card .card-footer .w-100 {
+  width: auto !important;
+  min-width: 190px;
+}
+
+#available-puppies-page .available-puppy-card .card-footer .btn {
+  border-radius: 9999px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Espresso button styling (page-only) */
+#available-puppies-page .available-puppy-card .btn.btn-outline-primary {
+  background-color: var(--espresso) !important;
+  border-color: var(--espresso) !important;
+  color: #fff !important;
+}
+
+#available-puppies-page .available-puppy-card .btn.btn-outline-primary:hover,
+#available-puppies-page .available-puppy-card .btn.btn-outline-primary:focus {
+  background-color: #2f2424 !important;
+  border-color: #2f2424 !important;
+  color: #fff !important;
+}
+
+#available-puppies-page .available-puppy-card .btn.btn-outline-primary:active {
+  background-color: #241b1b !important;
+  border-color: #241b1b !important;
+  color: #fff !important;
+}
+
+#available-puppies-page .available-puppy-card .btn.btn-outline-primary:focus-visible {
+  box-shadow: 0 0 0 0.2rem rgba(59, 47, 47, 0.25);
 }
