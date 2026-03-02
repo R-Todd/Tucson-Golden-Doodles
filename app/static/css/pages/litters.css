@@ -1,20 +1,93 @@
 /* app/static/css/pages/litters.css */
 
-/* Litter tile cover image should be uniform and never crop */
+/* ======================================================
+   PAGE — Litters (list)
+   This file includes:
+   1) /litters listing tiles (litter-tile*)
+   ====================================================== */
+
+/* ======================================================
+   LISTING: Litter tiles
+   ====================================================== */
+
+/* Page header: "Current Litters" (scoped to this page via template class) */
+.litters-page-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+.litters-page-title::after {
+  content: "";
+  display: block;
+  width: 92px;
+  height: 2px;
+  margin: 14px auto 0;
+  background: rgba(43, 36, 34, 0.22);
+  border-radius: 999px;
+}
+
+.litters-page-subtitle {
+  font-size: 1.05rem;
+  line-height: 1.45;
+  max-width: 60ch;
+}
+
+/* Litter tile cover image: fill the frame (no white/blank letterbox) */
 .litter-tile-img {
   width: 100%;
-  aspect-ratio: 3 / 4;     /* portrait */
+  aspect-ratio: 4 / 3;     /* landscape grid looks better for most litter photos */
   height: auto;
-  object-fit: contain;     /* never crop */
+  object-fit: cover;       /* removes the white/blank box */
   object-position: center;
-  background: #f4f4f4;     /* letterbox background */
+  background: transparent;
   display: block;
 }
 
 .litter-tile-title {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Breed title on listing: premium serif headline */
+.litter-tile-title a {
+  font-family: 'Playfair Display', serif;
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.litter-tile-title a:hover {
+  color: var(--ink);
+  text-decoration: none;
 }
 
 .litter-tile-subtitle {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* Meta line links (parents) should feel editorial, not "default blue" */
+.litter-tile-subtitle a {
+  color: rgba(43, 36, 34, 0.78);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(43, 36, 34, 0.22);
+}
+
+.litter-tile-subtitle a:hover,
+.litter-tile-subtitle a:focus {
+  color: var(--ink);
+  border-bottom-color: rgba(43, 36, 34, 0.40);
+}
+
+/* If the listing uses <small> for dates, keep it refined */
+.litter-tile-subtitle small {
+  color: rgba(43, 36, 34, 0.72);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }

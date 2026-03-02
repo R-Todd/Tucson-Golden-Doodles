@@ -10,12 +10,13 @@
 /* Thumbnail grid images */
 #gallery .img-thumbnail,
 .gallery-section .img-thumbnail {
-    border: 2px solid var(--espresso);
-    padding: 0.25rem;
-    background-color: #2b2422;
-    border-radius: 0.25rem;
+    /* Match hero/about framing */
+    border: 1px solid var(--line);
+    padding: 0;
+    background-color: transparent;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 4px 8px rgba(0,0,0,.075);
     cursor: pointer;
 }
 
@@ -24,7 +25,7 @@
 .gallery-section .img-thumbnail:hover {
     transform: scale(1.03);
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    border-color: var(--cta-blue);
+    border-color: rgba(255, 255, 255, 0.55);
 }
 
 /* When the <a> gets keyboard focus, give a visible ring on the image */
@@ -92,7 +93,7 @@
 @media (max-width: 576px) {
     .gallery-nav-btn {
         width: 2.75rem;
-        height: 2.75rem;
+        height: 2rem;
         font-size: 2rem;
     }
 }

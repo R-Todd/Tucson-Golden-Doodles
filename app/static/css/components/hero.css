@@ -59,13 +59,11 @@
     flex: 1 1 auto;
     line-height: 0; /* defensive: avoids baseline whitespace artifacts */
 
-    /* /*
-      Visual frame (requested)
-      - Adds a clean border so any 1px rounding gap is not visible
-      - Also makes the image area feel more complete/premium
-    */
-    border: 2px solid #000000;
-    box-sizing: border-box; 
+    /* Consistent site-wide frame styling */
+    /* border: 1px solid var(--line); */
+    /* box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    box-sizing: border-box; */
 }
 
 /* Subtle photo treatment for a more premium feel */

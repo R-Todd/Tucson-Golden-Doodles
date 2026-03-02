@@ -123,19 +123,47 @@ section.available-puppies {
   text-align: center;
 }
 
-.available-puppies-section .available-puppy-card .card-body .d-flex,
-#available-puppies .available-puppy-card .card-body .d-flex,
-.home-available-puppies .available-puppy-card .card-body .d-flex {
-  /* Center any flex rows used for meta lines (Born on, etc.) */
+/*
+  Parent line (Mother/Father) alignment — HOME only
+  The card-body is centered on HOME, but the parent line should be:
+  - Mother: left aligned
+  - Father: right aligned
+  This prevents the “Mother” column (w-50 on HOME) from centering its text and
+  creating a weird left gap.
+*/
+.home-available-puppies .available-puppy-card .card-body .small .d-flex.justify-content-between {
+  width: 100%;
+  justify-content: space-between !important;
+}
+
+.home-available-puppies .available-puppy-card .card-body .small .d-flex.justify-content-between > div:first-child {
+  text-align: left !important;
+}
+
+.home-available-puppies .available-puppy-card .card-body .small .d-flex.justify-content-between > div:last-child {
+  text-align: right !important;
+}
+
+/*
+  IMPORTANT: Only target the TOP header row in the card-body.
+  The Mother/Father line is also a `.d-flex` row (in _available_puppy_card.html),
+  and must remain `justify-content-between` so Mother stays left and Father stays right.
+
+  This selector uses `>` so it only matches the first header row directly inside
+  `.card-body` (the row containing the name/breed/born/coat + badge).
+*/
+.available-puppies-section .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3,
+#available-puppies .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3,
+.home-available-puppies .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3 {
   width: 100%;
   justify-content: center !important;
   align-items: center !important;
 }
 
-.available-puppies-section .available-puppy-card .card-body .d-flex > div:first-child,
-#available-puppies .available-puppy-card .card-body .d-flex > div:first-child,
-.home-available-puppies .available-puppy-card .card-body .d-flex > div:first-child {
-  /* Ensure the first column spans full width so text can center properly */
+.available-puppies-section .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3 > div:first-child,
+#available-puppies .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3 > div:first-child,
+.home-available-puppies .available-puppy-card .card-body > .d-flex.align-items-start.justify-content-between.gap-3 > div:first-child {
+  /* Only widen the left column in the HEADER row (do not affect Mother/Father row) */
   width: 100%;
 }
 
@@ -202,8 +230,8 @@ section.available-puppies {
   margin-top: 34px !important;   /* move it down more */
   margin-bottom: 8px !important;
   padding: 18px 34px !important; /* bigger padding */
-  background: var(--cta-blue) !important;
-  border: 2px solid var(--cta-blue) !important;
+  background: var(--light-teal) !important;
+  border: 2px solid var(--light-teal) !important;
   color: #ffffff !important;
   border-radius: 999px !important;
   font-weight: 800 !important;

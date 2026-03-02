@@ -1,0 +1,250 @@
+/* app/static/css/pages/parent_detail.css */
+
+/* =========================
+   Parent DETAIL page styling
+   ========================= */
+
+/* Two-Column Layout Container */
+.parent-layout-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Parent Carousel Styling (replaces Main Image styling) */
+.parent-carousel-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 10px;
+    max-width: 100%;
+    margin: auto;
+    border: none;
+}
+
+.carousel-image {
+    width: 100%;
+    height: 450px;
+    object-fit: contain;
+    border-radius: 5px;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+/* Adjust carousel controls for better visibility if needed */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 15px;
+}
+
+/* Breed & Weight Header */
+.breed-header {
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.weight-header {
+    font-size: 1rem;
+    font-style: italic;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* Description Paragraphs */
+.description-paragraphs p {
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    text-align: center;
+}
+
+/* Alternate Image Previews (New Section) */
+.alternate-previews {
+    margin-top: 40px;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.alternate-previews h6 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.alternate-preview-thumbnail {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.alternate-preview-thumbnail:hover {
+    transform: scale(1.05);
+    border-color: #007bff;
+}
+
+/* "Past Puppies" Section Header */
+.past-puppies-header {
+    margin-top: 80px;
+    /* ... */
+}
+
+.past-puppies-header h2 {
+    font-family: 'Playfair Display', serif;
+    /* ... */
+}
+
+/* ======================================================
+   Parent DETAIL page — Past Litters (Option A)
+   Compact “strip” + thumbnail row (premium)
+   ====================================================== */
+
+.past-litter-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    padding: 14px 14px 12px;
+    margin: 0 auto 16px;
+    max-width: 1100px;
+}
+
+.past-litter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.past-litter-text {
+    min-width: 0;
+}
+
+.past-litter-title {
+    color: var(--ink);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+}
+
+.past-litter-meta {
+    margin-top: 2px;
+    font-size: 0.95rem;
+    color: var(--muted) !important;
+}
+
+.past-litter-btn {
+    white-space: nowrap;
+    padding: 10px 16px;
+    border-radius: 999px;
+}
+
+.past-litter-thumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.past-litter-thumb {
+    /* Past puppy thumbnail size (tuning knob) */
+    width: 150px;
+    height: 170px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.past-litter-thumb:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.10);
+}
+
+.past-litter-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.past-litter-more {
+    font-weight: 700;
+    padding: 10px 12px;
+    border-radius: 999px;
+    border: 1px dashed rgba(0, 0, 0, 0.18);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.past-litter-empty {
+    margin-top: 10px;
+    padding: 10px 2px 2px;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 576px) {
+    .past-litter-card {
+        padding: 12px 12px 10px;
+    }
+
+    .past-litter-thumb {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* Past Puppies Thumbnails Row */
+.past-puppies-thumbnails-row {
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
+.puppy-thumbnail-wrapper {
+    /* ... */
+}
+
+.puppy-thumbnail {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 5px;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+}
+
+.puppy-thumbnail:hover {
+    transform: scale(1.08);
+    border-color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .parent-layout-container { flex-direction: column; }
+    .parent-image-column, .parent-info-column { width: 100%; margin-top: 0 !important; }
+    .parent-carousel-wrapper, .alternate-previews, .description-paragraphs { padding-left: 15px; padding-right: 15px; }
+    .past-puppies-header h2 { font-size: 1.8rem; }
+    /* banner font lives in parents.css */
+}
+
+/* New Litter Banner for Past Puppies */
+.litter-banner { text-align: center; padding: 8px 12px; background-color: #e9ecef; border-radius: 5px; margin-top: 25px; font-size: 1.1rem; border: 1px solid #dee2e6; }
+.litter-banner a { color: #495057; text-decoration: none; font-weight: 600; transition: color 0.2s ease-in-out; }
+.litter-banner a:hover { color: #0056b3; text-decoration: underline; }

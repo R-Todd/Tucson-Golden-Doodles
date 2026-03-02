@@ -8,6 +8,8 @@
   {% set title = "Current Litters" %}
   {% set subtitle = "Explore our current litters and meet the parents." %}
   {% set align = "center" %}
+  {% set title_class = "section-title litters-page-title" %}
+  {% set subtitle_class = "section-subtitle litters-page-subtitle" %}
   {% include "components/_section_header.html" %}
 
   {% if litters %}
@@ -73,35 +75,19 @@
                 </span>
               </div>
 
-              {% if litter.description %}
+              <!-- {% if litter.description %}
                 <p class="text-muted mb-0 litter-tile-desc">{{ litter.description }}</p>
               {% else %}
                 <p class="text-muted mb-0 litter-tile-desc">Click to see puppies and full litter details.</p>
-              {% endif %}
+              {% endif %} -->
             </div>
 
-            {# Footer: See full litter button + parent links (again) #}
+            {# Footer: See full litter button #}
             <div class="card-footer bg-white border-0 pt-0 pb-3">
               <div class="d-grid mb-2">
-                <a class="btn btn-outline-primary" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                <a class="btn btn-brand" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
                   See full litter
                 </a>
-              </div>
-
-              <div class="text-muted small">
-                {% if litter.mother %}
-                  Mother: <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
-                {% else %}
-                  Mother: —
-                {% endif %}
-
-                <span class="mx-2">|</span>
-
-                {% if litter.father %}
-                  Father: <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
-                {% else %}
-                  Father: —
-                {% endif %}
               </div>
             </div>
 

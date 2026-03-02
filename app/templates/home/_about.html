@@ -6,11 +6,11 @@
     <div class="container">
         <div class="row align-items-center g-4">
             <div class="col-md-6">
-                <div class="about-image-wrap">
+                <div class="about-media">
                     <img
                         src="{{ about.image_s3_key | s3_url or url_for('static', filename='img/about_us_family.jpg') }}"
                         alt="{{ about.image_alt_text or 'About our family' }}"
-                        class="img-fluid rounded shadow-sm">
+                        class="about-image">
                 </div>
             </div>
             <div class="col-md-6">

@@ -55,8 +55,8 @@
 .litter-announcement-banner .btn,
 .litter-announcement-banner .btn-primary,
 .litter-announcement-banner .btn-cta {
-  background: var(--cta-blue) !important;
-  border-color: var(--cta-blue) !important;
+  background: var(--teal-blue) !important;
+  border-color: var(--teal-blue) !important;
   color: #ffffff !important;
   font-weight: 700;
   text-transform: uppercase;

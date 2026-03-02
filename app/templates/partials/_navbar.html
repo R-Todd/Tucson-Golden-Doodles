@@ -1,38 +1,101 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url_for('main.index') }}">Tucson Golden Doodles</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="main-nav">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('parents.list_parents') }}">Our Parents</a></li>
+<header class="site-header">
+    {# Brand row: logo left, phone right (desktop); stacks on mobile #}
+    <div class="site-header__brand">
+        <div class="container">
+            <div class="site-brand-row">
+                <a class="site-brand" href="{{ url_for('main.index') }}" aria-label="Tucson Golden Doodles">
+                    <img
+                        class="site-brand__logo"
+                        src="{{ url_for('static', filename='img/main-logo.png') }}"
+                        alt="Tucson Golden Doodles"
+                        loading="eager"
+                    >
+                </a>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="our-puppies-dropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        Our Puppies
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="our-puppies-dropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('litters.list_litters') }}">Current Litters</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a></li>
-                    </ul>
-                </li>
+                {% if site_meta and site_meta.phone_number %}
+                    <div class="site-contact">
+                        <a class="site-phone" href="tel:{{ site_meta.phone_number|replace(' ', '') }}">
+                            {{ site_meta.phone_number }}
+                        </a>
 
-                {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin.index') }}">Admin Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_auth.logout') }}">Logout</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin_auth.login') }}">Admin Login</a>
-                    </li>
+                        <div class="site-social" aria-label="Social links">
+                            <a
+                                class="site-social__link"
+                                href="https://www.instagram.com/tucson_golden_doodles?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram"
+                            >
+                                <img
+                                    class="site-social__icon"
+                                    src="{{ url_for('static', filename='img/social/instagram.png') }}"
+                                    alt=""
+                                    loading="lazy"
+                                >
+                            </a>
+
+                            <a
+                                class="site-social__link"
+                                href="https://www.facebook.com/p/Tucson-Golden-Doodles-100063664025732/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Facebook"
+                            >
+                                <img
+                                    class="site-social__icon"
+                                    src="{{ url_for('static', filename='img/social/facebook.png') }}"
+                                    alt=""
+                                    loading="lazy"
+                                >
+                            </a>
+                        </div>
+                    </div>
                 {% endif %}
-            </ul>
+            </div>
         </div>
     </div>
-</nav>
+
+    {# Nav band (centered links) #}
+    <div class="site-header__nav">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light p-0" aria-label="Primary">
+                <button
+                    class="navbar-toggler ms-auto"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#main-nav"
+                    aria-controls="main-nav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="main-nav">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 site-nav site-nav--bar">
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('parents.list_parents') }}">Parents</a></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('litters.list_litters') }}">Litters</a>
+                        </li>
+
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.index') }}">Admin</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_auth.logout') }}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_auth.login') }}">Admin Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>

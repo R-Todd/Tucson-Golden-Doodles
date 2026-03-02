@@ -26,8 +26,9 @@
                     <div class="col-md-6">
                         {% if parents_intro.content_html %}
                             <div class="mb-3">
-                                <div class="h5 text-uppercase fw-bold mb-2">{{ parents_intro.title if parents_intro.title else "Meet Our Moms &amp; Dads" }}</div>
-                                <div class="border-top pt-3"></div>
+                                <div class="parents-intro__heading mb-2">
+                                    {{ parents_intro.title if parents_intro.title else "Meet Our Parents" }}
+                                </div>
                             </div>
                             <div class="parents-intro__content">{{ parents_intro.content_html|safe }}</div>
                         {% endif %}
@@ -38,12 +39,13 @@
 
         {# ----------------- OUR MOMS ----------------- #}
         <section class="parents-section parents-section--moms">
-            <div class="past-puppies-header mt-2 text-center">
-                <h2>Meet Our Moms</h2>
+            <div class="parents-section__header text-center">
+                <h2 class="parents-section__title">Moms</h2>
+                <p class="parents-section__subtitle">Our affectionate, nurturing mothers.</p>
             </div>
 
             {% if moms %}
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center parents-section__grid">
                     {% for parent in moms %}
                         <div class="col-sm-6 col-lg-3 mb-4">
                             <div class="card shadow-sm litter-card h-100">
@@ -81,12 +83,13 @@
 
         {# ----------------- OUR DADS ----------------- #}
         <section class="parents-section parents-section--dads">
-            <div class="past-puppies-header mt-5 text-center">
-                <h2>Meet Our Dads</h2>
+            <div class="parents-section__header text-center">
+                <h2 class="parents-section__title">Dads</h2>
+                <p class="parents-section__subtitle">Our confident, gentle fathers.</p>
             </div>
 
             {% if dads %}
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center parents-section__grid">
                     {% for parent in dads %}
                         <div class="col-sm-6 col-lg-3 mb-4">
                             <div class="card shadow-sm litter-card h-100">

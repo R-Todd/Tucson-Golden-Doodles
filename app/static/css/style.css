@@ -7,11 +7,14 @@
 
 /* Imports (must remain at top) */
 @import url("pages/parents.css");
+@import url("pages/parent_detail.css");
 @import url("pages/puppy.css");
 @import url("pages/litters.css");
+@import url("pages/litter_detail.css");
 @import url("pages/available_puppies.css");
 @import url("components/hero.css");
 @import url("components/about.css");
+@import url("components/navbar.css");
 /* @import url("components/banner.css"); */
 @import url("pages/home.css");
 @import url("components/announcement_banner.css");
@@ -25,6 +28,8 @@
     --surface: #ffffff;                 /* cards/sections */
     --ink: #2b2422;                     /* primary text */
     --muted: rgba(43, 36, 34, 0.75);    /* secondary text */
+    --teal-blue: #297aa0;
+    --light-teal: #2b8ab6;               /* accents, CTAs */
 
     /* Brand accents (match your screenshot) */
     --espresso: #3b2f2f;                /* Available Puppies button */
@@ -136,3 +141,41 @@ main {
     font-weight: 700;
 }
 .btn-outline-brand:hover { background: var(--espresso); color: #ffffff; }
+
+/* ======================================================
+   Lightbox (bs5-lightbox) — Mobile sizing
+   Goal:
+   - On phones, the lightbox should feel full-screen
+   - Remove modal padding/margins that shrink the image
+   ====================================================== */
+@media (max-width: 576px) {
+  /* bs5-lightbox adds `lightbox` class on the modal */
+  .modal.lightbox .modal-dialog {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0;
+  }
+
+  .modal.lightbox .modal-content {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .modal.lightbox .modal-body {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  /* Make the image fill most of the viewport height (better for portrait photos) */
+  .modal.lightbox .modal-body img {
+    max-width: 100vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+}

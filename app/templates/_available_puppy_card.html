@@ -53,7 +53,7 @@
 
       <div class="small">
         <div class="{{ parent_line_class }}">
-          <div class="{{ 'w-50 text-truncate' if is_home else '' }}">
+          <div class="{{ 'w-50 text-start text-truncate' if is_home else '' }}">
             Mother:
             {% if litter and litter.mother %}
               <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
