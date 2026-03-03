@@ -24,10 +24,13 @@ def list_litters():
     for litter in litters:
         litter.puppies.sort(key=lambda p: p.name or "")
 
+    # Only show CURRENT litters on the public Litters page
+    current_litters = [l for l in litters if not l.is_past]
+
     return render_template(
         "litters.html",
         title="Current Litters",
-        litters=litters,
+        litters=current_litters,
         PuppyStatus=PuppyStatus
     )
 

@@ -34,7 +34,17 @@ class LitterForm(FlaskForm):
 
     description = TextAreaField("Description", validators=[Optional()])
 
-    # NEW: Litter cover image upload
+    status_mode = SelectField(
+        "Litter Visibility",
+        choices=[
+            ("auto", "Auto (Past when no puppies are available)"),
+            ("force_past", "Force Past (Hide from Current Litters)"),
+        ],
+        default="auto",
+        validators=[DataRequired()],
+    )
+
+    # Litter cover image upload
     image_upload = FileField("Upload Main Litter Image")
 
 
@@ -56,7 +66,8 @@ class LitterAdminView(AdminModelView):
         "breed_name": {"id": "breed_name"},
         "expected_weight": {"id": "expected_weight"},
         "description": {"id": "description", "rows": 8},
-        "image_upload": {"id": "image_upload"},  # NEW
+        "status_mode": {"id": "status_mode"},
+        "image_upload": {"id": "image_upload"},
     }
 
     def _get_parent_choices(self, role: ParentRole):
@@ -91,15 +102,11 @@ class LitterAdminView(AdminModelView):
         model.breed_name = (form.breed_name.data or None)
         model.expected_weight = (form.expected_weight.data or None)
         model.description = (form.description.data or None)
+        model.status_mode = (form.status_mode.data or "auto")
 
-        # NEW: Litter cover image upload (similar to Puppy)
+        # Litter cover image upload (similar to Puppy)
         upload = request.files.get("image_upload")
         if upload and upload.filename:
-            # Phase 4 hardening:
-            # - upload_image returns (result, err). We must unpack it.
-            # - If rejected (.heic / invalid ext), show flash + abort save cleanly.
-            # - Evict memoized s3_url(old_key) when keys change so new image shows immediately.
-            # - Use lazy import for cache to avoid circular imports at startup.
             old_key = getattr(model, "main_image_s3_key", None)
 
             new_key, err = upload_image(upload, folder="litters")

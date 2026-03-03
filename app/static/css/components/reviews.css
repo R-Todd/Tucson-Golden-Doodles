@@ -1,98 +1,115 @@
-/* app/static/css/components/gallery.css */
+/* app/static/css/components/reviews.css */
 
 /* ======================================================
-   COMPONENT — Gallery (home/_gallery.html)
+   COMPONENT — Testimonials + Review Viewer (home/_testimonials.html)
    Notes:
-   - Keep existing IDs/classes because gallery_lightbox.js depends on them.
-   - Styles are scoped to #gallery (current) and .gallery-section (future-safe).
+   - Scoped to #testimonials and modal IDs so other pages/components are unaffected.
+   - Keeps the homepage compact: clamps card text, but shows full text in the modal.
+   - Works with the modal/filmstrip markup we added to home/_testimonials.html.
    ====================================================== */
 
-/* Thumbnail grid images */
-#gallery .img-thumbnail,
-.gallery-section .img-thumbnail {
-    border: 1px solid #dee2e6;
-    padding: 0.25rem;
-    background-color: #fff;
-    border-radius: 0.25rem;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,.075);
-    cursor: pointer;
+/* ===== Testimonials cards (home) ===== */
+#testimonials .card {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-/* Hover + keyboard focus */
-#gallery .img-thumbnail:hover,
-.gallery-section .img-thumbnail:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    border-color: #aecdec;
+#testimonials .card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.10),
+        0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* When the <a> gets keyboard focus, give a visible ring on the image */
-#gallery a:focus-visible .img-thumbnail,
-.gallery-section a:focus-visible .img-thumbnail {
-    outline: 3px solid rgba(174, 205, 236, 0.9);
-    outline-offset: 2px;
+/* Small thumbnail in the review card (first review image) */
+#testimonials .review-card-thumb {
+    float: right;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    margin-left: 0.75rem;
+    margin-top: 0.15rem;
 }
 
-/* Fullscreen gallery lightbox image */
-.gallery-lightbox-img {
-    max-width: 100%;
-    max-height: calc(100vh - 72px); /* header space */
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
+/* Clamp long reviews on the card to keep the section compact */
+#testimonials blockquote p {
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-/* Next / Prev arrow buttons */
-.gallery-nav-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 0;
-    background: rgba(0,0,0,0.35);
-    color: #fff;
-    font-size: 2.5rem;
-    line-height: 1;
-    width: 3.25rem;
-    height: 3.25rem;
+/* "View full review" as subtle, small gray text */
+#testimonials .rv-open {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.55);
+    text-decoration: none;
+}
+
+#testimonials .rv-open:hover,
+#testimonials .rv-open:focus {
+    color: rgba(0, 0, 0, 0.75);
+    text-decoration: underline;
+}
+
+/* ===== Review Viewer modal ===== */
+#reviewViewerModal #rvText {
+    white-space: pre-wrap;
+    line-height: 1.55;
+}
+
+/* Filmstrip thumbnails: compact + scrollable */
+#reviewViewerModal #rvFilmstrip {
+    padding-bottom: 0.25rem;
+}
+
+#reviewViewerModal #rvFilmstrip img {
+    height: 64px;
+    width: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Lighter horizontal scrollbar */
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar {
+    height: 8px;
+}
+
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s ease-in-out;
 }
 
-.gallery-prev { left: 16px; }
-.gallery-next { right: 16px; }
-
-.gallery-nav-btn:hover {
-    background: rgba(0,0,0,0.55);
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 999px;
 }
 
-/* Keyboard accessibility for lightbox controls */
-.gallery-nav-btn:focus-visible {
-    outline: 3px solid rgba(174, 205, 236, 0.9);
-    outline-offset: 3px;
+/* ===== Review Lightbox modal (gallery-style) ===== */
+#reviewLightbox .modal-body {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    #gallery .img-thumbnail,
-    .gallery-section .img-thumbnail {
-        transition: none;
-    }
-    #gallery .img-thumbnail:hover,
-    .gallery-section .img-thumbnail:hover {
-        transform: none;
-    }
-    .gallery-nav-btn {
-        transition: none;
-    }
-}
-
+/* Mobile tweaks */
 @media (max-width: 576px) {
-    .gallery-nav-btn {
-        width: 2.75rem;
-        height: 2.75rem;
-        font-size: 2rem;
+    #testimonials .review-card-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+    }
+
+    #reviewViewerModal #rvFilmstrip img {
+        height: 56px;
+        width: 56px;
     }
 }

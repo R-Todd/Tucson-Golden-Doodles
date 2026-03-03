@@ -7,7 +7,7 @@ from flask_admin.menu import MenuLink
 from app.models import db
 from app.models.site_models import ParentsPageIntro
 from app.models import (
-    User, Parent, Litter, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+    User, Parent, Litter, Puppy, Review, ReviewImage, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
 from . import bp, admin
 from .views import (
@@ -15,6 +15,8 @@ from .views import (
     AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
 from .views.home.parents_intro_view import ParentsPageIntroAdminView
+from .views.home.review_image_view import ReviewImageAdminView
+
 
 # Register admin views for different models
 admin.add_view(ParentAdminView(Parent, db.session))
@@ -22,7 +24,8 @@ admin.add_view(LitterAdminView(Litter, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 
 # Register admin views for site content using Bootstrap 5 templates
-admin.add_view(ReviewAdminView(Review, db.session))
+admin.add_view(ReviewAdminView(Review, db.session, name="Reviews", category="Reviews"))
+admin.add_view(ReviewImageAdminView(ReviewImage, db.session, name="Images", category="Reviews"))
 # Custom name for HeroSection view in the admin interface
 admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
 # Custom name for AboutSection view in the admin interface

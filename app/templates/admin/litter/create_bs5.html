@@ -9,6 +9,19 @@
 <div class="container-fluid">
   <div class="row g-4">
     <div class="col-12 col-lg-7">
+      {# Compact dropdown UI - inserted above the Mother field via JS #}
+      <div id="litter-visibility-ui" class="mb-3" style="display:none;">
+        <label for="litterVisibilitySelect" class="form-label fw-semibold mb-1">Litter Visibility</label>
+        <select id="litterVisibilitySelect" class="form-select form-select-sm" style="max-width: 360px;">
+          <option value="auto">Current (Automaticaly sets to PAST when no puppies are available)</option>
+          <option value="force_past">Past (Hide from Current Litters)</option>
+        </select>
+
+        <div id="litterVisibilityNote" class="form-text">
+          Auto status: <span class="fw-semibold" id="litterAutoStatus">—</span>
+        </div>
+      </div>
+
       {{ super() }}
     </div>
 
@@ -49,4 +62,64 @@
 {% block tail_js %}
   {{ super() }}
   <script src="{{ url_for('static', filename='js/previews/litter_preview.js') }}"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const statusSelect = document.getElementById('status_mode');
+      const ui = document.getElementById('litter-visibility-ui');
+      const visSelect = document.getElementById('litterVisibilitySelect');
+      const momField = document.getElementById('mom_id');
+
+      if (!statusSelect || !ui || !visSelect || !momField) return;
+
+      // Insert the dropdown right above Mother field
+      const momWrapper =
+        momField.closest('.form-group') ||
+        momField.closest('.mb-3') ||
+        momField.parentElement;
+
+      if (momWrapper && momWrapper.parentElement) {
+        momWrapper.parentElement.insertBefore(ui, momWrapper);
+        ui.style.display = '';
+      }
+
+      // Hide the original status_mode field
+      const statusWrapper =
+        statusSelect.closest('.form-group') ||
+        statusSelect.closest('.mb-3') ||
+        statusSelect.parentElement;
+      if (statusWrapper) statusWrapper.style.display = 'none';
+
+      // Ensure Auto is default on Create
+      if (!statusSelect.value) statusSelect.value = 'auto';
+      if (statusSelect.value !== 'auto' && statusSelect.value !== 'force_past') {
+        statusSelect.value = 'auto';
+      }
+      visSelect.value = statusSelect.value;
+
+      // Set note text
+      const note = document.getElementById('litterAutoStatus');
+      if (note) {
+        if (visSelect.value === 'force_past') {
+          note.textContent = 'Forced Past (hidden from Current Litters)';
+        } else {
+          note.textContent = 'Auto (Past when no puppies are available)';
+        }
+      }
+
+      // Sync UI -> actual field
+      visSelect.addEventListener('change', function () {
+        statusSelect.value = visSelect.value;
+
+        // Update note text on change
+        if (note) {
+          if (visSelect.value === 'force_past') {
+            note.textContent = 'Forced Past (hidden from Current Litters)';
+          } else {
+            note.textContent = 'Auto (Past when no puppies are available)';
+          }
+        }
+      });
+    });
+  </script>
 {% endblock %}

@@ -15,7 +15,56 @@
     <div class="container mt-4">
         {{ super() }}
 
-        
+        {# Existing images manager (single Reviews page UX) #}
+        <div class="mt-4">
+            <h4 class="mb-3">Existing Images</h4>
+
+            {% if model.images and model.images|length > 0 %}
+                <div class="d-flex flex-wrap gap-3" id="review-images-manager">
+                    {% for img in model.images %}
+                        <div class="border rounded-3 p-2" style="width: 140px;">
+                            {# Sort order (small) above image #}
+                            <div class="mb-2">
+                                <div class="small text-muted mb-1">Sort Order</div>
+                                <input
+                                    type="number"
+                                    class="form-control form-control-sm review-image-sort"
+                                    value="{{ img.sort_order }}"
+                                    data-image-id="{{ img.id }}"
+                                    style="max-width: 90px;"
+                                >
+                            </div>
+
+                            <img
+                                src="{{ img.s3_key | s3_url }}"
+                                alt="Review image"
+                                style="width: 100%; height: 96px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08);"
+                            >
+
+                            <div class="form-check mt-2">
+                                <input
+                                    class="form-check-input review-image-delete"
+                                    type="checkbox"
+                                    value="1"
+                                    id="delete-img-{{ img.id }}"
+                                    data-image-id="{{ img.id }}"
+                                >
+                                <label class="form-check-label small text-muted" for="delete-img-{{ img.id }}">
+                                    Delete
+                                </label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="small text-muted mt-2">
+                    Tip: Set sort order (lower shows first). Check Delete to remove an image, then click Save.
+                </div>
+            {% else %}
+                <div class="text-muted">No images added yet. Use “Choose file” above to add one.</div>
+            {% endif %}
+        </div>
+
+
         {# Add the Live Preview section #}
         <div class="live-preview-container">
             <h3>Live Preview</h3>
@@ -30,7 +79,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 {% endblock %}
 
@@ -40,5 +89,46 @@
 
     {# Load the new JavaScript for the preview #}
     <script src="{{ url_for('static', filename='js/previews/review_preview.js') }}"></script>
-    
+
+    <script>
+      // Inject existing-image sort/delete values into the main admin form on submit.
+      // This avoids rewriting Flask-Admin’s internal edit form template.
+      document.addEventListener('DOMContentLoaded', function () {
+        const container = document.querySelector('.container');
+        if (!container) return;
+        const form = container.querySelector('form');
+        if (!form) return;
+
+        form.addEventListener('submit', function () {
+          // Remove any prior injected fields (in case of validation re-submit)
+          form.querySelectorAll('input[data-rvimg="1"]').forEach(el => el.remove());
+
+          // Sort orders
+          document.querySelectorAll('.review-image-sort').forEach(function (input) {
+            const id = input.getAttribute('data-image-id');
+            if (!id) return;
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'review_image_sort_' + id;
+            hidden.value = input.value || '0';
+            hidden.setAttribute('data-rvimg', '1');
+            form.appendChild(hidden);
+          });
+
+          // Deletions
+          document.querySelectorAll('.review-image-delete').forEach(function (chk) {
+            const id = chk.getAttribute('data-image-id');
+            if (!id) return;
+            if (!chk.checked) return;
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'review_image_delete_' + id;
+            hidden.value = '1';
+            hidden.setAttribute('data-rvimg', '1');
+            form.appendChild(hidden);
+          });
+        });
+      });
+    </script>
+
 {% endblock %}
