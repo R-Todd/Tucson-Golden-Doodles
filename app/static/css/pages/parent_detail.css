@@ -103,6 +103,60 @@
 }
 
 /* ======================================================
+   Parent DETAIL — Current Litters (cards)
+   ====================================================== */
+
+/* Helps center 1–2 cards; 3+ will naturally fill the row */
+.current-litters-row {
+    justify-content: center;
+}
+
+/* Eye-catching AVAILABLE badge for current litter cards */
+.tgd-available-badge {
+    background: #198754; /* Bootstrap success green */
+    color: #ffffff;
+    border: 1px solid rgba(25, 135, 84, 0.35);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 0.75rem;
+    border-radius: 999px;
+    box-shadow:
+        0 8px 18px rgba(25, 135, 84, 0.22),
+        0 1px 0 rgba(255, 255, 255, 0.25) inset;
+    text-transform: none;
+}
+
+.tgd-available-badge:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 12px 26px rgba(25, 135, 84, 0.26),
+        0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+/* Empty state (no current litters) */
+.tgd-empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 16px;
+    text-align: center;
+}
+
+.tgd-empty-state-title {
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+}
+
+.tgd-empty-state-subtitle {
+    margin-top: 4px;
+    color: var(--muted);
+}
+
+/* ======================================================
    Parent DETAIL page — Past Litters (Option A)
    Compact “strip” + thumbnail row (premium)
    ====================================================== */
@@ -217,34 +271,3 @@
 .puppy-thumbnail-wrapper {
     /* ... */
 }
-
-.puppy-thumbnail {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 5px;
-    border: 2px solid transparent;
-    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    background-color: #ffffff;
-}
-
-.puppy-thumbnail:hover {
-    transform: scale(1.08);
-    border-color: #007bff;
-}
-
-/* Responsive */
-@media (max-width: 767.98px) {
-    .parent-layout-container { flex-direction: column; }
-    .parent-image-column, .parent-info-column { width: 100%; margin-top: 0 !important; }
-    .parent-carousel-wrapper, .alternate-previews, .description-paragraphs { padding-left: 15px; padding-right: 15px; }
-    .past-puppies-header h2 { font-size: 1.8rem; }
-    /* banner font lives in parents.css */
-}
-
-/* New Litter Banner for Past Puppies */
-.litter-banner { text-align: center; padding: 8px 12px; background-color: #e9ecef; border-radius: 5px; margin-top: 25px; font-size: 1.1rem; border: 1px solid #dee2e6; }
-.litter-banner a { color: #495057; text-decoration: none; font-weight: 600; transition: color 0.2s ease-in-out; }
-.litter-banner a:hover { color: #0056b3; text-decoration: underline; }

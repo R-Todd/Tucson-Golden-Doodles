@@ -62,13 +62,24 @@ def parent_detail(parent_id):
         abort(404)
 
     # Normalize ordering for display (newest litters first; puppies alphabetically)
-    litters = sorted(parent.litters or [], key=lambda l: l.birth_date or 0, reverse=True)
-    for litter in litters:
+    all_litters = sorted(parent.litters or [], key=lambda l: l.birth_date or 0, reverse=True)
+    for litter in all_litters:
         litter.puppies.sort(key=lambda p: p.name or "")
+
+        # Convenience count used by templates (e.g., "X available")
+        litter.available_count = sum(
+            1 for p in (litter.puppies or []) if p.status == PuppyStatus.AVAILABLE
+        )
+
+    # Split litters using the model's canonical definition of "past".
+    # This preserves your rules (auto: no available puppies => past) and any admin override.
+    current_litters = [l for l in all_litters if not l.is_past]
+    past_litters = [l for l in all_litters if l.is_past]
 
     return render_template(
         'parent_detail.html',
         parent=parent,
-        litters=litters,
+        current_litters=current_litters,
+        past_litters=past_litters,
         PuppyStatus=PuppyStatus
     )

@@ -91,3 +91,38 @@
   font-weight: 600;
   letter-spacing: 0.01em;
 }
+
+/* ======================================================
+   Shared UI tweaks for litter tiles (used on /litters + parent detail current litters)
+   ====================================================== */
+
+/* Tighten the light badge spacing inside litter tiles */
+.litter-tile .badge.bg-light.text-dark.border {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.1;
+  padding: 0.45rem 0.75rem;
+}
+
+/* Eye-catching AVAILABLE badge (used on litter tiles) */
+.tgd-available-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #198754;
+  color: #ffffff;
+  border: 1px solid rgba(25, 135, 84, 0.35);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  box-shadow:
+    0 8px 18px rgba(25, 135, 84, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}
+
+.tgd-available-badge:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 26px rgba(25, 135, 84, 0.26),
+    0 1px 0 rgba(255, 255, 255, 0.25) inset;
+}

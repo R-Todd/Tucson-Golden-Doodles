@@ -13,12 +13,12 @@
       <div id="litter-visibility-ui" class="mb-3" style="display:none;">
         <label for="litterVisibilitySelect" class="form-label fw-semibold mb-1">Litter Visibility</label>
         <select id="litterVisibilitySelect" class="form-select form-select-sm" style="max-width: 360px;">
-          <option value="auto">Current (Automaticaly sets to PAST when no puppies are available)</option>
+          <option value="auto">Current</option>
           <option value="force_past">Past (Hide from Current Litters)</option>
         </select>
 
         <div id="litterVisibilityNote" class="form-text">
-          Auto status: <span class="fw-semibold" id="litterAutoStatus">—</span>
+          Auto: <span class="fw-semibold" id="litterAutoStatus">—</span>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
       const note = document.getElementById('litterAutoStatus');
       if (note) {
         if (visSelect.value === 'force_past') {
-          note.textContent = 'Forced Past (hidden from Current Litters)';
+          note.textContent = 'Past (hidden from Current Litters)';
         } else {
           note.textContent = 'Auto (Past when no puppies are available)';
         }

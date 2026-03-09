@@ -73,6 +73,12 @@
                 <span class="badge bg-light text-dark border">
                   Expected Weight: {{ litter.expected_weight or "—" }}
                 </span>
+
+                {# Availability count (AVAILABLE puppies only) #}
+                {% set available_count = (litter.puppies|default([]) | selectattr('status', 'equalto', PuppyStatus.AVAILABLE) | list | length) %}
+                {% if available_count > 0 %}
+                  <span class="badge tgd-available-badge">Available: {{ available_count }}</span>
+                {% endif %}
               </div>
 
               <!-- {% if litter.description %}
