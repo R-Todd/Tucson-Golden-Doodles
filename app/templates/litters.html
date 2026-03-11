@@ -43,12 +43,31 @@
             </a>
 
             <div class="card-body">
+              {# Availability counts (AVAILABLE puppies only) #}
+              {% set ns = namespace(available_count=0, male_count=0, female_count=0) %}
+              {% for puppy in litter.puppies|default([]) %}
+                {% if puppy.status == PuppyStatus.AVAILABLE %}
+                  {% set ns.available_count = ns.available_count + 1 %}
+                  {% if puppy.gender and puppy.gender|lower == "male" %}
+                    {% set ns.male_count = ns.male_count + 1 %}
+                  {% elif puppy.gender and puppy.gender|lower == "female" %}
+                    {% set ns.female_count = ns.female_count + 1 %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+
               {# Title = Breed #}
-              <h2 class="h5 mb-1 litter-tile-title">
-                <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
-                  {{ litter.breed_name or "Litter" }}
-                </a>
-              </h2>
+              <div class="litter-tile-title-row mb-2">
+                <h2 class="h5 mb-0 litter-tile-title">
+                  <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                    {{ litter.breed_name or "Litter" }}
+                  </a>
+                </h2>
+
+                {% if ns.available_count > 0 %}
+                  <span class="badge tgd-available-badge">{{ ns.available_count }} Available</span>
+                {% endif %}
+              </div>
 
               {# Subtitle = Parents (linked) + born date #}
               <div class="text-muted small mb-3">
@@ -69,16 +88,21 @@
                 {% endif %}
               </div>
 
+              {% if ns.male_count > 0 or ns.female_count > 0 %}
+                <div class="litter-gender-badges mb-2">
+                  {% if ns.male_count > 0 %}
+                    <span class="badge tgd-male-badge">{{ ns.male_count }} Boys Available</span>
+                  {% endif %}
+                  {% if ns.female_count > 0 %}
+                    <span class="badge tgd-female-badge">{{ ns.female_count }} Girls Available</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+
               <div class="d-flex flex-wrap gap-2 mb-3">
                 <span class="badge bg-light text-dark border">
                   Expected Weight: {{ litter.expected_weight or "—" }}
                 </span>
-
-                {# Availability count (AVAILABLE puppies only) #}
-                {% set available_count = (litter.puppies|default([]) | selectattr('status', 'equalto', PuppyStatus.AVAILABLE) | list | length) %}
-                {% if available_count > 0 %}
-                  <span class="badge tgd-available-badge">Available: {{ available_count }}</span>
-                {% endif %}
               </div>
 
               <!-- {% if litter.description %}

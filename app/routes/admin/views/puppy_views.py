@@ -12,8 +12,15 @@ from app.utils.image_uploader import upload_image
 
 class PuppyForm(FlaskForm):
     """Defines the custom form used for creating/editing Puppy records."""
+    GENDER_CHOICES = [
+        ("", "Select Gender"),
+        ("Male", "Male"),
+        ("Female", "Female"),
+    ]
+
     name = StringField("Name", validators=[DataRequired()])
     litter_id = SelectField("Litter", coerce=int, validators=[InputRequired()])
+    gender = SelectField("Gender", choices=GENDER_CHOICES, validators=[])
     status = SelectField("Status", choices=[(s.name, s.value) for s in PuppyStatus], validators=[DataRequired()])
     coat = StringField("Coat", validators=[])
     image_upload = FileField("Upload New Main Image")
@@ -26,7 +33,7 @@ class PuppyAdminView(AdminModelView):
     create_template = 'admin/puppy/create_bs5.html'
     edit_template = 'admin/puppy/edit_bs5.html'
 
-    column_list = ('name', 'litter', 'status')
+    column_list = ('name', 'gender', 'litter', 'status')
 
     form = PuppyForm
 
@@ -34,6 +41,7 @@ class PuppyAdminView(AdminModelView):
         'name': {'id': 'name'},
         'litter_id': {'id': 'litter_id'},
         'coat': {'id': 'coat'},
+        'gender': {'id': 'gender'},
         'status': {'id': 'status'},
         'image_upload': {'id': 'image_upload'},
     }
@@ -76,6 +84,7 @@ class PuppyAdminView(AdminModelView):
         """
         model.name = form.name.data
         model.litter_id = form.litter_id.data
+        model.gender = form.gender.data or None
         model.status = PuppyStatus[form.status.data]
         model.coat = form.coat.data
 

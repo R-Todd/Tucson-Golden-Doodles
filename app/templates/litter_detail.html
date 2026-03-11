@@ -5,6 +5,18 @@
 {% block content %}
 <div class="container py-5 litter-detail-page">
 
+  {% set ns = namespace(available_count=0, male_count=0, female_count=0) %}
+  {% for puppy in litter.puppies|default([]) %}
+    {% if puppy.status == PuppyStatus.AVAILABLE %}
+      {% set ns.available_count = ns.available_count + 1 %}
+      {% if puppy.gender and puppy.gender|lower == "male" %}
+        {% set ns.male_count = ns.male_count + 1 %}
+      {% elif puppy.gender and puppy.gender|lower == "female" %}
+        {% set ns.female_count = ns.female_count + 1 %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
   <!-- =========================
        LITTER HEADER (premium)
   ========================== -->
@@ -23,6 +35,22 @@
           Born on {{ litter.birth_date.strftime('%B %d, %Y') }}
         {% endif %}
       </div>
+
+      {% if ns.available_count > 0 or ns.male_count > 0 or ns.female_count > 0 %}
+        <div class="litter-detail-badges mt-3">
+          {% if ns.available_count > 0 %}
+            <span class="badge tgd-available-badge">{{ ns.available_count }} Available</span>
+          {% endif %}
+
+          {% if ns.male_count > 0 %}
+            <span class="badge tgd-male-badge">{{ ns.male_count }} Boys Available</span>
+          {% endif %}
+
+          {% if ns.female_count > 0 %}
+            <span class="badge tgd-female-badge">{{ ns.female_count }} Girls Available</span>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <div class="litter-detail-cta-row mt-3">
         <a class="btn btn-brand" href="{{ url_for('puppies.available_puppies') }}">View Available Puppies</a>
@@ -156,7 +184,14 @@
               alt="{{ puppy.name }}">
 
             <div class="card-body text-center">
-              <h3 class="h5 mb-1">{{ puppy.name }}</h3>
+              <div class="puppy-card-header mb-2">
+                <h3 class="h5 mb-0">{{ puppy.name }}</h3>
+                {% if puppy.gender and puppy.gender|lower == "male" %}
+                  <span class="puppy-gender-badge puppy-gender-badge--male">Male</span>
+                {% elif puppy.gender and puppy.gender|lower == "female" %}
+                  <span class="puppy-gender-badge puppy-gender-badge--female">Female</span>
+                {% endif %}
+              </div>
 
               <div class="text-muted small mb-2">
                 Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>

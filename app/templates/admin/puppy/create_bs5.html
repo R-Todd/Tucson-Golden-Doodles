@@ -1,52 +1,85 @@
 {% extends 'admin/model/create.html' %}
 
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/previews/puppy_preview.css') }}">
+{% endblock %}
+
 {% block body %}
 <div class="container-fluid">
-
-  <div class="row">
-    <div class="col-lg-7">
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
       {{ super() }}
     </div>
 
-    <div class="col-lg-5">
-      <div class="card shadow-sm mt-3 mt-lg-0">
-        <div class="card-header">
-          <h5 class="mb-0">Live Preview</h5>
-        </div>
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Live Preview</h2>
 
-        <div class="card-body">
-          <div class="text-center mb-3">
-            <img
-              id="preview-puppy-image"
-              src="{{ url_for('static', filename='img/placeholder.jpg') }}"
-              class="img-fluid rounded"
-              style="max-height: 240px; object-fit: cover;"
-              alt="Puppy Image Preview"
-            >
+      <div id="puppy-preview-wrapper">
+        <div class="card h-100 shadow-sm available-puppy-card">
+          <img
+            id="preview-puppy-image"
+            src="{{ url_for('static', filename='img/placeholder.jpg') }}"
+            class="card-img-top available-puppy-img"
+            alt="Puppy Image Preview">
+
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between gap-3">
+              <div>
+                <h2 class="h5 mb-1" id="preview-puppy-name">New Puppy</h2>
+
+                <div class="text-muted small">
+                  Breed: <span class="fw-semibold" id="preview-breed-name">—</span>
+                </div>
+
+                <div class="text-muted small">
+                  Born on: <span class="fw-semibold" id="preview-born-on">—</span>
+                </div>
+
+                <div class="text-muted small">
+                  Coat: <span class="fw-semibold" id="preview-puppy-coat">—</span>
+                </div>
+
+                <div class="text-muted small">
+                  Gender: <span class="fw-semibold" id="preview-puppy-gender">—</span>
+                </div>
+              </div>
+
+              <div>
+                <span class="badge bg-secondary" id="preview-puppy-status">—</span>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <div class="small">
+              <div class="mb-2 d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <div>
+                  Mother:
+                  <span class="fw-semibold" id="preview-mother-name">—</span>
+                </div>
+
+                <div class="text-end ms-auto">
+                  Father:
+                  <span class="fw-semibold" id="preview-father-name">—</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <h4 class="text-center mb-2">
-            <span id="preview-puppy-name">New Puppy</span>
-          </h4>
-
-          <div class="text-center mb-2">
-            <span class="text-muted small">Litter:</span>
-            <div id="preview-litter-label" class="fw-semibold">—</div>
+          <div class="card-footer bg-white border-0 pt-0 pb-3">
+            <button class="btn btn-outline-primary w-100" type="button" disabled>
+              See full litter
+            </button>
           </div>
-
-          <div class="text-center mb-3">
-            <span class="text-muted small">Coat:</span>
-            <div id="preview-puppy-coat" class="fw-semibold">—</div>
-          </div>
-
-          <div class="text-center">
-            <span class="badge bg-secondary" id="preview-puppy-status">—</span>
-          </div>
-
         </div>
       </div>
     </div>
   </div>
-
 </div>
+{% endblock %}
+
+{% block tail_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/previews/puppy_preview.js') }}"></script>
 {% endblock %}

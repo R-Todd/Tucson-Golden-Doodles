@@ -26,7 +26,7 @@
 
 /* Intro title (circled "MEET OUR PARENTS"): match "Current Litters" vibe, NOT all-caps */
 .parents-intro__heading {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-weight: 800;
     letter-spacing: -0.01em;
     font-size: clamp(1.5rem, 1.8vw, 1.9rem);
@@ -61,7 +61,7 @@
 }
 
 .parents-section__title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-weight: 800;
     letter-spacing: 0.01em;
     margin: 0;

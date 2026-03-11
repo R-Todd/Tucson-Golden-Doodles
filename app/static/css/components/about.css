@@ -59,7 +59,7 @@
 
 .about-title,
 .about-section .about-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: clamp(2rem, 2.6vw, 3rem);
     line-height: 1.08;
     letter-spacing: -0.015em;
