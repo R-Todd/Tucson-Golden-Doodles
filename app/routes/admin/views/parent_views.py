@@ -1,5 +1,6 @@
 # app/routes/admin/views/parent_views.py
 
+from flask import url_for
 from flask import request, flash, current_app
 from wtforms.validators import ValidationError
 
@@ -17,12 +18,25 @@ class ParentAdminView(AdminModelView):
     edit_template = 'admin/parent/edit_bs5.html'
     form = ParentForm
 
-    column_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
+    column_list = ['main_image_s3_key', 'name', 'role', 'breed', 'is_active', 'is_guardian']
+    column_labels = {
+        'main_image_s3_key': 'Photo',
+        'name': 'Name',
+        'role': 'Role',
+        'breed': 'Breed',
+        'is_active': 'Active',
+        'is_guardian': 'Guardian Home',
+    }
+    column_sortable_list = ['name', 'role', 'breed', 'is_active', 'is_guardian']
+    column_default_sort = ('name', False)
+    column_searchable_list = ['name', 'breed']
+    column_filters = ['role', 'is_active', 'is_guardian']
 
     form_widget_args = {
         'name': {'id': 'name'},
         'breed': {'id': 'breed'},
         'weight_kg': {'id': 'weight_kg'},
+        'height_cm': {'id': 'height_cm'},
         'description': {'id': 'description', 'rows': 10},
         'image_upload': {'id': 'image_upload'},
         'alternate_image_upload_1': {'id': 'alternate_image_upload_1'},

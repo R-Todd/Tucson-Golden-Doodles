@@ -2,6 +2,7 @@
 
 {% block head_css %}
   {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/litter_detail.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/previews/litter_preview.css') }}">
 {% endblock %}
 
@@ -34,29 +35,51 @@
         else url_for('static', filename='img/placeholder.jpg')
       %}
 
-      <div class="card shadow-sm litter-preview-card">
-        <img id="preview-image"
-             class="card-img-top litter-preview-img"
-             src="{{ cover_img }}"
-             alt="Litter preview">
+      <div class="card shadow-sm litter-preview-card mb-3">
+        <img
+          id="preview-image"
+          class="card-img-top litter-preview-img"
+          src="{{ cover_img }}"
+          alt="Litter preview">
 
         <div class="card-body">
-          <h3 class="h5 mb-1" id="preview-breed">{{ model.breed_name or "Litter" }}</h3>
-          <div class="text-muted litter-preview-subtitle mb-3" id="preview-subtitle">Parents: —</div>
-
-          <div class="d-flex flex-wrap gap-2 mb-3">
-            <span class="badge bg-light text-dark border">
-              Expected Weight: <span id="preview-weight">{{ model.expected_weight or "—" }}</span>
-            </span>
+          <div class="text-muted small mb-2">Current Litter</div>
+          <h1 class="h4 mb-2" id="preview-title">{{ model.display_label if model else "Litter" }}</h1>
+          <div class="text-muted litter-preview-subtitle mb-3" id="preview-subtitle">
+            Mother: — &amp; Father: —
           </div>
 
-          <p class="text-muted litter-preview-desc" id="preview-desc">{{ model.description or "Description will appear here." }}</p>
+          <div class="d-flex gap-2 flex-wrap mb-0">
+            <button class="btn btn-brand btn-sm" type="button" disabled>View Available Puppies</button>
+            <button class="btn btn-outline-brand btn-sm" type="button" disabled>Back to Current Litters</button>
+          </div>
         </div>
+      </div>
 
-        <div class="card-footer bg-white border-0 pt-0 pb-3">
-          <div class="d-grid">
-            <button class="btn btn-outline-primary" type="button" disabled>See full litter</button>
-          </div>
+      <div class="card shadow-sm litter-preview-card">
+        <div class="card-body">
+          <h3 class="h5 mb-3">About This Litter</h3>
+          <p class="text-muted litter-preview-desc mb-4" id="preview-desc">
+            {{ model.description or "Click below to explore the parents and puppies in this litter." }}
+          </p>
+
+          <h3 class="h5 mb-3">Quick Facts</h3>
+          <dl class="mb-0">
+            <div class="d-flex justify-content-between gap-3 py-2 border-top">
+              <dt class="mb-0">Born on</dt>
+              <dd class="mb-0 text-end" id="preview-born">
+                {{ model.birth_date.strftime('%B %d, %Y') if model and model.birth_date else "—" }}
+              </dd>
+            </div>
+            <div class="d-flex justify-content-between gap-3 py-2 border-top">
+              <dt class="mb-0">Breed</dt>
+              <dd class="mb-0 text-end fw-semibold" id="preview-breed">{{ model.breed_name or "—" }}</dd>
+            </div>
+            <div class="d-flex justify-content-between gap-3 py-2 border-top">
+              <dt class="mb-0">Expected weight</dt>
+              <dd class="mb-0 text-end" id="preview-weight">{{ model.expected_weight or "—" }}</dd>
+            </div>
+          </dl>
         </div>
       </div>
 
@@ -78,7 +101,6 @@
 
       if (!statusSelect || !ui || !visSelect || !momField) return;
 
-      // Insert the dropdown right above Mother field
       const momWrapper =
         momField.closest('.form-group') ||
         momField.closest('.mb-3') ||
@@ -89,21 +111,18 @@
         ui.style.display = '';
       }
 
-      // Hide the original status_mode field
       const statusWrapper =
         statusSelect.closest('.form-group') ||
         statusSelect.closest('.mb-3') ||
         statusSelect.parentElement;
       if (statusWrapper) statusWrapper.style.display = 'none';
 
-      // Ensure Auto is default if missing/blank
       if (!statusSelect.value) statusSelect.value = 'auto';
       if (statusSelect.value !== 'auto' && statusSelect.value !== 'force_past') {
         statusSelect.value = 'auto';
       }
       visSelect.value = statusSelect.value;
 
-      // Set note text
       const note = document.getElementById('litterAutoStatus');
       if (note) {
         if (visSelect.value === 'force_past') {
@@ -113,11 +132,9 @@
         }
       }
 
-      // Sync UI -> actual field
       visSelect.addEventListener('change', function () {
         statusSelect.value = visSelect.value;
 
-        // Update note text on change
         if (note) {
           if (visSelect.value === 'force_past') {
             note.textContent = 'Forced Past (hidden from Current Litters)';

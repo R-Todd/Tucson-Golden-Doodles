@@ -15,22 +15,26 @@ class LitterForm(FlaskForm):
     """Defines the fields and validation for creating/editing Litter records."""
 
     mom_id = SelectField(
-        "Mother (Dam)",
+        "Mother",
         coerce=int,
-        validators=[InputRequired(message="Please select the mother (dam).")]
+        validators=[InputRequired(message="Please select a mother.")]
     )
 
     dad_id = SelectField(
-        "Father (Sire)",
+        "Father",
         coerce=int,
-        validators=[InputRequired(message="Please select the father (sire).")]
+        validators=[InputRequired(message="Please select a father.")]
     )
 
     birth_date = DateField("Born On", validators=[DataRequired()])
 
     breed_name = StringField("Breed Name", validators=[Optional()])
 
-    expected_weight = StringField("Expected Weight", validators=[Optional()])
+    expected_weight = StringField(
+        "Expected Weight (lbs)",
+        validators=[Optional()],
+        render_kw={"placeholder": "e.g. 25-35 lbs"},
+    )
 
     description = TextAreaField("Description", validators=[Optional()])
 

@@ -53,7 +53,7 @@
 
                     <p class="weight-header">
                         {% if parent.weight_kg is not none %}
-                            {{ parent.weight_kg }} kg / {{ (parent.weight_kg * 2.20462)|round(1) }} lbs
+                            {{ (parent.weight_kg * 2.20462)|round(1) }} lbs
                         {% else %}
                             Weight: N/A
                         {% endif %}
@@ -226,9 +226,4 @@
 
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.3/dist/index.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/parents_carousel.js') }}"></script>
 {% endblock %}

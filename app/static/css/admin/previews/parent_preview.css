@@ -1,36 +1,22 @@
 /* app/static/css/admin/previews/parent_preview.css */
 
-/* Pull in the real public-facing Parents page styles so the admin preview
-   stays in sync with production. */
-@import url("../../pages/parents.css");
-
 .live-preview-container .parent-layout-container {
     padding-top: 1rem;
 }
 
+.live-preview-container .container {
+    max-width: 100%;
+}
+
 .live-preview-container .parent-name-banner {
-    height: 60px;
     margin-bottom: 20px;
 }
 
-.live-preview-container .parent-profile-img {
-    max-height: 400px;
-    width: 100%;
-    object-fit: cover;
+.live-preview-container .carousel-image {
+    max-height: 450px;
 }
 
-.live-preview-container .parent-details-card {
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.live-preview-container .parent-details-card h3 {
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-.live-preview-container .parent-details-card p {
-    font-size: 1.1rem;
-    color: #555;
+.live-preview-container .carousel-control-prev-icon,
+.live-preview-container .carousel-control-next-icon {
+    background-size: 60% 60%;
 }

@@ -19,8 +19,14 @@ class ParentForm(FlaskForm):
     )
     breed = StringField('Breed')
     birth_date = DateField('Birth Date', validators=[Optional()])
-    weight_kg = FloatField('Weight (kg)', validators=[Optional()])
-    height_cm = FloatField('Height (cm)', validators=[Optional()])
+    weight_kg = FloatField(
+        'Weight (lbs)',
+        validators=[Optional()],
+    )
+    height_cm = FloatField(
+        'Height (inches)',
+        validators=[Optional()],
+    )
     is_active = BooleanField('Is Active', default=True)
     is_guardian = BooleanField('Is Guardian Home', default=False)
     description = TextAreaField('Description')

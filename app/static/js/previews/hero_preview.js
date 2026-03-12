@@ -1,56 +1,81 @@
 // app/static/js/previews/hero_preview.js
 
 document.addEventListener('DOMContentLoaded', function() {
-    /**
-     * A helper function to synchronize a form input's value with a preview element.
-     * @param {string} inputId - The ID of the form input element.
-     * @param {string} previewId - The ID of the element to display the preview.
-     */
-    const syncInputToPreview = (inputId, previewId) => {
-        const inputElement = document.getElementById(inputId);
-        const previewElement = document.getElementById(previewId);
-
-        if (inputElement && previewElement) {
-            // Update preview on page load with the initial value
-            previewElement.textContent = inputElement.value;
-
-            // Add event listener to update the preview in real-time on keyup
-            inputElement.addEventListener('keyup', () => {
-                previewElement.textContent = inputElement.value;
-            });
-        }
+    const FALLBACKS = {
+        main_title: 'Beautiful Mini Goldendoodles Raised with Care',
+        subtitle: 'Family-raised in Arizona',
+        description: 'Meet our current litters, learn about our parents, and explore available puppies.'
     };
 
-    /**
-     * A helper function to update the background image of the hero preview.
-     * @param {string} inputId - The ID of the file input element.
-     * @param {string} previewSelector - The CSS selector for the preview section.
-     */
-    const handleImagePreview = (inputId, previewSelector) => {
-        const inputElement = document.getElementById(inputId);
-        const previewSection = document.querySelector(previewSelector);
+    const byId = (id) => document.getElementById(id);
 
-        if (inputElement && previewSection) {
-            inputElement.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        // Set the background image using an inline style
-                        previewSection.style.backgroundImage = `url('${e.target.result}')`;
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-        }
+    const setText = (inputId, previewId, fallback = '') => {
+        const input = byId(inputId);
+        const preview = byId(previewId);
+        if (!input || !preview) return;
+
+        const update = () => {
+            const value = input.value.trim();
+            preview.textContent = value || fallback;
+        };
+
+        update();
+        input.addEventListener('input', update);
     };
 
-    // --- Initialize all live previews ---
-    syncInputToPreview('main_title', 'preview-main-title');
-    syncInputToPreview('subtitle', 'preview-subtitle');
-    syncInputToPreview('description', 'preview-description');
-    syncInputToPreview('scroll_text_main', 'preview-scroll-main');
-    syncInputToPreview('scroll_text_secondary', 'preview-scroll-secondary');
+    const setBullet = (inputId, itemId, textId) => {
+        const input = byId(inputId);
+        const item = byId(itemId);
+        const text = byId(textId);
+        if (!input || !item || !text) return;
 
-    // Initialize the image preview
-    handleImagePreview('image_upload', '.hero-preview-wrapper .hero-section');
+        const update = () => {
+            const value = input.value.trim();
+            text.textContent = value;
+            item.style.display = value ? '' : 'none';
+        };
+
+        update();
+        input.addEventListener('input', update);
+    };
+
+    const handleImagePreview = (inputId, previewImgId) => {
+        const input = byId(inputId);
+        const previewImg = byId(previewImgId);
+        if (!input || !previewImg) return;
+
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    };
+
+    const syncImageAltToTitle = () => {
+        const titleInput = byId('main_title');
+        const previewImg = byId('preview-hero-image');
+        if (!titleInput || !previewImg) return;
+
+        const update = () => {
+            const value = titleInput.value.trim();
+            previewImg.alt = value || 'Hero image preview';
+        };
+
+        update();
+        titleInput.addEventListener('input', update);
+    };
+
+    setText('main_title', 'preview-main-title', FALLBACKS.main_title);
+    setText('subtitle', 'preview-subtitle', FALLBACKS.subtitle);
+    setText('description', 'preview-description', FALLBACKS.description);
+
+    setBullet('scroll_text_main', 'preview-scroll-main-item', 'preview-scroll-main');
+    setBullet('scroll_text_secondary', 'preview-scroll-secondary-item', 'preview-scroll-secondary');
+
+    handleImagePreview('image_upload', 'preview-hero-image');
+    syncImageAltToTitle();
 });

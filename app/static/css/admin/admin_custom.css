@@ -21,3 +21,42 @@
     font-size: 1.5rem;
     color: #333;
 }
+
+/* --- Admin List Search Layout --- */
+.navbar-form,
+.navbar-form[role="search"] {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    padding-right: 120px;
+}
+
+.navbar-form .form-group,
+.navbar-form[role="search"] .form-group {
+    margin-bottom: 0 !important;
+    width: 100%;
+}
+
+.navbar-form .form-control,
+.navbar-form[role="search"] .form-control {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+}
+
+.navbar-form .btn,
+.navbar-form button,
+.navbar-form[role="search"] .btn,
+.navbar-form[role="search"] button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    min-height: 38px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center;
+    white-space: nowrap;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    z-index: 2;
+}

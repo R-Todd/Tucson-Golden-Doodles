@@ -8,13 +8,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputElement && previewElement) {
             const update = () => {
                 if (attribute === 'innerHTML') {
-                    previewElement.innerHTML = inputElement.value.replace(/\n/g, '<br>');
+                    const value = inputElement.value.trim();
+                    if (!value) {
+                        previewElement.innerHTML = '<p class="text-muted">No description is available yet.</p>';
+                        return;
+                    }
+
+                    const paragraphs = value
+                        .split(/\n+/)
+                        .map(p => p.trim())
+                        .filter(Boolean)
+                        .map(p => `<p>${p}</p>`)
+                        .join('');
+                    previewElement.innerHTML = paragraphs;
                 } else {
                     previewElement.textContent = inputElement.value;
                 }
             };
             update(); // Initial sync
             inputElement.addEventListener('keyup', update);
+            inputElement.addEventListener('input', update);
         }
     };
 
@@ -23,16 +36,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const weightPreview = document.getElementById('preview-parent-weight');
         if (weightInput && weightPreview) {
             const updateWeight = () => {
-                const kg = parseFloat(weightInput.value);
-                if (!isNaN(kg) && kg > 0) {
-                    const lbs = (kg * 2.20462).toFixed(1);
-                    weightPreview.textContent = `${kg} kg / ${lbs} lbs`;
+                const lbs = parseFloat(weightInput.value);
+                if (!isNaN(lbs) && lbs > 0) {
+                    weightPreview.textContent = `${lbs.toFixed(1)} lbs`;
                 } else {
                     weightPreview.textContent = 'Weight: N/A';
                 }
             };
             updateWeight(); // Initial sync
-            weightInput.addEventListener('keyup', updateWeight);
+            weightInput.addEventListener('input', updateWeight);
         }
     };
 
