@@ -20,14 +20,16 @@ def get_litters():
 
 
 def get_litter_label(litter):
-    """Returns a clearer admin dropdown label with the litter birth date."""
+    """Returns a clearer admin dropdown label with status and birth date."""
     if not litter:
         return "Invalid Litter"
 
-    if litter.birth_date:
-        return f"{litter.display_label} — Born {litter.birth_date.strftime('%B %d, %Y')}"
+    status_tag = "Past" if litter.is_past else "Current"
 
-    return f"{litter.display_label} — Born date not set"
+    if litter.birth_date:
+        return f"[{status_tag}] {litter.display_label} — Born {litter.birth_date.strftime('%B %d, %Y')}"
+
+    return f"[{status_tag}] {litter.display_label} — Born date not set"
 
 
 class AnnouncementBannerForm(FlaskForm):
