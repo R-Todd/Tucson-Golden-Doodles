@@ -69,16 +69,16 @@
               </button>
             {% elif model and model.id and model.is_upcoming %}
               <div class="text-muted small fw-semibold">
-                Save to add puppies.
+                Change to Current to add puppies.
               </div>
             {% endif %}
           </div>
 
           {% if model and model.is_upcoming %}
             <div class="border rounded p-3 bg-light">
-              <div class="fw-semibold mb-1">Save to add puppies</div>
+              <div class="fw-semibold mb-1">Change to Current to add puppies</div>
               <div class="text-muted small">
-                Save this litter after setting the correct stage to unlock puppy management.
+                Upcoming litters cannot have puppies yet. Change this litter to Current and save to unlock puppy management.
               </div>
             </div>
           {% elif model and model.puppies %}

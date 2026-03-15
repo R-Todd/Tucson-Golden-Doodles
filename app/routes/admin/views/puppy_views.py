@@ -72,6 +72,13 @@ class PuppyAdminView(AdminModelView):
                 if litter:
                     form_instance.litter_id.choices.insert(0, (litter.id, litter.display_label))
 
+        if obj and not form_instance.is_submitted():
+            form_instance.name.data = obj.name
+            form_instance.litter_id.data = obj.litter_id
+            form_instance.gender.data = obj.gender or ""
+            form_instance.status.data = obj.status.name if obj.status else ""
+            form_instance.coat.data = obj.coat or ""
+
     def _get_requested_litter_id(self):
         """Read an optional litter_id from the query string."""
         raw_litter_id = request.args.get("litter_id", type=int)
@@ -128,11 +135,6 @@ class PuppyAdminView(AdminModelView):
         model.status = PuppyStatus[form.status.data]
         model.coat = form.coat.data
 
-        # Phase 4 hardening:
-        # - upload_image returns (result, err). We must unpack it.
-        # - If rejected (.heic / invalid ext), show flash + abort save cleanly.
-        # - Evict memoized s3_url(old_key) when keys change so new image shows immediately.
-        # - Use lazy import for cache to avoid circular imports at startup.
         if form.image_upload.data:
             upload = form.image_upload.data
             old_key = getattr(model, "main_image_s3_key", None)
@@ -148,11 +150,10 @@ class PuppyAdminView(AdminModelView):
             s3_url_filter = current_app.jinja_env.filters.get("s3_url")
             if s3_url_filter and old_key:
                 try:
-                    from app import cache  # lazy import avoids circular import
+                    from app import cache
                     cache.delete_memoized(s3_url_filter, old_key)
                 except Exception:
                     pass
 
-        # Preserve original behavior: this view commits explicitly.
         db.session.add(model)
         db.session.commit()

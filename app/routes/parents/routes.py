@@ -1,3 +1,4 @@
+from datetime import date
 from flask import abort, render_template
 from sqlalchemy.orm import selectinload
 
@@ -62,7 +63,11 @@ def parent_detail(parent_id):
         abort(404)
 
     # Normalize ordering for display (newest litters first; puppies alphabetically)
-    all_litters = sorted(parent.litters or [], key=lambda l: l.birth_date or 0, reverse=True)
+    all_litters = sorted(
+        parent.litters or [],
+        key=lambda l: l.birth_date or l.expected_birth_date or date.min,
+        reverse=True
+    )
     for litter in all_litters:
         litter.puppies.sort(key=lambda p: p.name or "")
 
