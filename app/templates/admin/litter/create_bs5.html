@@ -18,7 +18,7 @@
               <div class="card-body py-3">
                 <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStageUpcoming" value="upcoming">
                 <span class="fw-semibold">Upcoming</span>
-                <div class="form-text mt-2">Planned pairing. Shows on Upcoming Litters before puppies are added.</div>
+                <div class="form-text mt-2">Displayed on Upcoming Litters Page (before puppies are added).</div>
               </div>
             </label>
           </div>
@@ -27,7 +27,7 @@
               <div class="card-body py-3">
                 <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStageCurrent" value="current">
                 <span class="fw-semibold">Current</span>
-                <div class="form-text mt-2">Active litter currently shown on the main Litters page.</div>
+                <div class="form-text mt-2">Displayed on the main Litters page.</div>
               </div>
             </label>
           </div>
@@ -36,7 +36,7 @@
               <div class="card-body py-3">
                 <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStagePast" value="past">
                 <span class="fw-semibold">Past</span>
-                <div class="form-text mt-2">Archived litter hidden from active litter pages.</div>
+                <div class="form-text mt-2">Only displayed under Parents "past litters" section.</div>
               </div>
             </label>
           </div>
@@ -46,7 +46,7 @@
           <span class="fw-semibold" id="litterStageStatus">Upcoming</span>
           <span id="litterStageHelp">Announced pairing / expected litter shown on the Upcoming Litters page.</span>
         </div>
-        <div class="form-text mt-1" id="litterDateHelp">Use Expected Birth Date for upcoming litters.</div>
+        <div class="form-text mt-1" id="litterDateHelp">Displayed under parents "Past Litters" section.</div>
       </div>
 
       {{ super() }}
@@ -196,21 +196,15 @@
 
         if (stageHelp) {
           if (stage === 'upcoming') {
-            stageHelp.textContent = 'Announced pairing / expected litter shown on the Upcoming Litters page.';
+            stageHelp.textContent = 'Upcoming Litters shown on the Upcoming Litters page';
+            stageHelp.textContent = 'Change to "Current" to add puppies';
           } else if (stage === 'current') {
             stageHelp.textContent = 'Active litter shown on the main Litters page.';
           } else {
-            stageHelp.textContent = 'Archived litter hidden from active public litter pages.';
+            stageHelp.textContent = 'Past litter(s) hidden from public.';
           }
         }
 
-        if (dateHelp) {
-          if (stage === 'upcoming') {
-            dateHelp.textContent = 'Use Expected Birth Date for upcoming litters.';
-          } else {
-            dateHelp.textContent = 'Use Born On for current and past litters.';
-          }
-        }
 
         if (previewStage) {
           previewStage.textContent = stage.charAt(0).toUpperCase() + stage.slice(1);

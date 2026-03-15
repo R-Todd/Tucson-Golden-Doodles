@@ -46,17 +46,24 @@ class PuppyAdminView(AdminModelView):
         'image_upload': {'id': 'image_upload'},
     }
 
-    def _get_litter_choices(self):
-        """Builds dropdown choices for litters."""
+    def _get_litter_choices(self, include_upcoming=True):
+        """Build dropdown choices for litters.
+
+        For puppy creation, upcoming litters should be excluded so new puppies
+        can only be added to current/past litters. For editing, we keep the full
+        list so existing records are not disrupted.
+        """
         litters = Litter.query.order_by(Litter.birth_date.desc()).all()
+        if not include_upcoming:
+            litters = [litter for litter in litters if not litter.is_upcoming]
         return [(litter.id, litter.display_label) for litter in litters]
 
-    def _populate_form_choices(self, form_instance, obj=None):
+    def _populate_form_choices(self, form_instance, obj=None, include_upcoming=True):
         """
         Populates the Litter dropdown.
         Ensures the dropdown choices are available in both create and edit views.
         """
-        form_instance.litter_id.choices = self._get_litter_choices()
+        form_instance.litter_id.choices = self._get_litter_choices(include_upcoming=include_upcoming)
 
         if obj and obj.litter_id:
             existing_ids = {choice_id for (choice_id, _) in form_instance.litter_id.choices}
@@ -76,17 +83,25 @@ class PuppyAdminView(AdminModelView):
 
     def create_form(self, obj=None):
         form = super().create_form(obj)
-        self._populate_form_choices(form, obj=None)
+        self._populate_form_choices(form, obj=None, include_upcoming=False)
 
         requested_litter_id = self._get_requested_litter_id()
         if requested_litter_id and not form.is_submitted():
-            form.litter_id.data = requested_litter_id
+            requested_litter = Litter.query.get(requested_litter_id)
+            if requested_litter and requested_litter.is_upcoming:
+                flash(
+                    'Puppies cannot be added to an upcoming litter. '
+                    'Change the litter stage to Current and save the litter first.',
+                    category='warning'
+                )
+            else:
+                form.litter_id.data = requested_litter_id
 
         return form
 
     def edit_form(self, obj=None):
         form = super().edit_form(obj)
-        self._populate_form_choices(form, obj=obj)
+        self._populate_form_choices(form, obj=obj, include_upcoming=True)
         return form
 
     def on_model_change(self, form, model, is_created):
@@ -94,6 +109,19 @@ class PuppyAdminView(AdminModelView):
         Saves form data into the Puppy model.
         Handles image upload if a new image is provided.
         """
+        selected_litter = Litter.query.get(form.litter_id.data)
+
+        if not selected_litter:
+            raise ValidationError("Please select a valid litter.")
+
+        if is_created and selected_litter.is_upcoming:
+            msg = (
+                "Puppies cannot be added to an upcoming litter. "
+                "Change the litter stage to Current and save the litter first."
+            )
+            flash(msg, category="warning")
+            raise ValidationError(msg)
+
         model.name = form.name.data
         model.litter_id = form.litter_id.data
         model.gender = form.gender.data or None
