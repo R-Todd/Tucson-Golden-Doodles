@@ -3,10 +3,10 @@
 {% block content %}
 <div class="container py-5">
 
-    <div class="text-center mb-5">
-        <h1 class="display-4">Our Puppies</h1>
-        <p class="lead">Meet the newest members of the Tucson Golden Doodles family.</p>
-    </div>
+    {% set title = "Our Puppies" %}
+    {% set subtitle = "Meet the newest members of the Tucson Golden Doodles family." %}
+    {% set align = "center" %}
+    {% include "components/_section_header.html" %}
 
     {% if litters %}
 
@@ -49,7 +49,7 @@
                                 </div>
 
                                 <div class="col-md-4">
-                                    <div class="text-muted small">Expected Weight</div>
+                                    <div class="text-muted small">Expected Weight (lbs)</div>
                                     <div class="fw-semibold">
                                         {{ litter.expected_weight or "—" }}
                                     </div>
@@ -76,7 +76,7 @@
 
                     <div class="col-md-6 text-center parent-profile">
                         {% if litter.mother %}
-                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">
+                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">
                             <img src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
                                  class="img-fluid parent-image"
                                  alt="Photo of {{ litter.mother.name }}">
@@ -89,7 +89,7 @@
 
                     <div class="col-md-6 text-center parent-profile">
                         {% if litter.father %}
-                        <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">
+                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">
                             <img src="{{ litter.father.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
                                  class="img-fluid rounded-circle parent-image"
                                  alt="Photo of {{ litter.father.name }}">

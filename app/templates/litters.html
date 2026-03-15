@@ -5,10 +5,12 @@
 {% block content %}
 <div class="container py-5">
 
-  <div class="text-center mb-5">
-    <h1 class="display-4">Current Litters</h1>
-    <p class="lead">Explore our current litters and meet the parents.</p>
-  </div>
+  {% set title = "Current Litters" %}
+  {% set subtitle = "Explore our current litters and meet the parents." %}
+  {% set align = "center" %}
+  {% set title_class = "section-title litters-page-title" %}
+  {% set subtitle_class = "section-subtitle litters-page-subtitle" %}
+  {% include "components/_section_header.html" %}
 
   {% if litters %}
     <div class="row g-4">
@@ -33,7 +35,7 @@
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card h-100 shadow-sm litter-tile">
 
-            <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+            <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
               <img
                 src="{{ cover_img }}"
                 class="card-img-top litter-tile-img"
@@ -41,23 +43,42 @@
             </a>
 
             <div class="card-body">
+              {# Availability counts (AVAILABLE puppies only) #}
+              {% set ns = namespace(available_count=0, male_count=0, female_count=0) %}
+              {% for puppy in litter.puppies|default([]) %}
+                {% if puppy.status == PuppyStatus.AVAILABLE %}
+                  {% set ns.available_count = ns.available_count + 1 %}
+                  {% if puppy.gender and puppy.gender|lower == "male" %}
+                    {% set ns.male_count = ns.male_count + 1 %}
+                  {% elif puppy.gender and puppy.gender|lower == "female" %}
+                    {% set ns.female_count = ns.female_count + 1 %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+
               {# Title = Breed #}
-              <h2 class="h5 mb-1 litter-tile-title">
-                <a class="text-decoration-none" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
-                  {{ litter.breed_name or "Litter" }}
-                </a>
-              </h2>
+              <div class="litter-tile-title-row mb-2">
+                <h2 class="h5 mb-0 litter-tile-title">
+                  <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                    {{ litter.breed_name or "Litter" }}
+                  </a>
+                </h2>
+
+                {% if ns.available_count > 0 %}
+                  <span class="badge tgd-available-badge">{{ ns.available_count }} Available</span>
+                {% endif %}
+              </div>
 
               {# Subtitle = Parents (linked) + born date #}
               <div class="text-muted small mb-3">
                 {% if litter.mother %}
-                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
+                  <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
                 {% else %}
                   <span>Mother: —</span>
                 {% endif %}
                 <span> &amp; </span>
                 {% if litter.father %}
-                  <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
+                  <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
                 {% else %}
                   <span>Father: —</span>
                 {% endif %}
@@ -67,41 +88,36 @@
                 {% endif %}
               </div>
 
+              {% if ns.male_count > 0 or ns.female_count > 0 %}
+                <div class="litter-gender-badges mb-2">
+                  {% if ns.male_count > 0 %}
+                    <span class="badge tgd-male-badge">{{ ns.male_count }} Boys Available</span>
+                  {% endif %}
+                  {% if ns.female_count > 0 %}
+                    <span class="badge tgd-female-badge">{{ ns.female_count }} Girls Available</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+
               <div class="d-flex flex-wrap gap-2 mb-3">
                 <span class="badge bg-light text-dark border">
-                  Expected Weight: {{ litter.expected_weight or "—" }}
+                  Expected Weight: {{ litter.expected_weight or "—" }} lbs
                 </span>
               </div>
 
-              {% if litter.description %}
+              <!-- {% if litter.description %}
                 <p class="text-muted mb-0 litter-tile-desc">{{ litter.description }}</p>
               {% else %}
                 <p class="text-muted mb-0 litter-tile-desc">Click to see puppies and full litter details.</p>
-              {% endif %}
+              {% endif %} -->
             </div>
 
-            {# Footer: See full litter button + parent links (again) #}
+            {# Footer: See full litter button #}
             <div class="card-footer bg-white border-0 pt-0 pb-3">
               <div class="d-grid mb-2">
-                <a class="btn btn-outline-primary" href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
+                <a class="btn btn-brand" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
                   See full litter
                 </a>
-              </div>
-
-              <div class="text-muted small">
-                {% if litter.mother %}
-                  Mother: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">{{ litter.mother.name }}</a>
-                {% else %}
-                  Mother: —
-                {% endif %}
-
-                <span class="mx-2">|</span>
-
-                {% if litter.father %}
-                  Father: <a href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">{{ litter.father.name }}</a>
-                {% else %}
-                  Father: —
-                {% endif %}
               </div>
             </div>
 

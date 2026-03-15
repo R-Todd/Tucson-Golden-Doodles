@@ -1,62 +1,236 @@
 {% extends 'admin/model/edit.html' %}
 
+{% block head_css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/previews/puppy_preview.css') }}">
+{% endblock %}
+
 {% block body %}
 <div class="container-fluid">
-
-  <div class="row">
-    <div class="col-lg-7">
+  <div class="row g-4">
+    <div class="col-12 col-lg-7" id="puppy-form-column">
       {{ super() }}
     </div>
 
-    <div class="col-lg-5">
-      <div class="card shadow-sm mt-3 mt-lg-0">
-        <div class="card-header">
-          <h5 class="mb-0">Live Preview</h5>
-        </div>
+    <div class="col-12 col-lg-5" id="puppy-preview-column">
+      <h2 class="h5 mb-3">Live Preview</h2>
 
-        <div class="card-body">
-          <div class="text-center mb-3">
-            <img
-              id="preview-puppy-image"
-              src="{{ model.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
-              class="img-fluid rounded"
-              style="max-height: 240px; object-fit: cover;"
-              alt="Puppy Image Preview"
-            >
-          </div>
+      <div id="puppy-preview-wrapper">
+        <div class="card h-100 shadow-sm available-puppy-card">
+          <img
+            id="preview-puppy-image"
+            src="{{ model.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+            class="card-img-top available-puppy-img"
+            alt="Puppy Image Preview">
 
-          <h4 class="text-center mb-2">
-            <span id="preview-puppy-name">{{ model.name }}</span>
-          </h4>
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between gap-3">
+              <div>
+                <h2 class="h5 mb-1" id="preview-puppy-name">{{ model.name or "New Puppy" }}</h2>
 
-          <div class="text-center mb-2">
-            <span class="text-muted small">Litter:</span>
-            <div id="preview-litter-label" class="fw-semibold">
-              {% if model.litter %}
-                {{ model.litter.display_label }}
-              {% else %}
-                —
-              {% endif %}
+                <div class="text-muted small">
+                  Breed: <span class="fw-semibold" id="preview-breed-name">
+                    {{ model.litter.breed_name if model.litter and model.litter.breed_name else "—" }}
+                  </span>
+                </div>
+
+                <div class="text-muted small">
+                  Born on: <span class="fw-semibold" id="preview-born-on">
+                    {{ model.litter.birth_date.strftime('%B %d, %Y') if model.litter and model.litter.birth_date else "—" }}
+                  </span>
+                </div>
+
+                <div class="text-muted small">
+                  Coat: <span class="fw-semibold" id="preview-puppy-coat">
+                    {{ model.coat or "—" }}
+                  </span>
+                </div>
+
+                <div class="text-muted small">
+                  Gender: <span class="fw-semibold" id="preview-puppy-gender">
+                    {{ model.gender or "—" }}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span class="badge bg-secondary" id="preview-puppy-status">
+                  {{ model.status.value }}
+                </span>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <div class="small">
+              <div class="mb-2 d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <div>
+                  Mother:
+                  <span class="fw-semibold" id="preview-mother-name">
+                    {{ model.litter.mother.name if model.litter and model.litter.mother else "—" }}
+                  </span>
+                </div>
+
+                <div class="text-end ms-auto">
+                  Father:
+                  <span class="fw-semibold" id="preview-father-name">
+                    {{ model.litter.father.name if model.litter and model.litter.father else "—" }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="text-center mb-3">
-            <span class="text-muted small">Coat:</span>
-            <div id="preview-puppy-coat" class="fw-semibold">
-              {{ model.coat or "—" }}
-            </div>
+          <div class="card-footer bg-white border-0 pt-0 pb-3">
+            <button class="btn btn-outline-primary w-100" type="button" disabled>
+              See full litter
+            </button>
           </div>
-
-          <div class="text-center">
-            <span class="badge bg-secondary" id="preview-puppy-status">
-              {{ model.status.value }}
-            </span>
-          </div>
-
         </div>
       </div>
     </div>
   </div>
-
 </div>
+{% endblock %}
+
+{% block tail_js %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/previews/puppy_preview.js') }}"></script>
+
+  <style>
+    .puppy-modal-active nav,
+    .puppy-modal-active .navbar,
+    .puppy-modal-active #litter_id,
+    .puppy-modal-active label[for="litter_id"],
+    .puppy-modal-active .nav.nav-tabs,
+    .puppy-modal-active ul.nav-tabs,
+    .puppy-modal-active .breadcrumb,
+    .puppy-modal-active .page-header,
+    .puppy-modal-active .flashes {
+      display: none !important;
+    }
+
+    .puppy-modal-active .container-fluid > .row {
+      margin-top: 0 !important;
+    }
+
+    .puppy-modal-active .container-fluid {
+      padding-top: 0 !important;
+    }
+
+    .puppy-modal-active input[name="_continue_editing"],
+    .puppy-modal-active input[name="_add_another"],
+    .puppy-modal-active button[name="_continue_editing"],
+    .puppy-modal-active button[name="_add_another"],
+    .puppy-modal-active .btn[name="_continue_editing"],
+    .puppy-modal-active .btn[name="_add_another"] {
+      display: none !important;
+    }
+
+    .puppy-modal-active form .form-actions .btn:not(.btn-primary),
+    .puppy-modal-active form .form-actions input:not(.btn-primary) {
+      display: none !important;
+    }
+
+    .puppy-modal-active form .form-actions .btn.btn-primary,
+    .puppy-modal-active form .form-actions input.btn.btn-primary {
+      display: inline-block !important;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const previewColumn = document.getElementById('puppy-preview-column');
+      const formColumn = document.getElementById('puppy-form-column');
+      const litterField = document.getElementById('litter_id');
+      const form = document.querySelector('form');
+      const body = document.body;
+      const cancelControls = document.querySelectorAll('a.btn, .form-actions a, a[href]');
+      const params = new URLSearchParams(window.location.search);
+      const isEmbedded = params.get('modal') === '1' || window.self !== window.top;
+
+      if (isEmbedded) {
+        if (body) {
+          body.classList.add('puppy-modal-active');
+        }
+
+        if (previewColumn) {
+          previewColumn.style.display = 'none';
+        }
+
+        if (formColumn) {
+          formColumn.classList.remove('col-lg-7');
+          formColumn.classList.add('col-lg-12');
+        }
+
+        if (litterField) {
+          const litterWrapper =
+            litterField.closest('.form-group') ||
+            litterField.closest('.mb-3') ||
+            litterField.parentElement;
+
+          if (litterWrapper) {
+            litterWrapper.style.display = 'none';
+          } else {
+            litterField.style.display = 'none';
+          }
+        }
+      }
+
+      if (isEmbedded && cancelControls.length) {
+        cancelControls.forEach((control) => {
+          const text = (control.textContent || '').trim().toLowerCase();
+          if (text === 'cancel') {
+            control.addEventListener('click', function (event) {
+              event.preventDefault();
+              window.parent.postMessage(
+                { type: 'puppy-modal:request-close' },
+                window.location.origin
+              );
+            });
+          }
+        });
+      }
+
+      if (isEmbedded && form) {
+        form.addEventListener('submit', async function (event) {
+          event.preventDefault();
+
+          const submitter = event.submitter;
+          const formData = new FormData(form);
+
+          if (submitter && submitter.name) {
+            formData.append(submitter.name, submitter.value || '');
+          }
+
+          try {
+            const response = await fetch(form.action || window.location.href, {
+              method: (form.method || 'POST').toUpperCase(),
+              body: formData,
+              credentials: 'same-origin',
+              redirect: 'follow'
+            });
+
+            const responseText = await response.text();
+            const updatedSuccessfully = response.ok && response.redirected;
+
+            if (updatedSuccessfully) {
+              window.parent.postMessage(
+                { type: 'puppy-modal:close-and-refresh' },
+                window.location.origin
+              );
+              return;
+            }
+
+            document.open();
+            document.write(responseText);
+            document.close();
+          } catch (error) {
+            console.error('Embedded puppy edit submit failed, falling back to normal submit.', error);
+            form.submit();
+          }
+        });
+      }
+    });
+  </script>
 {% endblock %}

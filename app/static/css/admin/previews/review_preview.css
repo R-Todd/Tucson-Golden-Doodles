@@ -1,4 +1,8 @@
-/* app/static/css/admin/reviews.css */
+/* app/static/css/admin/previews/review_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. */
+@import url("../../components/reviews.css");
 
 /* Styles for the review preview card in the admin edit view */
 #review-preview-wrapper {
@@ -18,7 +22,7 @@
     color: #555;
     font-style: normal;
     font-weight: 400;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
     border-left: 4px solid #aecdec; /* Accent color */
     padding-left: 1.5rem;
     margin-bottom: 0;

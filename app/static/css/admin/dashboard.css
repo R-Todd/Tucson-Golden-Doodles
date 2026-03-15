@@ -1,5 +1,10 @@
 /* app/static/css/admin/dashboard.css */
 
+/* ======================================================
+   ADMIN — Dashboard styles (dashboard-only)
+   Scopes to: #dashboard-cards
+   ====================================================== */
+
 /* Add some spacing to the dashboard cards for a cleaner look */
 #dashboard-cards .card {
     margin-bottom: 20px;
@@ -17,4 +22,21 @@
 #dashboard-cards .card-title {
     font-weight: bold;
     color: #333;
+}
+
+/* Keyboard accessibility: if a link/button inside a card is focused,
+   show a visible outline without changing layout. */
+#dashboard-cards .card :focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+    border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #dashboard-cards .card {
+        transition: none;
+    }
+    #dashboard-cards .card:hover {
+        transform: none;
+    }
 }

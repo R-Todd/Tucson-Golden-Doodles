@@ -1,18 +1,38 @@
 /* app/static/css/components/gallery.css */
 
-#gallery .img-thumbnail {
-    border: 1px solid #dee2e6;
-    padding: 0.25rem;
-    background-color: #fff;
-    border-radius: 0.25rem;
+/* ======================================================
+   COMPONENT — Gallery (home/_gallery.html)
+   Notes:
+   - Keep existing IDs/classes because gallery_lightbox.js depends on them.
+   - Styles are scoped to #gallery (current) and .gallery-section (future-safe).
+   ====================================================== */
+
+/* Thumbnail grid images */
+#gallery .img-thumbnail,
+.gallery-section .img-thumbnail {
+    /* Match hero/about framing */
+    border: 1px solid var(--line);
+    padding: 0;
+    background-color: transparent;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 1px 2px rgba(0,0,0,.075);
+    cursor: pointer;
 }
 
-#gallery .img-thumbnail:hover {
-    transform: scale(1.05);
+/* Hover + keyboard focus */
+#gallery .img-thumbnail:hover,
+.gallery-section .img-thumbnail:hover {
+    transform: scale(1.03);
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    border-color: #aecdec;
+    border-color: rgba(255, 255, 255, 0.55);
+}
+
+/* When the <a> gets keyboard focus, give a visible ring on the image */
+#gallery a:focus-visible .img-thumbnail,
+.gallery-section a:focus-visible .img-thumbnail {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 2px;
 }
 
 /* Fullscreen gallery lightbox image */
@@ -40,6 +60,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background 0.15s ease-in-out;
 }
 
 .gallery-prev { left: 16px; }
@@ -49,10 +70,30 @@
     background: rgba(0,0,0,0.55);
 }
 
+/* Keyboard accessibility for lightbox controls */
+.gallery-nav-btn:focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #gallery .img-thumbnail,
+    .gallery-section .img-thumbnail {
+        transition: none;
+    }
+    #gallery .img-thumbnail:hover,
+    .gallery-section .img-thumbnail:hover {
+        transform: none;
+    }
+    .gallery-nav-btn {
+        transition: none;
+    }
+}
+
 @media (max-width: 576px) {
     .gallery-nav-btn {
         width: 2.75rem;
-        height: 2.75rem;
+        height: 2rem;
         font-size: 2rem;
     }
 }

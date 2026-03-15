@@ -1,4 +1,3 @@
-# app/models/puppy_models.py
 """
 Defines the Puppy model, which represents individual puppies
 belonging to a specific litter.
@@ -23,8 +22,9 @@ class Puppy(db.Model):
 
     name = db.Column(db.String(100), nullable=False)
 
-    # NEW: Puppy-specific field
+    # NEW: Puppy-specific fields
     coat = db.Column(db.String(100), nullable=True)
+    gender = db.Column(db.String(10), nullable=True)
 
     status = db.Column(
         db.Enum(PuppyStatus),

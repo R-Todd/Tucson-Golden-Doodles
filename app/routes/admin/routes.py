@@ -4,31 +4,33 @@ from flask import redirect, url_for, request, render_template
 from flask_login import current_user, login_user, logout_user
 from flask_admin.menu import MenuLink
 
-from app import db
+from app.models import db
+from app.models.site_models import ParentsPageIntro
 from app.models import (
-    User, Parent, Litter, Puppy, Review, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
+    User, Parent, Litter, Puppy, Review, ReviewImage, HeroSection, AboutSection, GalleryImage, AnnouncementBanner
 )
 from . import bp, admin
 from .views import (
     ParentAdminView, LitterAdminView, PuppyAdminView, HeroSectionAdminView,
     AboutSectionAdminView, AnnouncementBannerAdminView, ReviewAdminView, AdminModelView, GalleryImageAdminView
 )
+from .views.home.parents_intro_view import ParentsPageIntroAdminView
+from .views.home.review_image_view import ReviewImageAdminView
+
 
 # Register admin views for different models
 admin.add_view(ParentAdminView(Parent, db.session))
 admin.add_view(LitterAdminView(Litter, db.session))
 admin.add_view(PuppyAdminView(Puppy, db.session))
 
-# Register admin views for site content using Bootstrap 5 templates
-admin.add_view(ReviewAdminView(Review, db.session))
-# Custom name for HeroSection view in the admin interface
-admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero Section"))
-# Custom name for AboutSection view in the admin interface
-admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section"))
-# Custom name for AnnouncementBanner view in the admin interface
-admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner"))
-# Custom name for GalleryImage view in the admin interface
-admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery Images"))
+# Register admin views for Home Page content using Bootstrap 5 templates
+admin.add_view(HeroSectionAdminView(HeroSection, db.session, name="Hero", category="Home Page"))
+admin.add_view(AnnouncementBannerAdminView(AnnouncementBanner, db.session, name="Announcement Banner", category="Home Page"))
+admin.add_view(AboutSectionAdminView(AboutSection, db.session, name="About Section", category="Home Page"))
+admin.add_view(GalleryImageAdminView(GalleryImage, db.session, name="Gallery", category="Home Page"))
+admin.add_view(ParentsPageIntroAdminView(ParentsPageIntro, db.session, name="Parents Section Intro", category="Home Page"))
+admin.add_view(ReviewAdminView(Review, db.session, name="Reviews", category="Home Page"))
+admin.add_view(ReviewImageAdminView(ReviewImage, db.session, name="Review Images", category="Home Page"))
 
 # Add a logout link to the admin menu
 admin.add_link(MenuLink(name='Logout', category='', url='/admin/logout'))

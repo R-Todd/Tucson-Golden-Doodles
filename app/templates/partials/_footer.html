@@ -1,0 +1,42 @@
+<footer class="site-footer mt-auto">
+    <div class="container">
+        <div class="site-footer__inner">
+            <div class="site-footer__brand-wrap">
+                <h2 class="site-footer__brand mb-2">Tucson Golden Doodles</h2>
+                <p class="site-footer__tagline mb-0">Raised with care in Arizona</p>
+            </div>
+
+            <div class="site-footer__contact">
+                {% if site_meta and site_meta.phone_number %}
+                    <a class="site-footer__link" href="tel:{{ site_meta.phone_number|replace(' ', '') }}">
+                        {{ site_meta.phone_number }}
+                    </a>
+                {% endif %}
+
+                {% if site_meta and site_meta.email %}
+                    <a class="site-footer__link" href="mailto:{{ site_meta.email }}">
+                        {{ site_meta.email }}
+                    </a>
+                {% endif %}
+
+                <a class="site-footer__link"
+                   href="{{ site_meta.social_instagram_url if site_meta and site_meta.social_instagram_url else 'https://www.instagram.com/tucson_golden_doodles?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==' }}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Instagram
+                </a>
+
+                <a class="site-footer__link"
+                   href="{{ site_meta.social_facebook_url if site_meta and site_meta.social_facebook_url else 'https://www.facebook.com/p/Tucson-Golden-Doodles-100063664025732/' }}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Facebook
+                </a>
+            </div>
+
+            <div class="site-footer__bottom">
+                <p class="mb-0">{{ now.year }} Tucson Golden Doodles All Rights Reserved</p>
+            </div>
+        </div>
+    </div>
+</footer>

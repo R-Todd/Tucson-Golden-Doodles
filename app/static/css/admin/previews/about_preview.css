@@ -1,4 +1,8 @@
-/* app/static/css/admin/about_preview.css */
+/* app/static/css/admin/previews/about_preview.css */
+
+/* Pull in the real public-facing component styles so the admin preview
+   stays in sync with production. */
+@import url("../../components/about.css");
 
 /* Styles the wrapper for the "About Us" preview section in the admin panel. */
 #about-preview-wrapper {

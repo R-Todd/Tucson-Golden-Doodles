@@ -1,20 +1,191 @@
 /* app/static/css/pages/litters.css */
 
-/* Litter tile cover image should be uniform and never crop */
+/* ======================================================
+   PAGE — Litters (list)
+   This file includes:
+   1) /litters listing tiles (litter-tile*)
+   ====================================================== */
+
+/* ======================================================
+   LISTING: Litter tiles
+   ====================================================== */
+
+/* Page header: "Current Litters" (scoped to this page via template class) */
+.litters-page-title {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin-bottom: 10px;
+}
+
+.litters-page-title::after {
+  content: "";
+  display: block;
+  width: 92px;
+  height: 2px;
+  margin: 14px auto 0;
+  background: rgba(43, 36, 34, 0.22);
+  border-radius: 999px;
+}
+
+.litters-page-subtitle {
+  font-size: 1.05rem;
+  line-height: 1.45;
+  max-width: 60ch;
+}
+
+/* Litter tile cover image: fill the frame (no white/blank letterbox) */
 .litter-tile-img {
   width: 100%;
-  aspect-ratio: 3 / 4;     /* portrait */
+  aspect-ratio: 4 / 3;     /* landscape grid looks better for most litter photos */
   height: auto;
-  object-fit: contain;     /* never crop */
+  object-fit: cover;       /* removes the white/blank box */
   object-position: center;
-  background: #f4f4f4;     /* letterbox background */
+  background: transparent;
   display: block;
 }
 
 .litter-tile-title {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.litter-tile-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.90rem;
+}
+
+.litter-tile-title-row .litter-tile-title {
+  margin-bottom: 0;
+}
+
+/* Breed title on listing: premium serif headline */
+.litter-tile-title a {
+  font-family: 'DM Serif Display', serif;
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.litter-tile-title a:hover {
+  color: var(--ink);
+  text-decoration: none;
 }
 
 .litter-tile-subtitle {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.65rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* Meta line links (parents) should feel editorial, not "default blue" */
+.litter-tile-subtitle a {
+  color: rgba(43, 36, 34, 0.78);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(43, 36, 34, 0.22);
+}
+
+.litter-tile-subtitle a:hover,
+.litter-tile-subtitle a:focus {
+  color: var(--ink);
+  border-bottom-color: rgba(43, 36, 34, 0.40);
+}
+
+/* If the listing uses <small> for dates, keep it refined */
+.litter-tile-subtitle small {
+  color: rgba(43, 36, 34, 0.72);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ======================================================
+   Shared UI tweaks for litter tiles (used on /litters + parent detail current litters)
+   ====================================================== */
+
+/* Tighten the light badge spacing inside litter tiles */
+.litter-tile .badge.bg-light.text-dark.border {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.1;
+  padding: 0.45rem 0.75rem;
+}
+
+.litter-gender-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Eye-catching AVAILABLE badge (used on litter tiles) */
+.tgd-available-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #6dc66d;
+  color: #ffffff;
+  border: 1px solid #6dc66d;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tgd-male-badge,
+.tgd-female-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 0.48rem 0.82rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  line-height: 1.1;
+}
+
+.tgd-male-badge {
+  background: #C0E2EE;
+  color: #2f5f86;
+}
+
+.tgd-female-badge {
+  background: #FBDCE9;
+  color: #a24f76;
+}
+
+.tgd-male-badge::before {
+  content: "B";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: rgba(47, 95, 134, 0.12);
+  color: #2f5f86;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.tgd-female-badge::before {
+  content: "G";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: rgba(162, 79, 118, 0.12);
+  color: #a24f76;
+  font-size: 0.72rem;
+  font-weight: 800;
 }

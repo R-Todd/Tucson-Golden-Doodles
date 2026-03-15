@@ -34,13 +34,15 @@
     const momName = getSelectedText(byId("mom_id"));
     const dadName = getSelectedText(byId("dad_id"));
 
-    setText(byId("preview-breed"), breed, "Litter");
+    setText(byId("preview-title"), breed, "Litter");
+    setText(byId("preview-breed"), breed, "—");
     setText(byId("preview-weight"), expectedWeight, "—");
-    setText(byId("preview-desc"), desc, "Description will appear here.");
+    setText(byId("preview-desc"), desc, "Click below to explore the parents and puppies in this litter.");
+    setText(byId("preview-born"), formatDateToPretty(birthRaw), "—");
 
     const bornPretty = formatDateToPretty(birthRaw);
     const parentsText = `${momName || "Mother: —"} & ${dadName || "Father: —"}${bornPretty ? " — Born on " + bornPretty : ""}`;
-    setText(byId("preview-subtitle"), parentsText, "Parents: —");
+    setText(byId("preview-subtitle"), parentsText, "Mother: — & Father: —");
 
     // Image live preview from file input
     const fileInput = byId("image_upload");

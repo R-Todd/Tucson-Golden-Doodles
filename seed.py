@@ -1,9 +1,11 @@
 import os
 from datetime import date
 from werkzeug.datastructures import FileStorage
+from sqlalchemy import text
 
-from app import create_app, db
+from app import create_app
 from app.models import (
+    db,
     User,
     SiteDetails,
     Parent,
@@ -16,10 +18,39 @@ from app.models import (
     AnnouncementBanner,
     ParentRole,
     PuppyStatus,
-    Litter
+    Litter,
 )
 
 from app.utils.image_uploader import upload_image
+
+
+# ======================================================
+# VALIDATION HELPERS
+# ======================================================
+
+def require_env(var_name: str) -> str:
+    """Return required env var value or raise a clear error."""
+    value = os.environ.get(var_name)
+    if value is None or str(value).strip() == "":
+        raise RuntimeError(f"{var_name} is required to run seed.py.")
+    return value
+
+
+def validate_seed_requirements() -> None:
+    """Fail fast if required env vars for seeding are missing."""
+    # Admin credentials (single-admin model)
+    require_env("ADMIN_USERNAME")
+    require_env("ADMIN_PASSWORD")
+
+    # App secrets / DB
+    require_env("SECRET_KEY")
+    require_env("DATABASE_URL")
+
+    # S3 requirements (you requested: fail if missing)
+    require_env("S3_BUCKET_NAME")
+    require_env("S3_BUCKET_REGION")
+    require_env("AWS_ACCESS_KEY_ID")
+    require_env("AWS_SECRET_ACCESS_KEY")
 
 
 # ======================================================
@@ -40,46 +71,88 @@ def upload_seed_image(filename, folder, responsive=False):
             content_type="image/jpeg"
         )
 
-        return upload_image(
+        result, err = upload_image(
             file_storage,
             folder=folder,
             create_responsive_versions=responsive
         )
 
+        if err:
+            print(f"Warning: Upload rejected (skipping): {filename} — {err}")
+            return None
+
+        return result
+
+# ======================================================
+# SEED SCRIPT
+# ======================================================
 
 app = create_app()
 
 with app.app_context():
-    print("Dropping all tables...")
-    db.drop_all()
+    # Fail fast on missing config (you requested strict S3 requirements)
+    validate_seed_requirements()
 
-    print("Creating tables...")
-    db.create_all()
+    print("Clearing existing data...")
+
+    # IMPORTANT:
+    # We rely on Alembic migrations to create/alter tables.
+    # Run `flask db upgrade` before `python seed.py`.
+    #
+    # Here we only clear rows to reseed deterministically.
+    #
+    # Delete order matters due to foreign keys (MySQL).
+    # To make reseeding deterministic even as FK relationships evolve, we temporarily
+    # disable FK checks during the wipe, then restore them even if something fails.
+    try:
+        db.session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+
+        db.session.query(AnnouncementBanner).delete(synchronize_session=False)
+        db.session.query(ParentImage).delete(synchronize_session=False)
+        db.session.query(Puppy).delete(synchronize_session=False)
+        db.session.query(Litter).delete(synchronize_session=False)
+        db.session.query(Parent).delete(synchronize_session=False)
+        db.session.query(Review).delete(synchronize_session=False)
+        db.session.query(GalleryImage).delete(synchronize_session=False)
+        db.session.query(HeroSection).delete(synchronize_session=False)
+        db.session.query(AboutSection).delete(synchronize_session=False)
+        db.session.query(SiteDetails).delete(synchronize_session=False)
+        db.session.query(User).delete(synchronize_session=False)
+
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    finally:
+        # Always restore FK checks so the app runs normally after seeding.
+        try:
+            db.session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
     # ======================================================
-    # ADMIN (FROM .env)
+    # ADMIN (FROM .env) — REQUIRED
     # ======================================================
 
-    admin_username = os.environ.get("ADMIN_USERNAME", "admin")
-    admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+    admin_username = require_env("ADMIN_USERNAME")
+    admin_password = require_env("ADMIN_PASSWORD")
 
     admin = User(username=admin_username)
     admin.set_password(admin_password)
     db.session.add(admin)
-
-    
-
 
     # ======================================================
     # SITE DETAILS
     # ======================================================
 
     site_details = SiteDetails(
-    phone_number="520-123-4567",
-    email="info@tucsongoldendoodles.com"
+        phone_number="520-404-4512",
+        email="tucsongoldendoodlesaz@gmail.com"
     )
     db.session.add(site_details)
 
+    db.session.commit()
     print("Created admin + site details")
 
     # ======================================================
@@ -134,9 +207,6 @@ with app.app_context():
     ])
     db.session.commit()
 
-    
-
-
     # Upload responsive parent main images
     for parent, filename in [
         (parent_archie, "archie.jpg"),
@@ -152,9 +222,6 @@ with app.app_context():
             parent.main_image_s3_key = keys.get("original")
 
     db.session.commit()
-
-    
-
 
     # Alternate parent images
     alternate_images = [
@@ -175,7 +242,6 @@ with app.app_context():
             )
 
     db.session.commit()
-
     print("Uploaded parent images")
 
     # ======================================================
@@ -228,9 +294,7 @@ with app.app_context():
         )
 
     db.session.commit()
-
     print("Created puppies")
-
 
     # ======================================================
     # GALLERY
@@ -278,7 +342,6 @@ with app.app_context():
         image_s3_key_large=hero_keys.get("large") if hero_keys else None,
     )
 
-
     about_keys = upload_seed_image("about-us.jpg", "about", responsive=True)
 
     about = AboutSection(
@@ -288,8 +351,8 @@ with app.app_context():
         image_s3_key_small=about_keys.get("small") if about_keys else None,
         image_s3_key_medium=about_keys.get("medium") if about_keys else None,
         image_s3_key_large=about_keys.get("large") if about_keys else None,
-        )
-    
+    )
+
     banner = AnnouncementBanner(
         is_active=True,
         main_text="Now accepting deposits for upcoming litters!",
@@ -298,9 +361,7 @@ with app.app_context():
     )
 
     db.session.add_all([hero, about, banner])
-
-
     db.session.commit()
-    print("Created hero/about/banner")
 
-    print("Full production database seeded successfully.")
+    print("Created hero/about/banner")
+    print(" Database seeded successfully.")

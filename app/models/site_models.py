@@ -118,3 +118,28 @@ class AnnouncementBanner(db.Model):
     def __repr__(self):
         """Provides a developer-friendly representation of the AnnouncementBanner object."""
         return f'<AnnouncementBanner {self.id}>'
+
+
+class ParentsPageIntro(db.Model):
+    """
+    Manages the main image and introductory text for the Parents page.
+
+    Intended for a single row of data to control a top-of-page feature image
+    and an editable description/intro block displayed above the Moms/Dads grids.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    title = db.Column(db.String(200), default="Our Parents")
+    content_html = db.Column(db.Text)
+
+    # S3 keys for the page's main image, with responsive sizes.
+    image_s3_key = db.Column(db.String(255))
+    image_s3_key_small = db.Column(db.String(255))
+    image_s3_key_medium = db.Column(db.String(255))
+    image_s3_key_large = db.Column(db.String(255))
+
+    def __repr__(self):
+        """Provides a developer-friendly representation of the ParentsPageIntro object."""
+        return f'<ParentsPageIntro {self.title}>'

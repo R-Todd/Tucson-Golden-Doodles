@@ -1,23 +1,18 @@
-/* app/static/css/admin/previews/litter_preview.css */
-
 .litter-preview-card {
-  max-width: 420px;
+  overflow: hidden;
 }
 
 .litter-preview-img {
   width: 100%;
-  aspect-ratio: 3 / 4;
   height: auto;
-  object-fit: contain;
-  object-position: center;
-  background: #f4f4f4;
   display: block;
 }
 
-.litter-preview-subtitle {
-  font-size: 0.9rem;
+.litter-preview-card .btn[disabled] {
+  opacity: 1;
+  pointer-events: none;
 }
 
-.litter-preview-desc {
+.litter-preview-card dl {
   margin-bottom: 0;
 }

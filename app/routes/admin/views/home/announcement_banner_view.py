@@ -1,6 +1,7 @@
 # app/routes/admin/views/home/announcement_banner_view.py
 
 import json
+
 from ..base import AdminModelView
 from app.routes.admin.forms.announcement_forms import AnnouncementBannerForm
 from app.models import Litter
@@ -34,6 +35,18 @@ class AnnouncementBannerAdminView(AdminModelView):
         'featured_puppy': {'id': 'featured_puppy'}
     }
 
+    def edit_form(self, obj=None):
+        form = super().edit_form(obj)
+
+        if obj is not None and hasattr(form, 'featured_puppy'):
+            form.featured_puppy.data = obj.featured_litter
+
+        return form
+
+    def create_form(self, obj=None):
+        form = super().create_form(obj)
+        return form
+
     def _get_template_args(self):
         """
         Injects JSON-serialized Litter data for the preview JavaScript.
@@ -63,6 +76,10 @@ class AnnouncementBannerAdminView(AdminModelView):
         selected_litter = form.featured_puppy.data
 
         if selected_litter:
+            model.featured_litter = selected_litter
             model.featured_litter_id = selected_litter.id
         else:
+            model.featured_litter = None
             model.featured_litter_id = None
+
+        return super().on_model_change(form, model, is_created)

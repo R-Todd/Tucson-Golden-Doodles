@@ -1,5 +1,12 @@
 /* app/static/css/components/about.css */
 
+/* ======================================================
+   COMPONENT — About (home/_about.html)
+   Safe polish:
+   - Visible keyboard focus on links
+   - Respect prefers-reduced-motion
+   ====================================================== */
+
 /*
   Premium About band (homepage)
   - Full-width soft background
@@ -7,20 +14,23 @@
   - Image framed (no stretching)
 */
 
-.about-band {
+.about-band,
+.about-section {
     background: var(--cream);
     border-bottom: 1px solid var(--line);
     padding: 72px 0;
 }
 
-.about-grid {
+.about-grid,
+.about-section .about-grid {
     display: grid;
     grid-template-columns: 1.05fr 1fr;
     gap: clamp(24px, 3vw, 56px);
     align-items: center;
 }
 
-.about-media {
+.about-media,
+.about-section .about-media {
     border-radius: var(--radius);
     overflow: hidden;
     background: #fff;
@@ -28,7 +38,8 @@
     box-shadow: var(--shadow);
 }
 
-.about-image {
+.about-image,
+.about-section .about-image {
     display: block;
     width: 100%;
     height: 100%;
@@ -37,7 +48,8 @@
     object-position: center;
 }
 
-.about-eyebrow {
+.about-eyebrow,
+.about-section .about-eyebrow {
     font-size: 0.85rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -45,8 +57,9 @@
     margin-bottom: 12px;
 }
 
-.about-title {
-    font-family: 'Playfair Display', serif;
+.about-title,
+.about-section .about-title {
+    font-family: 'DM Serif Display', serif;
     font-size: clamp(2rem, 2.6vw, 3rem);
     line-height: 1.08;
     letter-spacing: -0.015em;
@@ -54,7 +67,8 @@
     margin: 0 0 16px;
 }
 
-.about-content {
+.about-content,
+.about-section .about-content {
     color: var(--muted);
     font-size: 1.08rem;
     line-height: 1.75;
@@ -62,7 +76,8 @@
 }
 
 /* Ensure rich text from admin looks consistent */
-.about-content p {
+.about-content p,
+.about-section .about-content p {
     margin: 0 0 14px;
 }
 
@@ -70,15 +85,31 @@
     margin-bottom: 0;
 }
 
-.about-content a {
+.about-content a,
+.about-section .about-content a {
     color: var(--ink);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
 }
 
-.about-content a:hover {
+.about-content a:hover,
+.about-section .about-content a:hover {
     opacity: 0.9;
+}
+
+.about-content a:focus-visible,
+.about-section .about-content a:focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-content a:hover,
+    .about-section .about-content a:hover {
+        opacity: 1;
+    }
 }
 
 @media (max-width: 992px) {

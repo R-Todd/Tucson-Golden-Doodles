@@ -1,0 +1,265 @@
+/* app/static/css/pages/litter_detail.css */
+
+/* ======================================================
+   DETAIL: Litter detail page
+   Scope everything under .litter-detail-page so the listing is unaffected.
+   ====================================================== */
+
+.litter-detail-page {
+  /* page wrapper hook */
+}
+
+/* Header panel (title + meta + CTAs) */
+.litter-detail-header {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+
+.litter-detail-header__kicker {
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* Remove the gray "CURRENT LITTER" kicker label */
+.litter-detail-header__kicker {
+  display: none;
+}
+
+.litter-detail-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.1rem, 3vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* Make litter-detail section titles smaller (About This Litter, Quick Facts, Meet the Parents) */
+.litter-detail-panel .section-title,
+.litter-detail-facts .section-title {
+  font-size: clamp(1.35rem, 1.6vw, 1.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  margin-bottom: 0.75rem;
+}
+
+.litter-detail-meta {
+  max-width: 70ch;
+}
+
+.litter-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.litter-detail-page .tgd-available-badge,
+.litter-detail-page .tgd-male-badge,
+.litter-detail-page .tgd-female-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 0.48rem 0.82rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  line-height: 1.1;
+}
+
+.litter-detail-page .tgd-available-badge {
+  background: #6dc66d;
+  color: #ffffff;
+}
+
+.litter-detail-page .tgd-male-badge {
+  background: #C0E2EE;
+  color: #2f5f86;
+}
+
+.litter-detail-page .tgd-female-badge {
+  background: #FBDCE9;
+  color: #a24f76;
+}
+
+.litter-detail-page .tgd-male-badge::before {
+  content: "B";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: rgba(47, 95, 134, 0.12);
+  color: #2f5f86;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.litter-detail-page .tgd-female-badge::before {
+  content: "G";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.45rem;
+  border-radius: 999px;
+  background: rgba(162, 79, 118, 0.12);
+  color: #a24f76;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* CTA row: keep buttons tidy and aligned */
+.litter-detail-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Panels (About + Parents) */
+.litter-detail-panel {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+
+.litter-detail-description {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Quick facts card */
+.litter-detail-facts {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  background: var(--surface);
+}
+
+.litter-facts {
+  margin: 0;
+}
+
+.litter-facts__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.litter-facts__row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.litter-facts dt {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.litter-facts dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.litter-facts__strong {
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* Parent mini cards */
+.parent-mini-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  background: var(--surface);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.parent-mini-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}
+
+.parent-mini-card__media {
+  width: 100%;
+  aspect-ratio: 3 / 4; /* portrait */
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.parent-mini-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* no crop */
+  object-position: center;
+  display: block;
+}
+
+.parent-mini-card__body {
+  text-align: center;
+}
+
+.parent-mini-card__name {
+  color: var(--ink);
+}
+
+.puppy-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.puppy-card-header h3 {
+  text-align: left;
+}
+
+.puppy-gender-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.puppy-gender-badge--male {
+  background: #C0E2EE;
+  color: #2f5f86;
+}
+
+.puppy-gender-badge--female {
+  background: #FBDCE9;
+  color: #a24f76;
+}
+
+.puppy-card .text-muted.small {
+  text-align: left;
+}
+
+/* Responsive: keep spacing comfortable on smaller screens */
+@media (max-width: 991px) {
+  .litter-detail-header .card-body {
+    padding: 20px;
+  }
+}

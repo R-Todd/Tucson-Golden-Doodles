@@ -1,47 +1,88 @@
-/* app/static/css/style.css */
+/*
+  Global Styles Entry Point (style.css)
+  - Keeps global design tokens and a small set of shared utilities.
+  - Page/component styling is loaded via @import (kept at top).
+  - Organization-only edits: comments/spacing only; rule order preserved.
+*/
 
-/* --- IMPORTS --- */
-/* Import page-specific and component-specific styles. @import rules must be at the top. */
+/* Imports (must remain at top) */
 @import url("pages/parents.css");
+@import url("pages/parent_detail.css");
 @import url("pages/puppy.css");
 @import url("pages/litters.css");
+@import url("pages/litter_detail.css");
 @import url("pages/available_puppies.css");
 @import url("components/hero.css");
 @import url("components/about.css");
-@import url("components/banner.css"); 
+@import url("components/navbar.css");
+/* @import url("components/banner.css"); */
+@import url("pages/home.css");
+@import url("components/announcement_banner.css");
 @import url("components/reviews.css");
-
 @import url("components/gallery.css");
-
-
-/* --- GENERAL STYLING --- */
-body {
-    font-family: 'Open Sans', sans-serif; /* Clean sans-serif for body */
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background: #ffffff; /* Clean white background */
-    color: #2b2422;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif; /* Decorative serif for headings */
-    color: #2b2422; /* Highland-style ink */
-}
 
 /* ===== Global design tokens + rhythm (Highland-inspired) ===== */
 :root {
-    --cream: #fbf5ef;
-    --ink: #2b2422;
-    --muted: rgba(43, 36, 34, 0.75);
+    /* Core palette */
+    --cream: #fbf5ef;                   /* page background */
+    --surface: #ffffff;                 /* cards/sections */
+    --ink: #2b2422;                     /* primary text */
+    --muted: rgba(43, 36, 34, 0.75);    /* secondary text */
+    --teal-blue: #297aa0;
+    --light-teal: #2b8ab6;               /* accents, CTAs */
+
+    /* Brand accents (match your screenshot) */
+    --espresso: #3b2f2f;                /* Available Puppies button */
+    --bronze: #9b5b07;                  /* announcement band */
+    --bronze-dark: #6f450a;             /* darker bronze edge */
+    --cta-blue: #1f75f7;                /* featured litter CTA */
+
+    /* UI primitives */
     --line: rgba(0, 0, 0, 0.12);
-    --card: #ffffff;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
     --radius: 16px;
 }
 
+/* --- GENERAL STYLING --- */
+body {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.003em;
+    margin: 0;
+    padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Serif Display', serif;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+}
+
+p,
+li,
+a,
+span,
+label,
+input,
+textarea,
+select,
+button,
+.btn,
+.badge,
+.text-muted,
+small,
+.form-control,
+.form-select {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
 main {
-    background: #ffffff;
+    background: transparent; /* let the cream show through */
 }
 
 /* Section spacing helper (apply per-section in templates) */
@@ -60,11 +101,16 @@ main {
 /* Consistent section headings */
 .section-title {
     font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
     margin-bottom: 18px;
     color: var(--ink);
 }
 
 .section-subtitle {
+    font-size: clamp(1rem, 1.35vw, 1.08rem);
+    font-weight: 500;
+    line-height: 1.65;
     color: var(--muted);
     max-width: 52ch;
     margin: 0 auto 28px;
@@ -74,13 +120,187 @@ main {
 .btn.hero-cta {
     border-radius: 999px;
     padding: 12px 22px;
-    background: #3b2f2f;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    background: var(--espresso);
     color: #ffffff;
-    border: 1px solid #3b2f2f;
+    border: 1px solid var(--espresso);
 }
 
 .btn.hero-cta:hover {
-    background: #2f2525;
-    border-color: #2f2525;
+    filter: brightness(0.92);
     color: #ffffff;
+}
+
+/* --- Consistent surfaces --- */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* --- Shared button roles (use these across templates) --- */
+.btn-brand {
+    background: var(--espresso);
+    border: 1px solid var(--espresso);
+    color: #ffffff;
+    border-radius: 999px;
+    font-weight: 700;
+    font-family: 'Nunito Sans', sans-serif;
+    padding: 10px 18px;
+}
+.btn-brand:hover { filter: brightness(0.92); color: #ffffff; }
+
+.btn-cta {
+    background: var(--cta-blue);
+    border: 1px solid var(--cta-blue);
+    color: #ffffff;
+    border-radius: 999px;
+    font-weight: 700;
+    font-family: 'Nunito Sans', sans-serif;
+    padding: 10px 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.btn-cta:hover { filter: brightness(0.92); color: #ffffff; }
+
+.btn-outline-brand {
+    background: transparent;
+    border: 1px solid var(--espresso);
+    color: var(--espresso);
+    border-radius: 999px;
+    font-weight: 700;
+    font-family: 'Nunito Sans', sans-serif;
+}
+.btn-outline-brand:hover { background: var(--espresso); color: #ffffff; }
+
+/* Shared typographic polish */
+.card-title,
+.card-text,
+.navbar,
+.nav-link,
+.dropdown-item,
+.form-label {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+/* ======================================================
+   Footer
+   ====================================================== */
+.site-footer {
+    background: var(--espresso);
+    color: rgba(255, 248, 240, 0.92);
+    border-top: 1px solid rgba(155, 91, 7, 0.34);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    padding: 40px 0 28px;
+}
+
+.site-footer__inner {
+    text-align: center;
+}
+
+.site-footer__brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 2.2vw, 2.35rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: #fff8f0;
+}
+
+.site-footer__tagline {
+    color: rgba(255, 248, 240, 0.74);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.site-footer__contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 248, 240, 0.08);
+    border: 1px solid rgba(255, 248, 240, 0.12);
+    color: #fff8f0;
+    text-decoration: none;
+    font-weight: 700;
+    line-height: 1.1;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.site-footer__link:hover,
+.site-footer__link:focus {
+    background: rgba(255, 248, 240, 0.14);
+    border-color: rgba(255, 248, 240, 0.22);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.site-footer__bottom {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 248, 240, 0.12);
+    color: rgba(255, 248, 240, 0.64);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 576px) {
+    .site-footer {
+        padding: 34px 0 24px;
+    }
+
+    .site-footer__contact {
+        gap: 10px;
+    }
+}
+
+/* ======================================================
+   Lightbox (bs5-lightbox) — Mobile sizing
+   Goal:
+   - On phones, the lightbox should feel full-screen
+   - Remove modal padding/margins that shrink the image
+   ====================================================== */
+@media (max-width: 576px) {
+  /* bs5-lightbox adds `lightbox` class on the modal */
+  .modal.lightbox .modal-dialog {
+    max-width: 100vw;
+    width: 100vw;
+    margin: 0;
+  }
+
+  .modal.lightbox .modal-content {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .modal.lightbox .modal-body {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  /* Make the image fill most of the viewport height (better for portrait photos) */
+  .modal.lightbox .modal-body img {
+    max-width: 100vw;
+    max-height: 92vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
 }

@@ -1,19 +1,33 @@
-/* app/static/css/admin/hero_preview.css */
+/* app/static/css/admin/previews/hero_preview.css */
 
-/* Wrapper to constrain the hero preview */
 .hero-preview-wrapper {
-    height: 350px; /* Reduced height for a compact preview */
-    overflow: hidden; /* Hide parts of the background that don't fit */
-    position: relative;
-    border-radius: 5px;
+    width: 100%;
+    overflow: visible;
+    border-radius: 18px;
 }
 
-/* Apply the real hero section styles, but scoped to the preview */
-.hero-preview-wrapper .hero-section {
-    height: 100%;
+.hero-preview-wrapper .hero-split {
+    min-height: auto;
+    height: auto;
+}
+
+.hero-preview-wrapper .hero-split__text,
+.hero-preview-wrapper .hero-split__image {
+    min-height: auto;
+}
+
+.hero-preview-wrapper .hero-content {
+    max-width: 100%;
+}
+
+.hero-preview-wrapper .hero-image-frame {
+    height: auto;
+    min-height: 320px;
+}
+
+.hero-preview-wrapper .hero-image {
     width: 100%;
-    transform: scale(1); /* Ensure it's not scaled down */
-    position: absolute;
-    top: 0;
-    left: 0;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }

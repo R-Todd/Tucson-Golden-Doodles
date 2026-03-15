@@ -1,9 +1,9 @@
 # app/routes/admin/views/puppy_views.py
 
-from flask import request
+from flask import request, flash, current_app
 from flask_wtf import FlaskForm
 from wtforms.fields import FileField, SelectField, StringField
-from wtforms.validators import InputRequired, DataRequired
+from wtforms.validators import InputRequired, DataRequired, ValidationError
 
 from .base import AdminModelView
 from app.models import Puppy, PuppyStatus, Litter, db
@@ -12,8 +12,15 @@ from app.utils.image_uploader import upload_image
 
 class PuppyForm(FlaskForm):
     """Defines the custom form used for creating/editing Puppy records."""
+    GENDER_CHOICES = [
+        ("", "Select Gender"),
+        ("Male", "Male"),
+        ("Female", "Female"),
+    ]
+
     name = StringField("Name", validators=[DataRequired()])
     litter_id = SelectField("Litter", coerce=int, validators=[InputRequired()])
+    gender = SelectField("Gender", choices=GENDER_CHOICES, validators=[])
     status = SelectField("Status", choices=[(s.name, s.value) for s in PuppyStatus], validators=[DataRequired()])
     coat = StringField("Coat", validators=[])
     image_upload = FileField("Upload New Main Image")
@@ -26,7 +33,7 @@ class PuppyAdminView(AdminModelView):
     create_template = 'admin/puppy/create_bs5.html'
     edit_template = 'admin/puppy/edit_bs5.html'
 
-    column_list = ('name', 'litter', 'status')
+    column_list = ('name', 'gender', 'litter', 'status')
 
     form = PuppyForm
 
@@ -34,6 +41,7 @@ class PuppyAdminView(AdminModelView):
         'name': {'id': 'name'},
         'litter_id': {'id': 'litter_id'},
         'coat': {'id': 'coat'},
+        'gender': {'id': 'gender'},
         'status': {'id': 'status'},
         'image_upload': {'id': 'image_upload'},
     }
@@ -50,8 +58,6 @@ class PuppyAdminView(AdminModelView):
         """
         form_instance.litter_id.choices = self._get_litter_choices()
 
-        # If editing and current puppy has a litter id not present (shouldn't happen),
-        # keep it safe by injecting that value.
         if obj and obj.litter_id:
             existing_ids = {choice_id for (choice_id, _) in form_instance.litter_id.choices}
             if obj.litter_id not in existing_ids:
@@ -59,9 +65,23 @@ class PuppyAdminView(AdminModelView):
                 if litter:
                     form_instance.litter_id.choices.insert(0, (litter.id, litter.display_label))
 
+    def _get_requested_litter_id(self):
+        """Read an optional litter_id from the query string."""
+        raw_litter_id = request.args.get("litter_id", type=int)
+        if not raw_litter_id:
+            return None
+
+        litter = Litter.query.get(raw_litter_id)
+        return litter.id if litter else None
+
     def create_form(self, obj=None):
         form = super().create_form(obj)
         self._populate_form_choices(form, obj=None)
+
+        requested_litter_id = self._get_requested_litter_id()
+        if requested_litter_id and not form.is_submitted():
+            form.litter_id.data = requested_litter_id
+
         return form
 
     def edit_form(self, obj=None):
@@ -76,12 +96,35 @@ class PuppyAdminView(AdminModelView):
         """
         model.name = form.name.data
         model.litter_id = form.litter_id.data
+        model.gender = form.gender.data or None
         model.status = PuppyStatus[form.status.data]
         model.coat = form.coat.data
 
+        # Phase 4 hardening:
+        # - upload_image returns (result, err). We must unpack it.
+        # - If rejected (.heic / invalid ext), show flash + abort save cleanly.
+        # - Evict memoized s3_url(old_key) when keys change so new image shows immediately.
+        # - Use lazy import for cache to avoid circular imports at startup.
         if form.image_upload.data:
             upload = form.image_upload.data
-            model.main_image_s3_key = upload_image(upload, folder="puppies")
+            old_key = getattr(model, "main_image_s3_key", None)
 
+            new_key, err = upload_image(upload, folder="puppies")
+            if err or not new_key:
+                msg = err or "Puppy image upload failed. Please upload a JPG/PNG."
+                flash(msg, category="danger")
+                raise ValidationError(msg)
+
+            model.main_image_s3_key = new_key
+
+            s3_url_filter = current_app.jinja_env.filters.get("s3_url")
+            if s3_url_filter and old_key:
+                try:
+                    from app import cache  # lazy import avoids circular import
+                    cache.delete_memoized(s3_url_filter, old_key)
+                except Exception:
+                    pass
+
+        # Preserve original behavior: this view commits explicitly.
         db.session.add(model)
         db.session.commit()

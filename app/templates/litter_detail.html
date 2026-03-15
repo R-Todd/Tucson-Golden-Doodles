@@ -3,103 +3,173 @@
 {% block title %}{{ litter.display_label }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container py-5 litter-detail-page">
 
-  <div class="text-center mb-5">
-    <h1 class="display-5">{{ litter.display_label }}</h1>
-    <p class="lead mb-0">Meet the parents and puppies in this litter.</p>
-  </div>
+  {% set ns = namespace(available_count=0, male_count=0, female_count=0) %}
+  {% for puppy in litter.puppies|default([]) %}
+    {% if puppy.status == PuppyStatus.AVAILABLE %}
+      {% set ns.available_count = ns.available_count + 1 %}
+      {% if puppy.gender and puppy.gender|lower == "male" %}
+        {% set ns.male_count = ns.male_count + 1 %}
+      {% elif puppy.gender and puppy.gender|lower == "female" %}
+        {% set ns.female_count = ns.female_count + 1 %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
 
   <!-- =========================
-       LITTER INFO
+       LITTER HEADER (premium)
   ========================== -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="p-3 rounded bg-light border">
-        <div class="row g-3">
+  <div class="card litter-detail-header">
+    <div class="card-body">
+      <div class="litter-detail-header__kicker text-muted">Current Litter</div>
 
-          <div class="col-md-4">
-            <div class="text-muted small">Born on</div>
-            <div class="fw-semibold">
-              {{ litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else "—" }}
-            </div>
-          </div>
+      <h1 class="litter-detail-title mb-2">{{ litter.display_label }}</h1>
 
-          <div class="col-md-4">
-            <div class="text-muted small">Breed</div>
-            <div class="fw-semibold">
-              {{ litter.breed_name or "—" }}
-            </div>
-          </div>
+      <div class="litter-detail-meta text-muted">
+        {% if litter.mother %}{{ litter.mother.name }}{% else %}Mother: —{% endif %}
+        <span class="mx-1">&amp;</span>
+        {% if litter.father %}{{ litter.father.name }}{% else %}Father: —{% endif %}
+        {% if litter.birth_date %}
+          <span class="mx-2">—</span>
+          Born on {{ litter.birth_date.strftime('%B %d, %Y') }}
+        {% endif %}
+      </div>
 
-          <div class="col-md-4">
-            <div class="text-muted small">Expected Weight</div>
-            <div class="fw-semibold">
-              {{ litter.expected_weight or "—" }}
-            </div>
-          </div>
-
-          {% if litter.description %}
-          <div class="col-12">
-            <div class="text-muted small">About This Litter</div>
-            <div>
-              {{ litter.description }}
-            </div>
-          </div>
+      {% if ns.available_count > 0 or ns.male_count > 0 or ns.female_count > 0 %}
+        <div class="litter-detail-badges mt-3">
+          {% if ns.available_count > 0 %}
+            <span class="badge tgd-available-badge">{{ ns.available_count }} Available</span>
           {% endif %}
 
+          {% if ns.male_count > 0 %}
+            <span class="badge tgd-male-badge">{{ ns.male_count }} Boys Available</span>
+          {% endif %}
+
+          {% if ns.female_count > 0 %}
+            <span class="badge tgd-female-badge">{{ ns.female_count }} Girls Available</span>
+          {% endif %}
         </div>
+      {% endif %}
+
+      <div class="litter-detail-cta-row mt-3">
+        <a class="btn btn-brand" href="{{ url_for('puppies.available_puppies') }}">View Available Puppies</a>
+        <a class="btn btn-outline-brand" href="{{ url_for('litters.list_litters') }}">Back to Current Litters</a>
       </div>
     </div>
   </div>
 
   <!-- =========================
-       PARENTS (PORTRAIT 3:4, NO CROP)
+       DETAILS + QUICK FACTS
   ========================== -->
-  <div class="row mb-4 align-items-start gy-4">
-    <div class="col-6 col-md-6 text-center">
-      {% if litter.mother %}
-        <a class="text-decoration-none" href="{{ url_for('parents.list_parents') }}#parent-{{ litter.mother.id }}">
-          <img
-            src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
-            class="img-fluid parent-portrait"
-            alt="Photo of {{ litter.mother.name }}">
-          <div class="mt-2">
-            <div class="text-muted small">Mother</div>
-            <div class="h5 mb-0">{{ litter.mother.name }}</div>
+  <div class="row g-4 mt-1">
+    <!-- Left: narrative + parents -->
+    <div class="col-12 col-lg-8">
+
+      <div class="card litter-detail-panel mb-4">
+        <div class="card-body">
+          <h2 class="section-title mb-3">About This Litter</h2>
+
+          {% if litter.description %}
+            <p class="litter-detail-description mb-0">{{ litter.description }}</p>
+          {% else %}
+            <p class="litter-detail-description mb-0 text-muted">Click below to explore the parents and puppies in this litter.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- =========================
+           PARENTS (mini profile cards)
+      ========================== -->
+      <div class="card litter-detail-panel">
+        <div class="card-body">
+          <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+            <h2 class="section-title mb-0">Meet the Parents</h2>
           </div>
-        </a>
-      {% else %}
-        <div class="text-muted">Mother: —</div>
-      {% endif %}
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              {% if litter.mother %}
+                <a class="text-decoration-none" href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">
+                  <div class="card parent-mini-card h-100">
+                    <div class="parent-mini-card__media">
+                      <img
+                        src="{{ litter.mother.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+                        class="parent-mini-card__img"
+                        alt="Photo of {{ litter.mother.name }}">
+                    </div>
+                    <div class="card-body parent-mini-card__body">
+                      <div class="text-muted small">Mother</div>
+                      <div class="h5 mb-0 parent-mini-card__name">{{ litter.mother.name }}</div>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="text-muted">Mother: —</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-6">
+              {% if litter.father %}
+                <a class="text-decoration-none" href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">
+                  <div class="card parent-mini-card h-100">
+                    <div class="parent-mini-card__media">
+                      <img
+                        src="{{ litter.father.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+                        class="parent-mini-card__img"
+                        alt="Photo of {{ litter.father.name }}">
+                    </div>
+                    <div class="card-body parent-mini-card__body">
+                      <div class="text-muted small">Father</div>
+                      <div class="h5 mb-0 parent-mini-card__name">{{ litter.father.name }}</div>
+                    </div>
+                  </div>
+                </a>
+              {% else %}
+                <div class="text-muted">Father: —</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="col-6 col-md-6 text-center">
-      {% if litter.father %}
-        <a class="text-decoration-none" href="{{ url_for('parents.list_parents') }}#parent-{{ litter.father.id }}">
-          <img
-            src="{{ litter.father.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
-            class="img-fluid parent-portrait"
-            alt="Photo of {{ litter.father.name }}">
-          <div class="mt-2">
-            <div class="text-muted small">Father</div>
-            <div class="h5 mb-0">{{ litter.father.name }}</div>
-          </div>
-        </a>
-      {% else %}
-        <div class="text-muted">Father: —</div>
-      {% endif %}
+    <!-- Right: quick facts -->
+    <div class="col-12 col-lg-4">
+      <div class="card litter-detail-facts">
+        <div class="card-body">
+          <h2 class="section-title mb-3">Quick Facts</h2>
+
+          <dl class="litter-facts">
+            <div class="litter-facts__row">
+              <dt>Born on</dt>
+              <dd>{{ litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else "—" }}</dd>
+            </div>
+
+            <div class="litter-facts__row">
+              <dt>Breed</dt>
+              <dd class="litter-facts__strong">{{ litter.breed_name or "—" }}</dd>
+            </div>
+
+            <div class="litter-facts__row">
+              <dt>Expected weight</dt>
+              <dd>{{ litter.expected_weight or "—" }} lbs</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
     </div>
   </div>
 
-  <hr class="my-4">
+  <hr class="my-5">
 
   <!-- =========================
        PUPPIES GRID
   ========================== -->
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
     <h2 class="h4 mb-0">Puppies in this litter</h2>
-    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('puppies.list_litters') }}">Back to Current Litters</a>
+    <a class="btn btn-outline-brand btn-sm" href="{{ url_for('litters.list_litters') }}">Back to Current Litters</a>
   </div>
 
   {% if litter.puppies %}
@@ -114,7 +184,14 @@
               alt="{{ puppy.name }}">
 
             <div class="card-body text-center">
-              <h3 class="h5 mb-1">{{ puppy.name }}</h3>
+              <div class="puppy-card-header mb-2">
+                <h3 class="h5 mb-0">{{ puppy.name }}</h3>
+                {% if puppy.gender and puppy.gender|lower == "male" %}
+                  <span class="puppy-gender-badge puppy-gender-badge--male">Male</span>
+                {% elif puppy.gender and puppy.gender|lower == "female" %}
+                  <span class="puppy-gender-badge puppy-gender-badge--female">Female</span>
+                {% endif %}
+              </div>
 
               <div class="text-muted small mb-2">
                 Coat: <span class="fw-semibold">{{ puppy.coat or "—" }}</span>

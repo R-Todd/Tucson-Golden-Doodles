@@ -1,0 +1,248 @@
+/* ======================================================
+   Header / Navbar
+   Uses your palette vars from style.css:
+   --cream, --espresso, --bronze, --line, --shadow, etc.
+   ====================================================== */
+
+.site-header {
+    background: #f3dec8;
+    border-bottom: 1px solid var(--espresso);
+}
+
+/* Brand row: logo left, phone right (desktop) */
+.site-header__brand {
+    padding: 18px 0 8px;
+}
+
+.site-brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.site-brand__logo {
+    display: block;
+    max-width: min(560px, 94vw);
+    max-height: 180px;
+    width: auto;
+    height: auto;
+}
+
+/* Phone: right-justified in brand row */
+.site-phone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--espresso);
+    border: 1px solid rgba(59, 47, 47, 0.18);
+    color: var(--cream);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.site-phone:hover,
+.site-phone:focus {
+    background: rgba(59, 47, 47, 0.12);
+    color: var(--espresso);
+}
+
+/* Phone + socials block (right side) */
+.site-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* right-justified block */
+    gap: 8px;
+    width: max-content; /* makes this column match phone width */
+}
+
+.site-social {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    align-self: center; /* centers icons under the phone */
+}
+
+/* Social icons: image-only (no background) */
+.site-social__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* width: 60px;
+    height: 60px; */
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    text-decoration: none;
+}
+
+.site-social__link:hover,
+.site-social__link:focus {
+    opacity: 0.85;
+}
+
+.site-social__icon {
+    width: 45px;
+    height: 45px;
+    display: block;
+}
+
+/* Nav band */
+.site-header__nav {
+    /* Bronze nav bar */
+    background: var(--bronze);
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 8px 0;
+}
+
+/* Nav spacing */
+.site-nav {
+    gap: 10px;
+}
+
+.site-nav .nav-link {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    padding: 12px 18px;
+    border-radius: 0;
+    position: relative;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+/* Force white text inside the nav band (Bootstrap .navbar-light overrides otherwise) */
+.site-header__nav .navbar-nav .nav-link,
+.site-header__nav .navbar-nav .nav-link:visited,
+.site-header__nav .navbar-nav .nav-link:hover,
+.site-header__nav .navbar-nav .nav-link:focus,
+.site-header__nav .navbar-nav .nav-link:active {
+    color: #ffffff !important;
+}
+
+.site-nav .nav-link:hover,
+.site-nav .nav-link:focus {
+    color: #ffffff;
+    background: transparent;
+}
+
+/* Active tab: keep it clean; rely on underline */
+.site-nav .nav-link.active {
+    color: #ffffff;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    text-decoration: none;
+}
+
+/* Underline "rail" accent (hover + active) */
+.site-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 8px;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+    opacity: 0;
+    transform: translateY(2px);
+    transition: opacity 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.site-nav .nav-link:hover::after,
+.site-nav .nav-link:focus::after {
+    background: rgba(255, 255, 255, 0.80);
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.site-nav .nav-link.active::after {
+    /* Active underline becomes cream so it contrasts on bronze */
+    background: var(--cream);
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Vertical dividers between items (desktop) */
+@media (min-width: 992px) {
+    .site-nav {
+        gap: 0;
+    }
+
+    .site-nav .nav-item + .nav-item {
+        position: relative;
+    }
+
+    .site-nav .nav-item + .nav-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 18px;
+        background: rgba(255, 255, 255, 0.42); /* divider on bronze */
+    }
+}
+
+/* Dropdown: keep it light/premium */
+.navbar .dropdown-menu {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.navbar .dropdown-item {
+    padding: 10px 14px;
+}
+
+@media (max-width: 991.98px) {
+    .site-header__brand {
+        padding: 14px 0 6px;
+    }
+
+    /* Mobile: stack logo then phone */
+    .site-brand-row {
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .site-brand__logo {
+        max-height: 140px;
+    }
+
+    .site-phone {
+        width: 100%;
+        max-width: 360px;
+        justify-content: center;
+    }
+
+    .site-contact {
+        align-items: center;
+    }
+
+    .site-nav {
+        gap: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .site-nav .nav-link {
+        padding: 12px 10px;
+        text-align: center;
+    }
+}

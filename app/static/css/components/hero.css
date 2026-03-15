@@ -1,5 +1,12 @@
 /* app/static/css/components/hero.css */
 
+/* ======================================================
+   COMPONENT — Hero (home/_hero.html)
+   Safe polish:
+   - Add visible keyboard focus styling inside the hero
+   - Respect prefers-reduced-motion
+   ====================================================== */
+
 /*
   Split hero (text + image) matching reference:
   - Desktop: side-by-side
@@ -8,12 +15,19 @@
 */
 
 .hero-split {
-    /* Premium editorial height: tall, but not always a full-screen billboard */
-    min-height: clamp(640px, 92vh, 980px);
+    /*
+      Layout height
+      - This controls the amount of vertical “air” in the hero.
+      - If the hero feels like it has too much empty space on tall displays,
+        reduce the middle value (vh) or the max value.
+    */
+    min-height: clamp(560px, 78vh, 880px);
     display: grid;
     grid-template-columns: 1fr 1.25fr;
     background: var(--cream);
     border-bottom: 1px solid var(--line);
+    /* Ensure both columns stretch to the same full height (prevents tiny gaps) */
+    align-items: stretch;
 }
 
 .hero-split__text {
@@ -24,13 +38,32 @@
 
 .hero-split__image {
     border-left: 1px solid var(--line);
+    /*
+      Make the image column stretch and clip:
+      - fixes the top "air" area above the image
+      - removes the thin background strip at the bottom from sub-pixel rounding
+    */
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    /* If there’s ever a rounding gap, match the frame background */
+    background: var(--surface);
 }
 
 .hero-image-frame {
+    /* Fill the entire column height */
     height: 100%;
     width: 100%;
     overflow: hidden;
     position: relative;
+    flex: 1 1 auto;
+    line-height: 0; /* defensive: avoids baseline whitespace artifacts */
+
+    /* Consistent site-wide frame styling */
+    /* border: 1px solid var(--line); */
+    /* box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    box-sizing: border-box; */
 }
 
 /* Subtle photo treatment for a more premium feel */
@@ -57,11 +90,11 @@
 }
 
 .hero-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: clamp(2.6rem, 4.2vw, 4.6rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
-    font-weight: 700;
+    font-weight: 400;
     margin-bottom: 0.5rem;
     color: var(--ink);
 }
@@ -155,9 +188,26 @@
     opacity: 0.85;
 }
 
+/* Keyboard accessibility: make focus obvious without changing layout */
+.hero-split :focus-visible {
+    outline: 3px solid rgba(174, 205, 236, 0.9);
+    outline-offset: 3px;
+    border-radius: 10px;
+}
+
 /* Animation for the scroll arrow (kept from earlier hero) */
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-20px); }
     60% { transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* If any hero element uses bounce, disable it for reduced motion users */
+    .hero-split * {
+        scroll-behavior: auto;
+    }
+    .hero-down-arrow {
+        animation: none !important;
+    }
 }

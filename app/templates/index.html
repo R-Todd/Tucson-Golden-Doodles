@@ -1,194 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+  {# Phase 5C (slow rollout): extract the home page into partials one section at a time. #}
+  {# Batch 5C-1: Hero only #}
+  {% include "home/_hero.html" %}
 
-{% if hero %}
-{#--- HERO CONTENT BLOCK ---#}
-<section class="hero-split">
-    <div class="hero-split__text">
-        <div class="hero-content">
-            <h1 class="hero-title">{{ hero.main_title }}</h1>
+  {# Batch 5C-2: Announcement banner only #}
+  {% include "home/_announcement_banner.html" %}
 
-            <div class="hero-kicker">{{ hero.subtitle }}</div>
+  {# Batch 5C-3: About section only #}
+  {% include "home/_about.html" %}
 
-            <p class="hero-description">{{ hero.description }}</p>
+  <div class="container">
+      {# Batch 5C-4: Available puppies section only #}
+      {% include "home/_available_puppies.html" %}
 
-            <ul class="hero-bullets">
-                {% if hero.scroll_text_main %}<li>{{ hero.scroll_text_main }}</li>{% endif %}
-                {% if hero.scroll_text_secondary %}<li>{{ hero.scroll_text_secondary }}</li>{% endif %}
-            </ul>
+      {# Batch 5C-5: Testimonials section only #}
+      {% include "home/_testimonials.html" %}
 
-            <div class="hero-cta-row">
-                <a class="btn hero-cta" href="{{ url_for('puppies.available_puppies') }}">Available Puppies</a>
-            </div>
-
-            <a href="#about" class="hero-down" aria-label="Scroll to About section">
-                <span class="hero-down-arrow">&darr;</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="hero-split__image" aria-hidden="true">
-        <div class="hero-image-frame">
-            <img
-                src="{{ (hero.image_s3_key_large or hero.image_s3_key) | s3_url }}"
-                alt="{{ hero.main_title }}"
-                class="hero-image"
-                loading="eager"
-                decoding="async">
-        </div>
-    </div>
-</section>
-{% endif %}
-
-{#--- ANNOUNCEMENT BANNER BLOCK ---#}
-{% if announcement_banner and announcement_banner.is_active %}
-    <div class="litter-announcement-banner">
-        <h4 class="h4">{{ announcement_banner.main_text }}</h4>
-
-        {% if announcement_banner.featured_litter %}
-            {% set litter = announcement_banner.featured_litter %}
-            {% set mom = litter.mother %}
-            {% set dad = litter.father %}
-
-            <p>{{ announcement_banner.sub_text.format(
-                mom_name=mom.name if mom else "",
-                dad_name=dad.name if dad else "",
-                birth_date=litter.birth_date.strftime('%B %d, %Y') if litter.birth_date else ""
-            ) }}</p>
-
-            <a class="btn btn-primary"
-               href="{{ url_for('puppies.litter_detail', litter_id=litter.id) }}">
-                View Featured Litter
-            </a>
-        {% endif %}
-    </div>
-{% endif %}
-
-{#--- ABOUT SECTION ---#}
-{% if about %}
-<section id="about" class="about-section section-pad">
-    <div class="container">
-        <div class="row align-items-center g-4">
-            <div class="col-md-6">
-                <div class="about-image-wrap">
-                    <img
-                        src="{{ about.image_s3_key | s3_url or url_for('static', filename='img/about_us_family.jpg') }}"
-                        alt="{{ about.image_alt_text or 'About our family' }}"
-                        class="img-fluid rounded shadow-sm">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <h2 class="section-title text-start">{{ about.title }}</h2>
-                <div class="section-subtitle text-start">{{ about.subtitle }}</div>
-                <div class="about-content">{{ about.content_html|safe }}</div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<div class="container">
-
-    {#--- AVAILABLE PUPPIES SECTION ---#}
-    <section id="available-puppies" class="section-pad text-center available-puppies--home">
-        <h2 class="section-title">Available Puppies</h2>
-        <p class="section-subtitle">Browse puppies currently marked as available. Click a pup to learn more.</p>
-
-        {% if puppies %}
-        <div class="row g-4">
-            {% for puppy in puppies %}
-                {% set is_home = true %}
-                {% include "_available_puppy_card.html" %}
-            {% endfor %}
-        </div>
-
-        <div class="mt-4">
-            <a class="btn btn-outline-primary" href="{{ url_for('puppies.available_puppies') }}">View all available puppies</a>
-        </div>
-
-        {% else %}
-            <p>We have no available puppies at this time. Please check back soon!</p>
-        {% endif %}
-    </section>
-    <hr class="my-5">
-
-    {#--- REVIEWS/TESTIMONIALS SECTION ---#}
-    {% if reviews %}
-    <section id="testimonials" class="section-pad">
-        <h2 class="section-title text-center">What Our Families Are Saying</h2>
-        <p class="section-subtitle text-center">Real stories from families who welcomed one of our pups.</p>
-
-        <div class="row">
-            {% for review in reviews %}
-                {# Defense-in-depth: skip placeholder/blank reviews #}
-                {% if review.testimonial_text and review.author_name %}
-                <div class="col-md-6 mx-auto mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <blockquote class="blockquote mb-0">
-                                <p>{{ review.testimonial_text }}</p>
-                                <footer class="blockquote-footer mt-2">{{ review.author_name }}</footer>
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </section>
-    <hr class="my-5">
-    {% endif %}
-
-    {#--- GALLERY SECTION ---#}
-    {% if gallery_images %}
-    <section id="gallery" class="section-pad">
-        <h2 class="section-title text-center">Gallery</h2>
-        <p class="section-subtitle text-center">A peek into life with our dogs and puppies.</p>
-
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-            {% for image in gallery_images %}
-            <div class="col">
-                <a href="{{ image.image_s3_key | s3_url }}"
-                   data-gallery="site-gallery"
-                   data-title="{{ image.caption or 'Gallery Image' }}">
-                    <img src="{{ image.image_s3_key | s3_url }}"
-                         class="img-fluid img-thumbnail"
-                         alt="{{ image.caption or 'Gallery Image' }}">
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    {# --- GALLERY LIGHTBOX MODAL (Bootstrap 5) --- #}
-    <div class="modal fade" id="galleryLightbox" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-dark">
-          <div class="modal-header border-0">
-            <h5 class="modal-title text-white" id="galleryLightboxTitle">Gallery</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-
-          <div class="modal-body p-0 position-relative d-flex align-items-center justify-content-center">
-            <button type="button" class="gallery-nav-btn gallery-prev" aria-label="Previous image">
-              &#10094;
-            </button>
-
-            <img id="galleryLightboxImg" class="gallery-lightbox-img" src="" alt="">
-
-            <button type="button" class="gallery-nav-btn gallery-next" aria-label="Next image">
-              &#10095;
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
-</div>
+      {# Batch 5C-6: Gallery section + modal only #}
+      {% include "home/_gallery.html" %}
+  </div>
 {% endblock %}
 
 {% block extra_js %}
+  {# Home gallery lightbox hook (must remain a true block in base.html) #}
   <script src="{{ url_for('static', filename='js/gallery_lightbox.js') }}"></script>
 {% endblock %}

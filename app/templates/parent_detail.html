@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}{{ parent.name }} - Tucson Golden Doodles{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+
+    <div class="parent-name-banner" id="parent-{{ parent.id }}">
+        <h1 class="display-5 text-white text-uppercase text-center py-3">{{ parent.name }}</h1>
+    </div>
+
+    <div class="container my-5">
+
+        <div class="row g-4 parent-layout-container">
+            <div class="col-md-6 parent-image-column">
+
+                {% set all_carousel_keys = [] %}
+                {% if parent.main_image_s3_key %}{% set _ = all_carousel_keys.append(parent.main_image_s3_key) %}{% endif %}
+                {% if parent.alternate_image_s3_key_1 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_1) %}{% endif %}
+                {% if parent.alternate_image_s3_key_2 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_2) %}{% endif %}
+                {% if parent.alternate_image_s3_key_3 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_3) %}{% endif %}
+                {% if parent.alternate_image_s3_key_4 %}{% set _ = all_carousel_keys.append(parent.alternate_image_s3_key_4) %}{% endif %}
+
+                {% if all_carousel_keys %}
+                <div id="parentCarousel-{{ parent.id }}" class="carousel slide parent-carousel-wrapper">
+                    <div class="carousel-inner">
+                        {% for s3_key in all_carousel_keys %}
+                        <div class="carousel-item {{ 'active' if loop.first }}">
+                            <img src="{{ s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') }}"
+                                 class="d-block w-100 carousel-image"
+                                 alt="Parent image {{ loop.index }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button class="carousel-control-prev" type="button"
+                            data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+
+                    <button class="carousel-control-next" type="button"
+                            data-bs-target="#parentCarousel-{{ parent.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="col-md-6 parent-info-column">
+                <div class="text-center mt-md-0 mt-4">
+                    <h3 class="breed-header">{{ parent.breed }}</h3>
+
+                    <p class="weight-header">
+                        {% if parent.weight_kg is not none %}
+                            {{ (parent.weight_kg * 2.20462)|round(1) }} lbs
+                        {% else %}
+                            Weight: N/A
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="description-paragraphs mt-4">
+                    {% if parent.description %}
+                        {% for paragraph in parent.description.split('\n') %}
+                            {% if paragraph.strip() %}
+                                <p>{{ paragraph.strip() }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No description is available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="past-puppies-header mt-5 text-center">
+            <h2>CURRENT LITTERS</h2>
+        </div>
+
+        {% if current_litters %}
+            <div class="row g-4 mt-3 justify-content-center current-litters-row">
+                {% for litter in current_litters %}
+                    {# Cover image priority:
+                       1) Litter main image (admin-selected)
+                       2) First puppy image
+                       3) Placeholder
+                    #}
+                    {% set cover_img =
+                      (litter.main_image_s3_key | s3_url)
+                      if litter.main_image_s3_key
+                      else
+                      (
+                        (litter.puppies[0].main_image_s3_key | s3_url)
+                        if litter.puppies and litter.puppies[0].main_image_s3_key
+                        else url_for('static', filename='img/placeholder.jpg')
+                      )
+                    %}
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm litter-tile">
+
+                            <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                                <img
+                                    src="{{ cover_img }}"
+                                    class="card-img-top litter-tile-img"
+                                    alt="{{ litter.display_label }}">
+                            </a>
+
+                            <div class="card-body">
+                                <h2 class="h5 mb-1 litter-tile-title">
+                                    <a class="text-decoration-none" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                                        {{ litter.breed_name or "Litter" }}
+                                    </a>
+                                </h2>
+
+                                <div class="text-muted small mb-3">
+                                    {% if litter.mother %}
+                                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.mother.id) }}">{{ litter.mother.name }}</a>
+                                    {% else %}
+                                        <span>Mother: —</span>
+                                    {% endif %}
+                                    <span> &amp; </span>
+                                    {% if litter.father %}
+                                        <a href="{{ url_for('parents.parent_detail', parent_id=litter.father.id) }}">{{ litter.father.name }}</a>
+                                    {% else %}
+                                        <span>Father: —</span>
+                                    {% endif %}
+
+                                    {% if litter.birth_date %}
+                                        <span class="ms-2">— Born on {{ litter.birth_date.strftime('%B %d, %Y') }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="badge bg-light text-dark border">
+                                        Expected Weight: {{ litter.expected_weight or "—" }}
+                                    </span>
+
+                                    {% if litter.available_count is not none %}
+                                        <span class="badge tgd-available-badge">
+                                            Available: {{ litter.available_count }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white border-0 pt-0 pb-3">
+                                <div class="d-grid mb-2">
+                                    <a class="btn btn-brand" href="{{ url_for('litters.litter_detail', litter_id=litter.id) }}">
+                                        See full litter
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="tgd-empty-state mt-3">
+                <div class="tgd-empty-state-title">No current litters available</div>
+                <div class="tgd-empty-state-subtitle">
+                    Please check back soon for upcoming litters and availability updates.
+                </div>
+            </div>
+        {% endif %}
+
+        {% set past_litters_with_puppies = (past_litters|default([])) | selectattr('puppies') | list %}
+
+        {% if past_litters_with_puppies %}
+            <div class="past-puppies-header mt-5 text-center">
+                <h2>PAST LITTERS</h2>
+            </div>
+
+            {% for litter in past_litters_with_puppies %}
+                <div class="past-litter-card">
+                    <div class="past-litter-row">
+                        <div class="past-litter-text">
+                            <div class="past-litter-title">
+                                Litter with
+                                {% if parent.role.name == 'MOM' %}
+                                    {{ litter.father.name if litter.father else "Unknown Dad" }}
+                                {% else %}
+                                    {{ litter.mother.name if litter.mother else "Unknown Mom" }}
+                                {% endif %}
+                            </div>
+                            <div class="past-litter-meta text-muted">
+                                {% if litter.birth_date %}
+                                    Born: {{ litter.birth_date.strftime('%B %Y') }}
+                                {% else %}
+                                    Born: —
+                                {% endif %}
+                                {% if litter.breed_name %}
+                                    <span class="mx-2">•</span>{{ litter.breed_name }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if litter.puppies %}
+                        <div class="past-litter-thumbs">
+                            {% for puppy in litter.puppies[:6] %}
+                                {% set puppy_img = puppy.main_image_s3_key | s3_url or url_for('static', filename='img/placeholder.jpg') %}
+                                <a class="past-litter-thumb"
+                                   href="{{ puppy_img }}"
+                                   data-toggle="lightbox"
+                                   data-gallery="past-litter-{{ litter.id }}"
+                                   data-title="{{ puppy.name }}">
+                                    <img
+                                        src="{{ puppy_img }}"
+                                        class="past-litter-thumb-img"
+                                        alt="{{ puppy.name }}">
+                                </a>
+                            {% endfor %}
+
+                            {% if litter.puppies|length > 6 %}
+                                {% set extra_count = (litter.puppies|length) - 6 %}
+                                <div class="past-litter-more text-muted">+{{ extra_count }} more</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,30 +1,115 @@
 /* app/static/css/components/reviews.css */
 
-/* --- Testimonials/Reviews Section --- */
+/* ======================================================
+   COMPONENT — Testimonials + Review Viewer (home/_testimonials.html)
+   Notes:
+   - Scoped to #testimonials and modal IDs so other pages/components are unaffected.
+   - Keeps the homepage compact: clamps card text, but shows full text in the modal.
+   - Works with the modal/filmstrip markup we added to home/_testimonials.html.
+   ====================================================== */
+
+/* ===== Testimonials cards (home) ===== */
 #testimonials .card {
-    border: none;
-    border-radius: 12px;
-    background-color: #ffffff;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 #testimonials .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.10),
+        0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-#testimonials .blockquote {
-    font-size: 1.1rem;
-    color: #555;
-    font-style: normal;
-    font-weight: 400;
-    font-family: 'Open Sans', sans-serif;
-    border-left: 4px solid #aecdec; /* Accent color */
-    padding-left: 1.5rem;
+/* Small thumbnail in the review card (first review image) */
+#testimonials .review-card-thumb {
+    float: right;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    margin-left: 0.75rem;
+    margin-top: 0.15rem;
 }
 
-#testimonials .blockquote-footer {
-    font-weight: 600;
-    color: #333;
-    font-style: normal;
+/* Clamp long reviews on the card to keep the section compact */
+#testimonials blockquote p {
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* "View full review" as subtle, small gray text */
+#testimonials .rv-open {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.55);
+    text-decoration: none;
+}
+
+#testimonials .rv-open:hover,
+#testimonials .rv-open:focus {
+    color: rgba(0, 0, 0, 0.75);
+    text-decoration: underline;
+}
+
+/* ===== Review Viewer modal ===== */
+#reviewViewerModal #rvText {
+    white-space: pre-wrap;
+    line-height: 1.55;
+}
+
+/* Filmstrip thumbnails: compact + scrollable */
+#reviewViewerModal #rvFilmstrip {
+    padding-bottom: 0.25rem;
+}
+
+#reviewViewerModal #rvFilmstrip img {
+    height: 64px;
+    width: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Lighter horizontal scrollbar */
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar {
+    height: 8px;
+}
+
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+}
+
+#reviewViewerModal #rvFilmstrip::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 999px;
+}
+
+/* ===== Review Lightbox modal (gallery-style) ===== */
+#reviewLightbox .modal-body {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Mobile tweaks */
+@media (max-width: 576px) {
+    #testimonials .review-card-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+    }
+
+    #reviewViewerModal #rvFilmstrip img {
+        height: 56px;
+        width: 56px;
+    }
 }
