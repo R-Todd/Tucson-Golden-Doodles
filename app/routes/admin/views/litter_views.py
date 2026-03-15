@@ -128,10 +128,6 @@ class LitterAdminView(AdminModelView):
 
     def _normalize_stage(self, value):
         stage = (value or "upcoming").strip().lower()
-        if stage == "auto":
-            return "current"
-        if stage == "force_past":
-            return "past"
         return stage if stage in {"upcoming", "current", "past"} else "upcoming"
 
     def on_model_change(self, form, model, is_created):

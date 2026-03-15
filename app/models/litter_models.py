@@ -1,6 +1,5 @@
 from . import db
 from datetime import timedelta
-from .enums import PuppyStatus
 
 
 class Litter(db.Model):
@@ -61,25 +60,12 @@ class Litter(db.Model):
 
     @property
     def is_past(self) -> bool:
-        """Return True if this litter should be treated as a past litter.
+        """Return True when this litter is explicitly configured as past.
 
-        Rules:
-        - Upcoming litters are never past
-        - Admin override: status_mode == "past" => past
-        - Current litters automatically become past when they have no available puppies
+        Litter stage is admin-controlled and should not be inferred from
+        puppy availability.
         """
-        mode = (self.status_mode or "upcoming").strip().lower()
-
-        if mode == "upcoming":
-            return False
-
-        if mode == "past":
-            return True
-
-        if not self.puppies:
-            return True
-
-        return not any(p.status == PuppyStatus.AVAILABLE for p in self.puppies)
+        return (self.status_mode or "upcoming").strip().lower() == "past"
 
     @property
     def take_home_date(self):
@@ -95,8 +81,8 @@ class Litter(db.Model):
 
     @property
     def is_current(self) -> bool:
-        """Return True when this litter should be treated as current."""
-        return not self.is_upcoming and not self.is_past
+        """Return True when this litter is explicitly configured as current."""
+        return (self.status_mode or "upcoming").strip().lower() == "current"
 
     def __str__(self):
         # Helps Flask-Admin / WTForms render this object consistently.

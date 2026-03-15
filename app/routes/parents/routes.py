@@ -71,9 +71,8 @@ def parent_detail(parent_id):
             1 for p in (litter.puppies or []) if p.status == PuppyStatus.AVAILABLE
         )
 
-    # Split litters using the model's canonical definition of "past".
-    # This preserves your rules (auto: no available puppies => past) and any admin override.
-    current_litters = [l for l in all_litters if not l.is_past]
+    # Split litters using explicit manual stage selection.
+    current_litters = [l for l in all_litters if l.is_current]
     past_litters = [l for l in all_litters if l.is_past]
 
     return render_template(

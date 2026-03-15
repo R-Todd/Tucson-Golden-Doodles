@@ -131,8 +131,6 @@
 
       function normalizeStage(value) {
         const normalized = (value || '').trim().toLowerCase();
-        if (normalized === 'auto') return 'current';
-        if (normalized === 'force_past') return 'past';
         if (['upcoming', 'current', 'past'].includes(normalized)) return normalized;
         return 'upcoming';
       }
