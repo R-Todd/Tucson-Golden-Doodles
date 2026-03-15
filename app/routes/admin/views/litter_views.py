@@ -26,7 +26,9 @@ class LitterForm(FlaskForm):
         validators=[InputRequired(message="Please select a father.")]
     )
 
-    birth_date = DateField("Born On", validators=[DataRequired()])
+    expected_birth_date = DateField("Expected Birth Date", validators=[Optional()])
+
+    birth_date = DateField("Born On", validators=[Optional()])
 
     breed_name = StringField("Breed Name", validators=[Optional()])
 
@@ -39,17 +41,42 @@ class LitterForm(FlaskForm):
     description = TextAreaField("Description", validators=[Optional()])
 
     status_mode = SelectField(
-        "Litter Visibility",
+        "Litter Stage",
         choices=[
-            ("auto", "Auto (Past when no puppies are available)"),
-            ("force_past", "Force Past (Hide from Current Litters)"),
+            ("upcoming", "Upcoming"),
+            ("current", "Current"),
+            ("past", "Past"),
         ],
-        default="auto",
+        default="upcoming",
         validators=[DataRequired()],
     )
 
-    # Litter cover image upload
     image_upload = FileField("Upload Main Litter Image")
+
+    def validate(self, extra_validators=None):
+        if not super().validate(extra_validators=extra_validators):
+            return False
+
+        stage = (self.status_mode.data or "upcoming").strip().lower()
+
+        if stage == "upcoming":
+            if not self.expected_birth_date.data:
+                self.expected_birth_date.errors.append("Upcoming litters require an expected birth date.")
+                return False
+            return True
+
+        if stage == "current":
+            effective_birth_date = self.birth_date.data or self.expected_birth_date.data
+            if not effective_birth_date:
+                self.birth_date.errors.append("Current litters require a birth date or an expected birth date to convert.")
+                return False
+            return True
+
+        if not self.birth_date.data:
+            self.birth_date.errors.append("Current and past litters require a birth date.")
+            return False
+
+        return True
 
 
 class LitterAdminView(AdminModelView):
@@ -59,13 +86,14 @@ class LitterAdminView(AdminModelView):
     create_template = "admin/litter/create_bs5.html"
     edit_template = "admin/litter/edit_bs5.html"
 
-    column_list = ("birth_date", "mother", "father", "breed_name", "expected_weight")
+    column_list = ("status_mode", "expected_birth_date", "birth_date", "mother", "father", "breed_name", "expected_weight")
 
     form = LitterForm
 
     form_widget_args = {
         "mom_id": {"id": "mom_id"},
         "dad_id": {"id": "dad_id"},
+        "expected_birth_date": {"id": "expected_birth_date"},
         "birth_date": {"id": "birth_date"},
         "breed_name": {"id": "breed_name"},
         "expected_weight": {"id": "expected_weight"},
@@ -98,17 +126,38 @@ class LitterAdminView(AdminModelView):
         form_instance = super().edit_form(obj)
         return self._populate_form_choices(form_instance, obj)
 
+    def _normalize_stage(self, value):
+        stage = (value or "upcoming").strip().lower()
+        if stage == "auto":
+            return "current"
+        if stage == "force_past":
+            return "past"
+        return stage if stage in {"upcoming", "current", "past"} else "upcoming"
+
     def on_model_change(self, form, model, is_created):
         """Persist relationships and shared litter fields + handle cover image upload."""
         model.mom_id = form.mom_id.data
         model.dad_id = form.dad_id.data
-        model.birth_date = form.birth_date.data
+
+        stage = self._normalize_stage(form.status_mode.data)
+
+        expected_birth_date = form.expected_birth_date.data
+        birth_date = form.birth_date.data
+
+        if stage == "current":
+            if not birth_date and expected_birth_date:
+                birth_date = expected_birth_date
+            expected_birth_date = None
+        elif stage == "past":
+            expected_birth_date = None
+
+        model.expected_birth_date = expected_birth_date
+        model.birth_date = birth_date
         model.breed_name = (form.breed_name.data or None)
         model.expected_weight = (form.expected_weight.data or None)
         model.description = (form.description.data or None)
-        model.status_mode = (form.status_mode.data or "auto")
+        model.status_mode = stage
 
-        # Litter cover image upload (similar to Puppy)
         upload = request.files.get("image_upload")
         if upload and upload.filename:
             old_key = getattr(model, "main_image_s3_key", None)
@@ -124,7 +173,7 @@ class LitterAdminView(AdminModelView):
             s3_url_filter = current_app.jinja_env.filters.get("s3_url")
             if s3_url_filter and old_key:
                 try:
-                    from app import cache  # lazy import avoids circular import
+                    from app import cache
                     cache.delete_memoized(s3_url_filter, old_key)
                 except Exception:
                     pass

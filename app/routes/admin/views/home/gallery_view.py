@@ -1,6 +1,6 @@
 # app/routes/admin/views/home/gallery_view.py
 
-from flask import request, flash, current_app, redirect
+from flask import request, flash, current_app, redirect, jsonify
 from flask_admin import expose
 from wtforms.fields import FileField
 from wtforms.validators import ValidationError
@@ -13,18 +13,15 @@ from app.utils.image_uploader import upload_image
 class GalleryImageAdminView(AdminModelView):
     """ Custom Admin View for Gallery Images with Bootstrap 5 templates and live preview. """
 
-    # --- Template Configuration ---
     list_template = 'admin/gallery/list_bs5.html'
     create_template = 'admin/gallery/create_bs5.html'
     edit_template = 'admin/gallery/edit_bs5.html'
 
     column_default_sort = ('sort_order', True)
 
-    # --- List View ---
     column_list = ('image_s3_key', 'caption', 'sort_order')
     column_labels = {'image_s3_key': 'Image'}
 
-    # --- Form View ---
     form_columns = ('caption', 'sort_order', 'image_upload')
     form_extra_fields = {
         'image_upload': FileField('Upload Image (Required on create)')
@@ -48,6 +45,18 @@ class GalleryImageAdminView(AdminModelView):
             .all()
         )
 
+    def _wants_json(self):
+        return (
+            request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            or 'application/json' in (request.headers.get('Accept') or '')
+        )
+
+    def _json_or_redirect(self, success, message, status_code=200):
+        if self._wants_json():
+            return jsonify({"ok": success, "message": message}), status_code
+        flash(message, 'success' if success else 'danger')
+        return redirect(self.get_url('.index_view'))
+
     def _insert_item_at_position(self, item, position):
         items = [existing for existing in self._ordered_items() if existing.id != getattr(item, 'id', None)]
 
@@ -68,26 +77,22 @@ class GalleryImageAdminView(AdminModelView):
         sort_raw = (request.form.get('quick_sort_order') or '').strip()
 
         if not file or not file.filename:
-            flash('Please choose an image to upload.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, 'Please choose an image to upload.', 400)
 
         try:
             requested_position = int(sort_raw) if sort_raw else 0
         except ValueError:
-            flash('Sort order must be a whole number.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, 'Sort order must be a whole number.', 400)
 
         s3_key, err = upload_image(file, folder='gallery')
         if err or not s3_key:
-            flash(err or 'Gallery image upload failed. Please upload a JPG/PNG.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, err or 'Gallery image upload failed. Please upload a JPG/PNG.', 400)
 
         item = self.model(image_s3_key=s3_key, caption=caption, sort_order=0)
         self.session.add(item)
         self._insert_item_at_position(item, requested_position)
         self.session.commit()
-        flash('Gallery image added.', 'success')
-        return redirect(self.get_url('.index_view'))
+        return self._json_or_redirect(True, 'Gallery image added.')
 
     @expose('/quick-update/<int:item_id>/', methods=('POST',))
     def quick_update_view(self, item_id):
@@ -96,28 +101,24 @@ class GalleryImageAdminView(AdminModelView):
 
         item = self.session.get(self.model, item_id)
         if item is None:
-            flash('Gallery image not found.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, 'Gallery image not found.', 404)
 
         if request.form.get('delete_image') == 'y':
             self.session.delete(item)
             self.session.commit()
             self._normalize_sort_orders(self._ordered_items())
             self.session.commit()
-            flash('Gallery image deleted.', 'success')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(True, 'Gallery image deleted.')
 
         try:
             requested_position = int((request.form.get('sort_order') or item.sort_order or 0))
         except ValueError:
-            flash('Sort order must be a whole number.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, 'Sort order must be a whole number.', 400)
 
         item.caption = (request.form.get('caption') or '').strip() or None
         self._insert_item_at_position(item, requested_position)
         self.session.commit()
-        flash('Gallery image updated.', 'success')
-        return redirect(self.get_url('.index_view'))
+        return self._json_or_redirect(True, 'Gallery image saved.')
 
     @expose('/quick-reorder/', methods=('POST',))
     def quick_reorder_view(self):
@@ -126,8 +127,7 @@ class GalleryImageAdminView(AdminModelView):
 
         ordered_ids = request.form.getlist('ordered_ids[]')
         if not ordered_ids:
-            flash('No gallery order was provided.', 'danger')
-            return redirect(self.get_url('.index_view'))
+            return self._json_or_redirect(False, 'No gallery order was provided.', 400)
 
         items = []
         for index, item_id in enumerate(ordered_ids):
@@ -136,13 +136,10 @@ class GalleryImageAdminView(AdminModelView):
                 items.append(item)
 
         self._normalize_sort_orders(items)
-
         self.session.commit()
-        flash('Gallery order updated.', 'success')
-        return redirect(self.get_url('.index_view'))
+        return self._json_or_redirect(True, 'Gallery order updated.')
 
     def on_model_change(self, form, model, is_created):
-        """ Handles the S3 image upload when a gallery item is saved. """
         file = request.files.get('image_upload')
 
         if is_created and not file:

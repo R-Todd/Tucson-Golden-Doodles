@@ -33,6 +33,10 @@
       </button>
     </div>
 
+    <div id="gallerySavedBanner" class="alert alert-primary d-none" role="alert">
+      Saved
+    </div>
+
     {% if data %}
       <div class="gallery-admin-grid" id="gallery-admin-grid">
         {% for row in data %}
@@ -43,7 +47,7 @@
               <div class="gallery-admin-card__top">
                 <div>
                   <label class="gallery-admin-card__label" for="sort-order-{{ row.id }}">Sort Order</label>
-                  <input id="sort-order-{{ row.id }}" class="form-control gallery-admin-card__sort" type="number" name="sort_order" value="{{ row.sort_order if row.sort_order is not none else 0 }}">
+                  <input id="sort-order-{{ row.id }}" class="form-control gallery-admin-card__sort js-gallery-sort" type="number" name="sort_order" value="{{ row.sort_order if row.sort_order is not none else 0 }}">
                 </div>
                 <button class="gallery-admin-card__drag" type="button" title="Drag to reorder" aria-label="Drag to reorder">
                   <i class="bi bi-grip-vertical"></i>
@@ -66,7 +70,7 @@
                 <button class="btn btn-outline-danger btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-record-id="{{ row.id }}">
                   Delete
                 </button>
-                <button class="btn btn-primary btn-sm" type="submit">Save</button>
+                <button class="btn btn-primary btn-sm js-gallery-save" type="submit">Save</button>
               </div>
             </form>
           </div>
@@ -147,6 +151,18 @@
 
         let draggedCard = null;
         const csrfToken = "{{ csrf_token() if csrf_token else '' }}";
+        const savedBanner = document.getElementById('gallerySavedBanner');
+        let savedBannerTimer = null;
+
+        function showSavedBanner(message = 'Saved') {
+          if (!savedBanner) return;
+          savedBanner.textContent = message;
+          savedBanner.classList.remove('d-none');
+          clearTimeout(savedBannerTimer);
+          savedBannerTimer = setTimeout(() => {
+            savedBanner.classList.add('d-none');
+          }, 1800);
+        }
 
         function getDragAfterElement(container, y) {
           const cards = [...container.querySelectorAll('.gallery-admin-card:not(.dragging)')];
@@ -160,20 +176,60 @@
           }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
         }
 
+        async function postForm(url, formData) {
+          const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json'
+            }
+          });
+
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.message || 'Save failed.');
+          }
+          return payload;
+        }
+
         async function persistOrder() {
           const orderedIds = [...grid.querySelectorAll('.gallery-admin-card')].map(card => card.dataset.itemId);
           const formData = new FormData();
           orderedIds.forEach(id => formData.append('ordered_ids[]', id));
           formData.append('csrf_token', csrfToken);
 
-          await fetch("{{ get_url('.quick_reorder_view', url=return_url) }}", {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-          });
-
+          await postForm("{{ get_url('.quick_reorder_view', url=return_url) }}", formData);
           window.location.reload();
         }
+
+        async function autoSaveSort(input) {
+          const form = input.closest('form');
+          if (!form) return;
+          const formData = new FormData(form);
+          try {
+            await postForm(form.action, formData);
+            window.location.reload();
+          } catch (error) {
+            alert(error.message);
+          }
+        }
+
+        grid.querySelectorAll('.js-gallery-sort').forEach(input => {
+          let startingValue = input.value;
+
+          input.addEventListener('focus', () => {
+            startingValue = input.value;
+          });
+
+          input.addEventListener('change', () => autoSaveSort(input));
+          input.addEventListener('blur', () => {
+            if (input.value !== startingValue) {
+              autoSaveSort(input);
+            }
+          });
+        });
 
         grid.querySelectorAll('.gallery-admin-card').forEach(card => {
           card.addEventListener('dragstart', () => {
@@ -200,6 +256,23 @@
           } else {
             grid.insertBefore(dragging, afterElement);
           }
+        });
+
+        grid.querySelectorAll('form').forEach(form => {
+          form.addEventListener('submit', async (event) => {
+            const submitter = event.submitter;
+            if (!submitter || !submitter.classList.contains('js-gallery-save')) return;
+
+            event.preventDefault();
+            const formData = new FormData(form);
+
+            try {
+              const payload = await postForm(form.action, formData);
+              showSavedBanner(payload.message || 'Saved');
+            } catch (error) {
+              alert(error.message);
+            }
+          });
         });
       });
     </script>

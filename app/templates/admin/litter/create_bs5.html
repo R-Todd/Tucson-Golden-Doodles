@@ -9,17 +9,44 @@
 <div class="container-fluid">
   <div class="row g-4">
     <div class="col-12 col-lg-7">
-      {# Compact dropdown UI - inserted above the Mother field via JS #}
-      <div id="litter-visibility-ui" class="mb-3" style="display:none;">
-        <label for="litterVisibilitySelect" class="form-label fw-semibold mb-1">Litter Visibility</label>
-        <select id="litterVisibilitySelect" class="form-select form-select-sm" style="max-width: 360px;">
-          <option value="auto">Current</option>
-          <option value="force_past">Past (Hide from Current Litters)</option>
-        </select>
+      <div id="litter-stage-ui" class="mb-3" style="display:none;">
+        <label class="form-label fw-semibold mb-2">Litter Stage</label>
 
-        <div id="litterVisibilityNote" class="form-text">
-          Auto: <span class="fw-semibold" id="litterAutoStatus">—</span>
+        <div class="row g-2" id="litterStageCards">
+          <div class="col-12 col-md-4">
+            <label class="card h-100 border litter-stage-card" data-stage="upcoming" for="litterStageUpcoming">
+              <div class="card-body py-3">
+                <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStageUpcoming" value="upcoming">
+                <span class="fw-semibold">Upcoming</span>
+                <div class="form-text mt-2">Planned pairing. Shows on Upcoming Litters before puppies are added.</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="card h-100 border litter-stage-card" data-stage="current" for="litterStageCurrent">
+              <div class="card-body py-3">
+                <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStageCurrent" value="current">
+                <span class="fw-semibold">Current</span>
+                <div class="form-text mt-2">Active litter currently shown on the main Litters page.</div>
+              </div>
+            </label>
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="card h-100 border litter-stage-card" data-stage="past" for="litterStagePast">
+              <div class="card-body py-3">
+                <input class="form-check-input me-2" type="radio" name="litter_stage_ui" id="litterStagePast" value="past">
+                <span class="fw-semibold">Past</span>
+                <div class="form-text mt-2">Archived litter hidden from active litter pages.</div>
+              </div>
+            </label>
+          </div>
         </div>
+
+        <div id="litterStageNote" class="form-text">
+          <span class="fw-semibold" id="litterStageStatus">Upcoming</span>
+          <span id="litterStageHelp">Announced pairing / expected litter shown on the Upcoming Litters page.</span>
+        </div>
+        <div class="form-text mt-1" id="litterDateHelp">Use Expected Birth Date for upcoming litters.</div>
       </div>
 
       {{ super() }}
@@ -41,6 +68,12 @@
           <div class="d-flex flex-wrap gap-2 mb-3">
             <span class="badge bg-light text-dark border">
               Expected Weight: <span id="preview-weight">—</span>
+            </span>
+            <span class="badge bg-light text-dark border">
+              Stage: <span id="preview-stage">Upcoming</span>
+            </span>
+            <span class="badge bg-light text-dark border">
+              Take Home: <span id="preview-take-home">—</span>
             </span>
           </div>
 
@@ -66,13 +99,20 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const statusSelect = document.getElementById('status_mode');
-      const ui = document.getElementById('litter-visibility-ui');
-      const visSelect = document.getElementById('litterVisibilitySelect');
+      const ui = document.getElementById('litter-stage-ui');
+      const stageInputs = document.querySelectorAll('input[name="litter_stage_ui"]');
       const momField = document.getElementById('mom_id');
+      const expectedBirthDateField = document.getElementById('expected_birth_date');
+      const birthDateField = document.getElementById('birth_date');
+      const stageLabel = document.getElementById('litterStageStatus');
+      const stageHelp = document.getElementById('litterStageHelp');
+      const dateHelp = document.getElementById('litterDateHelp');
+      const previewStage = document.getElementById('preview-stage');
+      const previewTakeHome = document.getElementById('preview-take-home');
+      const stageCards = document.querySelectorAll('.litter-stage-card');
 
-      if (!statusSelect || !ui || !visSelect || !momField) return;
+      if (!statusSelect || !ui || !stageInputs.length || !momField) return;
 
-      // Insert the dropdown right above Mother field
       const momWrapper =
         momField.closest('.form-group') ||
         momField.closest('.mb-3') ||
@@ -83,43 +123,125 @@
         ui.style.display = '';
       }
 
-      // Hide the original status_mode field
       const statusWrapper =
         statusSelect.closest('.form-group') ||
         statusSelect.closest('.mb-3') ||
         statusSelect.parentElement;
       if (statusWrapper) statusWrapper.style.display = 'none';
 
-      // Ensure Auto is default on Create
-      if (!statusSelect.value) statusSelect.value = 'auto';
-      if (statusSelect.value !== 'auto' && statusSelect.value !== 'force_past') {
-        statusSelect.value = 'auto';
+      function normalizeStage(value) {
+        const normalized = (value || '').trim().toLowerCase();
+        if (normalized === 'auto') return 'current';
+        if (normalized === 'force_past') return 'past';
+        if (['upcoming', 'current', 'past'].includes(normalized)) return normalized;
+        return 'upcoming';
       }
-      visSelect.value = statusSelect.value;
 
-      // Set note text
-      const note = document.getElementById('litterAutoStatus');
-      if (note) {
-        if (visSelect.value === 'force_past') {
-          note.textContent = 'Past (hidden from Current Litters)';
-        } else {
-          note.textContent = 'Auto (Past when no puppies are available)';
+      function setSelectedStage(stage) {
+        stageInputs.forEach((input) => {
+          input.checked = input.value === stage;
+        });
+
+        stageCards.forEach((card) => {
+          const isActive = card.dataset.stage === stage;
+          card.classList.toggle('border-primary', isActive);
+          card.classList.toggle('shadow-sm', isActive);
+          card.classList.toggle('bg-light', isActive);
+        });
+      }
+
+      statusSelect.value = normalizeStage(statusSelect.value);
+      setSelectedStage(statusSelect.value);
+
+      function calculateTakeHome(value) {
+        if (!value) return '—';
+        const date = new Date(value + 'T00:00:00');
+        if (isNaN(date.getTime())) return '—';
+        date.setDate(date.getDate() + 56);
+        return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+
+      function setFieldVisibility(field, shouldShow) {
+        if (!field) return;
+        const wrapper =
+          field.closest('.form-group') ||
+          field.closest('.mb-3') ||
+          field.parentElement;
+        if (wrapper) wrapper.style.display = shouldShow ? '' : 'none';
+      }
+
+      function syncStageUI() {
+        const selectedInput = document.querySelector('input[name="litter_stage_ui"]:checked');
+        const stage = selectedInput ? selectedInput.value : 'upcoming';
+        statusSelect.value = stage;
+        setSelectedStage(stage);
+
+        const isUpcoming = stage === 'upcoming';
+
+        if (stage === 'current') {
+          if (birthDateField && expectedBirthDateField && !birthDateField.value && expectedBirthDateField.value) {
+            birthDateField.value = expectedBirthDateField.value;
+          }
+          if (expectedBirthDateField) {
+            expectedBirthDateField.value = '';
+          }
+        } else if (stage === 'past' && expectedBirthDateField) {
+          expectedBirthDateField.value = '';
         }
-      }
 
-      // Sync UI -> actual field
-      visSelect.addEventListener('change', function () {
-        statusSelect.value = visSelect.value;
+        setFieldVisibility(expectedBirthDateField, isUpcoming);
+        setFieldVisibility(birthDateField, !isUpcoming);
 
-        // Update note text on change
-        if (note) {
-          if (visSelect.value === 'force_past') {
-            note.textContent = 'Forced Past (hidden from Current Litters)';
+        if (stageLabel) {
+          stageLabel.textContent = stage.charAt(0).toUpperCase() + stage.slice(1);
+        }
+
+        if (stageHelp) {
+          if (stage === 'upcoming') {
+            stageHelp.textContent = 'Announced pairing / expected litter shown on the Upcoming Litters page.';
+          } else if (stage === 'current') {
+            stageHelp.textContent = 'Active litter shown on the main Litters page.';
           } else {
-            note.textContent = 'Auto (Past when no puppies are available)';
+            stageHelp.textContent = 'Archived litter hidden from active public litter pages.';
           }
         }
+
+        if (dateHelp) {
+          if (stage === 'upcoming') {
+            dateHelp.textContent = 'Use Expected Birth Date for upcoming litters.';
+          } else {
+            dateHelp.textContent = 'Use Born On for current and past litters.';
+          }
+        }
+
+        if (previewStage) {
+          previewStage.textContent = stage.charAt(0).toUpperCase() + stage.slice(1);
+        }
+
+        const baseDateValue = isUpcoming
+          ? (expectedBirthDateField ? expectedBirthDateField.value : '')
+          : (birthDateField ? birthDateField.value : '');
+
+        if (previewTakeHome) {
+          previewTakeHome.textContent = calculateTakeHome(baseDateValue);
+        }
+      }
+
+      if (expectedBirthDateField) {
+        expectedBirthDateField.addEventListener('change', syncStageUI);
+        expectedBirthDateField.addEventListener('input', syncStageUI);
+      }
+      if (birthDateField) {
+        birthDateField.addEventListener('change', syncStageUI);
+        birthDateField.addEventListener('input', syncStageUI);
+      }
+      stageInputs.forEach((input) => {
+        input.addEventListener('change', function () {
+          syncStageUI();
+        });
       });
+
+      syncStageUI();
     });
   </script>
 {% endblock %}

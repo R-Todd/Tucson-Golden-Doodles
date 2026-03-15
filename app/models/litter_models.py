@@ -1,5 +1,5 @@
 from . import db
-from datetime import date
+from datetime import timedelta
 from .enums import PuppyStatus
 
 
@@ -18,15 +18,17 @@ class Litter(db.Model):
     dad_id = db.Column(db.Integer, db.ForeignKey("parent.id"), nullable=False)
 
     # Shared litter information
-    birth_date = db.Column(db.Date, nullable=False)
+    expected_birth_date = db.Column(db.Date, nullable=True)
+    birth_date = db.Column(db.Date, nullable=True)
     breed_name = db.Column(db.String(120), nullable=True)
     description = db.Column(db.Text, nullable=True)
     expected_weight = db.Column(db.String(120), nullable=True)
 
-    # Litter status override:
-    # - "auto" (default): past if there are ZERO available puppies
-    # - "force_past": always treat as past (hides from Current Litters)
-    status_mode = db.Column(db.String(20), default="auto", nullable=False, index=True)
+    # Litter lifecycle stage:
+    # - "upcoming": announced pairing / expected litter
+    # - "current": active litter shown on the site
+    # - "past": archived litter hidden from active pages
+    status_mode = db.Column(db.String(20), default="upcoming", nullable=False, index=True)
 
     # Litter cover image (used on Current Litters page)
     main_image_s3_key = db.Column(db.String(255))
@@ -53,22 +55,48 @@ class Litter(db.Model):
         return f"Litter from {mom_name} & {dad_name}"
 
     @property
+    def is_upcoming(self) -> bool:
+        """Return True when this litter is configured as upcoming."""
+        return (self.status_mode or "upcoming").strip().lower() == "upcoming"
+
+    @property
     def is_past(self) -> bool:
         """Return True if this litter should be treated as a past litter.
 
-        Rules (Auto is always on):
-        - Admin override: status_mode == "force_past" => past
-        - Otherwise: past if there are ZERO available puppies
+        Rules:
+        - Upcoming litters are never past
+        - Admin override: status_mode == "past" => past
+        - Current litters automatically become past when they have no available puppies
         """
-        mode = (self.status_mode or "auto").strip().lower()
-        if mode == "force_past":
+        mode = (self.status_mode or "upcoming").strip().lower()
+
+        if mode == "upcoming":
+            return False
+
+        if mode == "past":
             return True
 
-        # Auto: past if no puppies are AVAILABLE
         if not self.puppies:
             return True
 
         return not any(p.status == PuppyStatus.AVAILABLE for p in self.puppies)
+
+    @property
+    def take_home_date(self):
+        """Return the take-home date, calculated as 8 weeks after birth.
+
+        Uses the actual birth date when available, and falls back to the
+        expected birth date for upcoming litters.
+        """
+        base_date = self.birth_date or self.expected_birth_date
+        if not base_date:
+            return None
+        return base_date + timedelta(weeks=8)
+
+    @property
+    def is_current(self) -> bool:
+        """Return True when this litter should be treated as current."""
+        return not self.is_upcoming and not self.is_past
 
     def __str__(self):
         # Helps Flask-Admin / WTForms render this object consistently.

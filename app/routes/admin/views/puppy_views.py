@@ -58,8 +58,6 @@ class PuppyAdminView(AdminModelView):
         """
         form_instance.litter_id.choices = self._get_litter_choices()
 
-        # If editing and current puppy has a litter id not present (shouldn't happen),
-        # keep it safe by injecting that value.
         if obj and obj.litter_id:
             existing_ids = {choice_id for (choice_id, _) in form_instance.litter_id.choices}
             if obj.litter_id not in existing_ids:
@@ -67,9 +65,23 @@ class PuppyAdminView(AdminModelView):
                 if litter:
                     form_instance.litter_id.choices.insert(0, (litter.id, litter.display_label))
 
+    def _get_requested_litter_id(self):
+        """Read an optional litter_id from the query string."""
+        raw_litter_id = request.args.get("litter_id", type=int)
+        if not raw_litter_id:
+            return None
+
+        litter = Litter.query.get(raw_litter_id)
+        return litter.id if litter else None
+
     def create_form(self, obj=None):
         form = super().create_form(obj)
         self._populate_form_choices(form, obj=None)
+
+        requested_litter_id = self._get_requested_litter_id()
+        if requested_litter_id and not form.is_submitted():
+            form.litter_id.data = requested_litter_id
+
         return form
 
     def edit_form(self, obj=None):
